@@ -1,0 +1,23 @@
+#ifndef __BASE__HH
+#define __BASE__HH
+
+
+template <typename T>
+class Base
+{
+ public:
+ 	Base (){};
+	
+ private:
+ 	std::vector<T > _elements;
+}
+
+template <int DIM> //working in |R ^ DIM
+class PolynomialBase : Base <Poly<DIM> >
+{
+
+}
+
+
+#endif //__BASE__HH
+
