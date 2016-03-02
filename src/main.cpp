@@ -1,29 +1,27 @@
 #include <iostream>
-#include <array>
-#include <cmath> //pow
-using namespace std;
+//#include <array>
+//#include <cmath> //pow
 
-template <typename T, size_t N>
-	class Tensor
-	{
-		public:
-//			Tensor(std::initializer_list<T> coor) : _matrix()
-//			{
-//				size_t i = 0;
-//				for (auto input : coor)
-//					_matrix[i++] = input;
-//			};
-			Tensor(std::initializer_list<T> coor) : _matrix(coor){}
-			std::size_t size(){return _matrix.size();}
-		private:
-			std::array<T, N> _matrix;
-	};
+#include "Tensorize.h"
+#include "Point.h" 
+using namespace std;
+using namespace Geometry;
+
 
 int main()
 {
-//	std::array<double, 2> temp({1,2});
-	Tensor<double, 2> test({1,2});
-	std::cout << test.size() << std::endl;
+	Tensor<double, 2> test(vector<double>(3,1),vector<double>(2,2));
+	cout << test.size() << endl;
+	
+	Point<1> p_test({1});	
+	Point<1> p_copy(p_test);
+	Point<1> p1 = p_copy;
+	array<double, 2> init ({2,3});
+	Point<2> p2(init);
+	Point<3> p3 = p1 * p2;
+	p1.print();
+	p2.print();
+	p3.print();
 	return 0;
 };
 
