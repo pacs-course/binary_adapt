@@ -2,7 +2,8 @@
 #define __POLY__HH
 
 #include <vector>
-#include <exception>
+#include <exception> //runtime_error
+#include <algorithm> //max
 
 #include "Tensorize.h"
 #include "Point.h"
@@ -72,10 +73,38 @@ template <size_t DIM>
 			};
 
 
-//			Polinomial<DIM> operator + (const Polinomial<DIM>& add)
-//			{
-//				
-//			}
+			Polinomial<DIM> operator + (const Polinomial<DIM>& add)
+			{
+				size_t addDegree = add.degree();
+				size_t thisDegree = degree();
+				size_t resDegree = max(addDegree, thisDegree);
+
+				Polinomial<DIM>& maxPoli (
+														addDegree == resDegree ? add : *this 
+													);
+
+				Polinomial<DIM>& minPoli (
+														addDegree == resDegree ? *this : add 
+													);													
+
+				Polinomial<DIM> result(resDegree);
+				if (_coeff.empty())
+					convertStorage();
+				if (add._coeff.empty())
+					add.convertStorage();
+
+				size_t ind(0);
+				while (ind < minPoli.degree())
+				{
+					result._coeff[ind] = minPoli._coeff[ind] + maxPoli._coeff[ind];
+					++ind;
+				}
+
+				while (ind < resDegree)
+					result._coeff[ind] = maxPoli._coeff[ind];
+
+				return result;
+			}
 
 			template <size_t N>
 				Polinomial<DIM + N> tensor (const Polinomial<N>& p)
@@ -116,10 +145,6 @@ template <size_t DIM>
 			};
 
 		protected:
-			void degree(size_t val)
-			{
-				_degree = val;
-			}
 
 			void updateDegree()
 			{
@@ -138,7 +163,7 @@ template <size_t DIM>
 					for (auto pol : _oneDFactors)
 						d += pol.degree();
 				}
-				degree(d);
+				_degree = d;
 				_degreeUpdated = true;
 			}
 
@@ -199,7 +224,9 @@ every method that modifies polinomial coefficients must also set _degreeUpdated=
 				Polinomial (const vector<double>&);
 
 				//1D polinomial product
-				Polinomial<1> operator * (Polinomial<1>&) const;
+				Polinomial<1> operator * (const Polinomial<1>&) const;
+				//1D polinomial sum
+				Polinomial<1> operator + (const Polinomial<1>&) const;
 				//method to access coefficient value of x^ind term
 				double& operator [] (size_t ind);
 				//evaluate polinomial in input point

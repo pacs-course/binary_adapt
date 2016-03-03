@@ -1,10 +1,10 @@
-#include "Poly.h"
+#include "Polinomial.h"
 
 	using namespace std;
 
 	Polinomial<1>::Polinomial (size_t degree) : _coeff(degree, 0){};
 	Polinomial<1>::Polinomial (const vector<double>& v): _coeff(v){};
-	Polinomial<1> Polinomial<1>::operator * (Polinomial<1>& p) const
+	Polinomial<1> Polinomial<1>::operator * (const Polinomial<1>& p) const
 	{
 		size_t thisDegree = degree();
 		size_t pDegree = p.degree();
@@ -13,15 +13,44 @@
 
 		for (size_t i = 0; i < thisDegree; ++i)
 			for (size_t j = 0; j < pDegree; ++j)
-				result[i + j] += _coeff[i]*p[j];
+				result._coeff[i + j] += _coeff[i] * p._coeff[j];
 
 		return result;
 	};
 
-	double& Polinomial<1>::operator [] (size_t ind)
+	Polinomial<1> Polinomial<1>::operator + (const Polinomial<1>& p) const
 	{
-		return _coeff[ind];
-	}
+		size_t pDegree = p.degree();
+		size_t thisDegree = degree();
+		size_t resultDegree = max(pDegree, thisDegree);
+
+		const Polinomial<1>& maxPoli	(
+													pDegree == resultDegree ? p : *this 
+												);
+
+		const Polinomial<1>& minPoli	(
+													pDegree == resultDegree ? *this : p 
+												);											
+
+		Polinomial<1> result(resultDegree);
+
+		size_t ind(0);
+		while (ind < minPoli.degree())
+		{
+			result._coeff[ind] = minPoli._coeff[ind] + maxPoli._coeff[ind];
+			++ind;
+		}
+
+		while (ind < resultDegree)
+			result._coeff[ind] = maxPoli._coeff[ind];
+
+		return result;	
+	};
+
+//	double& Polinomial<1>::operator [] (size_t ind)
+//	{
+//		return _coeff[ind];
+//	}
 
 //smart evaluation to minimize number of products
 	double Polinomial<1>::operator() (Point<1> const& x) const
