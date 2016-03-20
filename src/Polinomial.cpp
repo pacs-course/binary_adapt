@@ -1,25 +1,92 @@
 #include "Polinomial.h"
 
 	using namespace std;
+	
+	Polinomial<1>::Polinomial ()					 					: _coeff()	 					{};
+	Polinomial<1>::Polinomial (size_t degree) 					: _coeff(degree + 1, 0)		{};
+	Polinomial<1>::Polinomial (const vector<double>& v) 		: _coeff(v) 					{};
+	Polinomial<1>::Polinomial (size_t degree, double coeff)	: _coeff(degree + 1, coeff){};
 
-	Polinomial<1>::Polinomial (size_t degree) : _coeff(degree, 0){};
-	Polinomial<1>::Polinomial (const vector<double>& v): _coeff(v){};
+	Polinomial<1>::Polinomial (const Polinomial<1>& p)
+	{
+		*this = p;
+	};
+
+	Polinomial<1>& Polinomial<1>::operator = (const Polinomial<1>& p)
+	{
+//#ifdef DEBUG
+//		cout << "Sono in operator = " << endl;
+//#endif //DEBUG
+		if (&p != this)
+		{
+//			_coeff.resize(p._coeff.size());
+//			copy (p._coeff.begin(), p._coeff.end(), _coeff.begin());
+			_coeff = p._coeff;
+		}
+//#ifdef DEBUG
+//		cout << "Esco da operator = " << endl;
+//#endif //DEBUG
+		return *this;
+	};
+
+	Polinomial<1> Polinomial<1>::operator * (const double& scalar) const
+	{
+		Polinomial<1> result(*this);
+#ifdef DEBUG
+//		cout << "moltiplico il polinomio di coefficienti" << endl;
+//		print();
+//		cout << "per il double " << scalar << endl;
+
+//		cout << "Il risultato e' inizializzato a" << endl;
+//		result.print();
+//		size_t i = 0;
+#endif //DEBUG
+		
+		for (auto& c : result)
+			c *= scalar;
+
+#ifdef DEBUG
+//		cout << "Il risultato prima del return e': " << endl;
+//		result.print();
+#endif //DEBUG
+		return result;
+	}
+
 	Polinomial<1> Polinomial<1>::operator * (const Polinomial<1>& p) const
 	{
+
 		size_t thisDegree = degree();
 		size_t pDegree = p.degree();
 
 		Polinomial<1> result (thisDegree + pDegree);
 
-		for (size_t i = 0; i < thisDegree; ++i)
-			for (size_t j = 0; j < pDegree; ++j)
-				result._coeff[i + j] += _coeff[i] * p._coeff[j];
+#ifdef DEBUG
+		cout << "Sto moltiplicando" << endl;
+		print();
+		cout << "con" << endl;
+		p.print();		
+#endif //DEBUG
 
+		for (size_t i = 0; i <= thisDegree; ++i)
+			for (size_t j = 0; j <= pDegree; ++j)
+				result[i + j] += _coeff[i] * p.get(j);
+
+#ifdef DEBUG
+		cout << "Coefficienti risultato:		";
+		result.print();
+		cout << "Risultato ha grado >>> " << result.degree() << endl; 
+#endif //DEBUG
 		return result;
 	};
 
 	Polinomial<1> Polinomial<1>::operator + (const Polinomial<1>& p) const
 	{
+#ifdef DEBUG
+		cout << "Sto sommando " << endl;
+		print();
+		cout << "a" << endl;
+		p.print();
+#endif //DEBUG
 		size_t pDegree = p.degree();
 		size_t thisDegree = degree();
 		size_t resultDegree = max(pDegree, thisDegree);
@@ -33,27 +100,113 @@
 												);											
 
 		Polinomial<1> result(resultDegree);
+#ifdef DEBUG
+		cout << "Risultato inizializzato a " << endl;
+		result.print();
+#endif //DEBUG
 
 		size_t ind(0);
-		while (ind < minPoli.degree())
+		
+		while (ind <= minPoli.degree())
 		{
-			result._coeff[ind] = minPoli._coeff[ind] + maxPoli._coeff[ind];
+			result[ind] = minPoli.get(ind) + maxPoli.get(ind);
+#ifdef DEBUG
+			cout << minPoli.get(ind) << " + " << maxPoli.get(ind) << " = " << result[ind] << endl;
+#endif //DEBUG
 			++ind;
 		}
 
-		while (ind < resultDegree)
-			result._coeff[ind] = maxPoli._coeff[ind];
-
+		while (ind <= resultDegree)
+		{
+			result[ind] = maxPoli.get(ind);
+			++ind;
+		}
+#ifdef DEBUG
+		cout << "Risultato somma " << endl;
+		result.print();
+#endif //DEBUG
 		return result;	
 	};
 
-//	double& Polinomial<1>::operator [] (size_t ind)
-//	{
-//		return _coeff[ind];
-//	}
+	Polinomial<1> Polinomial<1>::operator - (const Polinomial<1>& p) const
+	{
+#ifdef DEBUG
+		cout << "Sto sottraendo " << endl;
+		p.print();
+		cout << "a" << endl;
+		print();
+		
+#endif //DEBUG
+		Polinomial<1> temp(p);
+		for (auto& coeff : temp)
+			coeff = 0.0 - coeff;
+#ifdef DEBUG
+		cout << "Risultato inversione segni: " << endl;
+		temp.print();
+#endif //DEBUG
+		return ((*this) + temp);
+	};
+
+	Polinomial<1>& Polinomial<1>::operator -= (const Polinomial<1>& p)
+	{
+//#ifdef DEBUG
+//		cout << "Entro in operator -= " << endl;
+//#endif //DEBUG
+		(*this) = (*this) - p;
+//#ifdef DEBUG
+//		cout << "Pronto per uscire da operator -= " << endl;
+//#endif //DEBUG
+		return (*this);
+	};
+	Polinomial<1>& Polinomial<1>::operator += (const Polinomial<1>& p)
+	{
+		(*this) = (*this) + p;
+		return (*this);
+	};
+	Polinomial<1>& Polinomial<1>::operator *= (const Polinomial<1>& p)
+	{
+		(*this) = (*this) * p;
+		return (*this);
+	};
+	Polinomial<1>& Polinomial<1>::operator *= (const double& a)
+	{
+		(*this) = (*this) * a;
+		return (*this);
+	};
+
+
+	double& Polinomial<1>::operator[] (size_t ind)
+	{
+//#ifdef DEBUG
+//		cout << "Chiamata ad operatore []" << endl; 
+//		cout << "Dimensione coefficienti >>>> " << _coeff.size() << endl;
+//		cout << "Grado polinomio >>>>>>>>>>>> " << degree() << endl;
+//#endif //DEBUG
+		return _coeff[ind];
+	};
+
+	double Polinomial<1>::get (size_t ind) const
+	{
+		return _coeff[ind];
+	};
+
+	vector<double>::iterator Polinomial<1>::begin()
+	{
+		return _coeff.begin();
+	};
+	vector<double>::iterator Polinomial<1>::end()
+	{
+		return _coeff.end();
+	};
+
 
 //smart evaluation to minimize number of products
 	double Polinomial<1>::operator() (Point<1> const& x) const
+	{
+		return (*this)(x[0]);
+	};
+
+	double Polinomial<1>::operator() (double const& x) const
 	{
 		double tot = 0;
 /*
@@ -64,68 +217,30 @@ begin() = rend()-1 : last one must not be multiplicated by x
 		for (; c_i != oneLessEnd; ++c_i)
 		{
 			tot += *c_i;
-			tot *= x[0];
+			tot *= x;
 		}
 		tot += *c_i;
 		return tot;
-	};
 
+	};
 	size_t Polinomial<1>::degree() const
 	{
-		return _coeff.size();
+		return _coeff.size() - 1;
 	};
 
 	void Polinomial<1>::degree(size_t val)
 	{
-		_coeff.resize(val);
-	}
+		_coeff.resize(val + 1);
+	};
 
+	bool Polinomial<1>::null() const
+	{
+		return _coeff.empty();
+	};
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-//	Poly1D::Poly1D ()											: _coefficients () 						{};
-//	Poly1D::Poly1D (vector<double>& coeff)				: _coefficients (coeff) 				{};
-//	Poly1D::Poly1D (size_t& degree, double& coeff)	: _coefficients (degree + 1, coeff)	{};
-
-//	double Poly1D::operator() (Point<1>& x)
-//	{
-//		return (*this)(x[0]);
-//	};
-
-//	double Poly1D::operator() (double& x)
-//	{
-//		size_t p(0);
-//		return accumulate(
-//								_coefficients.begin(),
-//								_coefficients.end(),
-//								0.0,
-//								[&&] (double tot, double coeff) { return tot += coeff*pow(x, p++); }
-//								);
-//	};
-
-//	size_t Poly1D::degree ()
-//	{
-//		return _coefficients.size() - 1;
-//	};
-
-//	void Poly1D::degree (size_t& p, double& val)
-//	{
-//		_coefficients.resize(p + 1, val);
-//	}
-
-
+	void Polinomial<1>::print() const
+	{
+		for (auto& c : _coeff)
+			cout << c << "	";
+		cout << endl;
+	};

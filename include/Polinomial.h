@@ -4,8 +4,9 @@
 #include <vector>
 #include <exception> //runtime_error
 #include <algorithm> //max
+#include <type_traits> //enable_if
 
-#include "Tensorize.h"
+//#include "Tensorize.h"
 #include "Point.h"
 
 using namespace Geometry;
@@ -17,17 +18,9 @@ template <size_t DIM>
 	{
 		public:
  
-			Polinomial() : _coeff(), _degree(0), _degreeUpdated(true)
+			Polinomial() : _degree(0), _degreeUpdated(true)
 			{
-				_oneDFactors.fill(Polinomial<1>(0));
-			};
-
-			Polinomial(size_t degree) : _degree(degree), _degreeUpdated(true)
-			{
-				_coeff.resize(degree);
-				size_t i(0);
-				for (auto pol : _coeff)
-					pol = Polinomial<DIM-1> (i++);
+				_oneDFactors.fill(Polinomial<1>());
 			};
 
 			Polinomial<DIM> (const Polinomial<DIM>& p)
@@ -39,7 +32,6 @@ template <size_t DIM>
 			{
 				if (&p != this)
 				{
-					_coeff = p._coeff;
 					for (size_t i = 0; i < DIM; ++i)
 						_oneDFactors[i] = p._oneDFactors[i];
 					_degree = p._degree;
@@ -52,88 +44,62 @@ template <size_t DIM>
 
 			Polinomial<DIM> operator * (const Polinomial<DIM>& p)
 			{
-				size_t thisDegree = degree();
-				size_t pDegree = p.degree();
+				Polinomial<DIM> result ();
+				for (size_t i = 0; i < DIM; ++i)
+					result.setFactor(i, _oneDFactors[i] * p[i]);
 
-				Polinomial<DIM> result (thisDegree + pDegree);
-
-				if (p._coeff.empty() && _coeff.empty())
-					for (size_t ind = 0; ind < DIM; ++ind)
-						result._oneDFactors[ind] = _oneDFactors[ind] * p._oneDFactors[ind];
-				else
-				{
-					_coeff.empty() ? convertStorage() : p.convertStorage();
-					for (size_t i = 0; i < thisDegree; ++i)
-						for (size_t j = 0; j < pDegree; ++j)
-							result._coeff[i + j] += _coeff[i] * p._coeff[j];
-				}
-
-				result._degreeUpdated = false;
 				return result;
 			};
 
-
-			Polinomial<DIM> operator + (const Polinomial<DIM>& add)
+			Polinomial<1>& operator[] (size_t ind)
 			{
-				size_t addDegree = add.degree();
-				size_t thisDegree = degree();
-				size_t resDegree = max(addDegree, thisDegree);
+				return _oneDFactors[ind];
+			};
 
-				Polinomial<DIM>& maxPoli (
-														addDegree == resDegree ? add : *this 
-													);
+			typename array<Polinomial<1>, DIM>::iterator begin()
+			{
+				return _oneDFactors.begin();
+			};
 
-				Polinomial<DIM>& minPoli (
-														addDegree == resDegree ? *this : add 
-													);													
+			typename array<Polinomial<1>, DIM>::iterator end()
+			{
+				return _oneDFactors.end();
+			};
 
-				Polinomial<DIM> result(resDegree);
-				if (_coeff.empty())
-					convertStorage();
-				if (add._coeff.empty())
-					add.convertStorage();
-
-				size_t ind(0);
-				while (ind < minPoli.degree())
-				{
-					result._coeff[ind] = minPoli._coeff[ind] + maxPoli._coeff[ind];
-					++ind;
-				}
-
-				while (ind < resDegree)
-					result._coeff[ind] = maxPoli._coeff[ind];
-
-				return result;
-			}
-
-			template <size_t N>
+			template <size_t N, typename enable_if< (N > 1), int>::type = 0>
 				Polinomial<DIM + N> tensor (const Polinomial<N>& p)
 				{
-					Polinomial<DIM + N> result();
+					Polinomial<DIM + N> result;
 					size_t i(0);
-					size_t degree = 0;
 					for (auto pol1 : _oneDFactors)
-						result._oneDFactors[i++] = pol1;
+						result.setFactor(i++, pol1);
 	
-					for (auto pol2 : p._oneDFactors)
-						result._oneDFactors[i++] = pol2;
+					for (auto pol2 : p)
+						result.setFactor(i++, pol2);
 
-					result._degreeUpdated = false;
 					return result;
 				}
+			
+			template <size_t N, typename enable_if< (N == 1), int>::type = 0>
+				Polinomial<DIM + N> tensor (const Polinomial<N>& p)
+				{
+					Polinomial<DIM + N> result;
+					size_t i(0);
+					for (auto pol1 : _oneDFactors)
+						result.setFactor(i++, pol1);
+	
+					result.setFactor(i, p);
+					return result;
+				}
+			
 
 			//polinomial evaluation
 			double operator() (Point<DIM> const& x) const
 			{
-				if (!_coeff.empty())
-					return evaluate(x.begin());
-				else
-				{
-					double tot = 1;
-					for (size_t i = 0; i < DIM; ++i)
-						tot *= _oneDFactors[i].evaluate(x[i]);
-					return tot;
-				}
+				double tot = 1;
+				for (size_t i = 0; i < DIM; ++i)
+					tot *= _oneDFactors[i](x[i]);
+				return tot;
 			};
 
 
@@ -144,68 +110,47 @@ template <size_t DIM>
 				return _degree;
 			};
 
-		protected:
+			void print() const
+			{
+				cout << "Polinomio " << DIM << "D di fattori:" << endl;
+				for (auto pol : _oneDFactors)
+					pol.print();
+				cout << endl;
+			};
 
+		public:
+			void setFactor(size_t ind, Polinomial<1> const& f)
+			{
+				_oneDFactors[ind] = f;
+				_degreeUpdated = false;
+			};
+
+		private:
 			void updateDegree()
 			{
 				size_t d(0);
-				if (!_coeff.empty())
-				{
-					for (size_t i = 0; i < _coeff.size(); ++i)
-					{
-						size_t curr = _coeff[i].degree() + i;
-						if (curr > d)
-							d = curr;
-					}
-				}
-				else
-				{
-					for (auto pol : _oneDFactors)
-						d += pol.degree();
-				}
+				for (auto pol : _oneDFactors)
+					d += pol.degree();
+
 				_degree = d;
 				_degreeUpdated = true;
 			}
 
-		private:
-//INPUT TYPE TO BE CONVERTED TO ITERATOR
-			double evaluate(double const* iter) const
+			bool null()
 			{
-				auto next = iter + 1;
-				double tot = 0;
+				for (auto pol : _oneDFactors)
+					if (pol.empty())
+						return true;
 
-				//begin() = rend()-1 : last one must not be multiplicated by x
-				auto c_i = _coeff.rbegin();
-				auto oneLessEnd = _coeff.rend() - 1;
-				for (; c_i != oneLessEnd ; ++c_i)
-				{
-					tot += c_i->evaluate(next);
-					tot *= (*iter);
-				}
-				tot += c_i->evaluate(next);
-				return tot;				
-			};
-
-			void convertStorage()
-			{
-				if (_coeff.empty())
-				{
-					string ss("I'm not able to convert from 1DFactors in recursive format: TEACH ME");
-					throw runtime_error(ss);
-				}				
+				return false;
 			}
 
 /*
-multivariate polinomial of DIM variables is generally stored as a univariate polinomial with polinomial<DIM-1> coefficients _coeff,
-such that the total degree is equal to the _coeff size.
-In the particular case the polinomial can be written as a product of univariate polinomial, these are stored in a DIM sized array
-and _coeff is setted as empty, since it's useless
+multivariate polinomial of DIM variables is stored as a product of univariate polinomial; these are stored in a DIM sized array
 */
-			vector<Polinomial<DIM - 1> > _coeff;
 			array<Polinomial<1>, DIM> _oneDFactors;
 
 /*
-degree value depends on how the multivariate polinomial is stored
 degree evaluation is computed at runtime every time _degreeUpdated is false
 every method that modifies polinomial coefficients must also set _degreeUpdated=false
 */
@@ -218,21 +163,87 @@ every method that modifies polinomial coefficients must also set _degreeUpdated=
 		class Polinomial<1>
 		{
 			public:
+				Polinomial ();
 				//constructor to initialize coefficients size
 				Polinomial (size_t);
+				//constructor to set degree and constant coefficients
+				Polinomial (size_t, double);
 				//constructor to initialize coefficients value
 				Polinomial (const vector<double>&);
 
+				Polinomial (const Polinomial<1>& p);
+				Polinomial<1>& operator = (const Polinomial<1>& p);
+
+				//1D polinomial product
+				Polinomial<1> operator * (const double&) const;
 				//1D polinomial product
 				Polinomial<1> operator * (const Polinomial<1>&) const;
 				//1D polinomial sum
 				Polinomial<1> operator + (const Polinomial<1>&) const;
-				//method to access coefficient value of x^ind term
-				double& operator [] (size_t ind);
+				//1D polinomial difference
+				Polinomial<1> operator - (const Polinomial<1>&) const;
+
+				Polinomial<1>& operator -= (const Polinomial<1>&);
+				Polinomial<1>& operator += (const Polinomial<1>&);
+				Polinomial<1>& operator *= (const Polinomial<1>&);
+				Polinomial<1>& operator *= (const double&);
+
+				
+				//methods to access coefficient value of x^ind term
+				double& operator[] (size_t ind);
+				double  get (size_t ind) const;
+
 				//evaluate polinomial in input point
 				double operator() (Point<1> const&) const;
+				double operator() (double const& ) 	const;
+
 				//polinomial degree
 				size_t degree() const;
+
+				bool null() const;
+
+			template <size_t NEW_DIM>
+				typename enable_if< !(NEW_DIM < 1), Polinomial<NEW_DIM> >::type
+					extendVariables (size_t my_position = 0)
+					{
+						vector<double> coeff (degree(),0);
+						coeff[0] = 1;
+ 						Polinomial<1> constantOne(coeff);
+						Polinomial<NEW_DIM> result;
+						for (size_t i = 0; i < NEW_DIM; ++i)
+							i != my_position ? result.setFactor(i, constantOne) : result.setFactor(i, *this);
+						
+						return result;
+					};
+
+			template <size_t N, typename enable_if< (N > 1), int>::type = 0>
+				Polinomial<1 + N> tensor (const Polinomial<N>& p)
+				{
+					Polinomial<1 + N> result;
+					size_t i(0);
+					result.setFactor (i++, *this);
+	
+					for (auto pol2 : p._oneDFactors)
+						result.setFactor (i++, pol2);
+
+					return result;
+				}
+			
+			template <size_t N, typename enable_if< (N == 1), int>::type = 0>
+				Polinomial<1 + N> tensor (const Polinomial<N>& p)
+				{
+					Polinomial<1 + N> result;
+					result.setFactor(0, *this);
+					result.setFactor(1, p);
+
+					return result;
+				}
+
+			vector<double>::iterator begin();
+			vector<double>::iterator end();
+
+			void print() const;
+
 			protected:
 				void degree(size_t val);
 			private:
@@ -241,26 +252,4 @@ every method that modifies polinomial coefficients must also set _degreeUpdated=
 
 
 #endif //__POLY__HH
-
-
-
-//	class Poly1D
-//	{
-//		public:
-//			using CoeffContainer = std::vector<double>;
-
-////remember that the polinomial degree is one less the size of the _coefficients vector
-//		Poly1D();
-//		Poly1D(std::vector<double>&);
-//		Poly1D(std::size_t degree, double coeff = 0);
-
-//		double operator () (Point<1>&);
-//		double operator () (double&);
-//		
-//		std::size_t	degree ();
-//		void			degree (std::size_t& p, double& val = 0);
-
-//		private:
-//			CoeffContainer _coefficients;
-//	}
 

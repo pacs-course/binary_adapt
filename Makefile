@@ -1,7 +1,7 @@
 #COMPILER FLAGS
 CXX = g++ 
 OPTIMIZE_OPS = -O3
-CXXFLAGS = $(OPTIMIZE_OPS) -march=native -Wall -Wextra -std=c++11 $(INCLUDE_FLAGS)
+CXXFLAGS = $(OPTIMIZE_OPS) -march=native -Wall -Wextra -std=c++11 $(INCLUDE_FLAGS) 
 INCLUDE_FLAGS = -I$(INCLUDE_DIR)
 
 #DIRECTORY TREE
@@ -19,8 +19,10 @@ DIRS = $(OBJ_DIRS) $(BIN_DIRS)
 #INCLUDES
 DEPS = $(INCLUDE_DIR)/*.h
 
-SRC = $(SRC_DIR)/main.cpp \
-		$(SRC_DIR)/Poly.cpp
+#SRC = $(SRC_DIR)/main.cpp \
+#		$(SRC_DIR)/Polinomial.cpp \
+#		$(SRC_DIR)/BaseBuilderRule.cpp
+SRC = $(wildcard $(SRC_DIR)/*.cpp)
 
 OBJ = $(patsubst $(SRC_DIR)/%.cpp,$(OBJ_DIR)/%.o,$(SRC))
 
@@ -34,7 +36,7 @@ EXECUTABLES = $(EXE_TEST)
 .PHONY:all
 all: dir_tree $(EXECUTABLES)
 #all:
-#	echo $(OBJ)
+#	echo $(SRC)
 
 $(OBJ_DIR)/%.o : $(SRC_DIR)/%.cpp $(DEPS)
 	$(CXX) $(CXXFLAGS) -c -o $@ $<
