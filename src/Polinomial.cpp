@@ -69,7 +69,7 @@
 
 		for (size_t i = 0; i <= thisDegree; ++i)
 			for (size_t j = 0; j <= pDegree; ++j)
-				result[i + j] += _coeff[i] * p.get(j);
+				result[i + j] += _coeff[i] * p[j];
 
 #ifdef DEBUG
 		cout << "Coefficienti risultato:		";
@@ -109,16 +109,16 @@
 		
 		while (ind <= minPoli.degree())
 		{
-			result[ind] = minPoli.get(ind) + maxPoli.get(ind);
+			result[ind] = minPoli[ind] + maxPoli[ind];
 #ifdef DEBUG
-			cout << minPoli.get(ind) << " + " << maxPoli.get(ind) << " = " << result[ind] << endl;
+			cout << minPoli[ind] << " + " << maxPoli[ind] << " = " << result[ind] << endl;
 #endif //DEBUG
 			++ind;
 		}
 
 		while (ind <= resultDegree)
 		{
-			result[ind] = maxPoli.get(ind);
+			result[ind] = maxPoli[ind];
 			++ind;
 		}
 #ifdef DEBUG
@@ -177,11 +177,11 @@
 
 	double& Polinomial<1>::operator[] (size_t ind)
 	{
-//#ifdef DEBUG
-//		cout << "Chiamata ad operatore []" << endl; 
-//		cout << "Dimensione coefficienti >>>> " << _coeff.size() << endl;
-//		cout << "Grado polinomio >>>>>>>>>>>> " << degree() << endl;
-//#endif //DEBUG
+		return _coeff[ind];
+	};
+
+	const double& Polinomial<1>::operator[] (size_t ind) const
+	{
 		return _coeff[ind];
 	};
 
@@ -195,6 +195,14 @@
 		return _coeff.begin();
 	};
 	vector<double>::iterator Polinomial<1>::end()
+	{
+		return _coeff.end();
+	};
+	vector<double>::const_iterator Polinomial<1>::begin() const
+	{
+		return _coeff.begin();
+	};
+	vector<double>::const_iterator Polinomial<1>::end() const
 	{
 		return _coeff.end();
 	};

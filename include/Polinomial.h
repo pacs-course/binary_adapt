@@ -51,6 +51,11 @@ template <size_t DIM>
 				return result;
 			};
 
+			const Polinomial<1>& operator[] (size_t ind) const
+			{
+				return _oneDFactors[ind];
+			};
+
 			Polinomial<1>& operator[] (size_t ind)
 			{
 				return _oneDFactors[ind];
@@ -66,26 +71,36 @@ template <size_t DIM>
 				return _oneDFactors.end();
 			};
 
+			typename array<Polinomial<1>, DIM>::const_iterator begin() const
+			{
+				return _oneDFactors.begin();
+			};
+
+			typename array<Polinomial<1>, DIM>::const_iterator end() const
+			{
+				return _oneDFactors.end();
+			};
+
 			template <size_t N, typename enable_if< (N > 1), int>::type = 0>
-				Polinomial<DIM + N> tensor (const Polinomial<N>& p)
+				Polinomial<DIM + N> tensor (const Polinomial<N>& p) const
 				{
 					Polinomial<DIM + N> result;
 					size_t i(0);
-					for (auto pol1 : _oneDFactors)
+					for (const auto& pol1 : _oneDFactors)
 						result.setFactor(i++, pol1);
 	
-					for (auto pol2 : p)
+					for (const auto& pol2 : p)
 						result.setFactor(i++, pol2);
 
 					return result;
 				}
 			
 			template <size_t N, typename enable_if< (N == 1), int>::type = 0>
-				Polinomial<DIM + N> tensor (const Polinomial<N>& p)
+				Polinomial<DIM + N> tensor (const Polinomial<N>& p) const
 				{
 					Polinomial<DIM + N> result;
 					size_t i(0);
-					for (auto pol1 : _oneDFactors)
+					for (const auto& pol1 : _oneDFactors)
 						result.setFactor(i++, pol1);
 	
 					result.setFactor(i, p);
@@ -113,36 +128,36 @@ template <size_t DIM>
 			void print() const
 			{
 				cout << "Polinomio " << DIM << "D di fattori:" << endl;
-				for (auto pol : _oneDFactors)
+				for (const auto& pol : _oneDFactors)
 					pol.print();
 				cout << endl;
 			};
 
 		public:
-			void setFactor(size_t ind, Polinomial<1> const& f)
+			void setFactor(size_t ind, const Polinomial<1>& f)
 			{
 				_oneDFactors[ind] = f;
 				_degreeUpdated = false;
 			};
 
-		private:
-			void updateDegree()
-			{
-				size_t d(0);
-				for (auto pol : _oneDFactors)
-					d += pol.degree();
-
-				_degree = d;
-				_degreeUpdated = true;
-			}
-
 			bool null()
 			{
-				for (auto pol : _oneDFactors)
+				for (const auto& pol : _oneDFactors)
 					if (pol.empty())
 						return true;
 
 				return false;
+			}
+
+		private:
+			void updateDegree()
+			{
+				size_t d(0);
+				for (const auto& pol : _oneDFactors)
+					d += pol.degree();
+
+				_degree = d;
+				_degreeUpdated = true;
 			}
 
 /*
@@ -190,8 +205,9 @@ every method that modifies polinomial coefficients must also set _degreeUpdated=
 
 				
 				//methods to access coefficient value of x^ind term
-				double& operator[] (size_t ind);
-				double  get (size_t ind) const;
+				double& 			operator[] 	(size_t ind)		;
+				const double& 	operator[] 	(size_t ind) const;
+				double  			get 			(size_t ind) const;
 
 				//evaluate polinomial in input point
 				double operator() (Point<1> const&) const;
@@ -217,20 +233,20 @@ every method that modifies polinomial coefficients must also set _degreeUpdated=
 					};
 
 			template <size_t N, typename enable_if< (N > 1), int>::type = 0>
-				Polinomial<1 + N> tensor (const Polinomial<N>& p)
+				Polinomial<1 + N> tensor (const Polinomial<N>& p) const
 				{
 					Polinomial<1 + N> result;
 					size_t i(0);
 					result.setFactor (i++, *this);
 	
-					for (auto pol2 : p._oneDFactors)
+					for (const auto& pol2 : p)
 						result.setFactor (i++, pol2);
 
 					return result;
 				}
 			
 			template <size_t N, typename enable_if< (N == 1), int>::type = 0>
-				Polinomial<1 + N> tensor (const Polinomial<N>& p)
+				Polinomial<1 + N> tensor (const Polinomial<N>& p) const
 				{
 					Polinomial<1 + N> result;
 					result.setFactor(0, *this);
@@ -241,6 +257,8 @@ every method that modifies polinomial coefficients must also set _degreeUpdated=
 
 			vector<double>::iterator begin();
 			vector<double>::iterator end();
+			vector<double>::const_iterator begin() const;
+			vector<double>::const_iterator end() const;
 
 			void print() const;
 

@@ -4,6 +4,7 @@
 #include <iostream> //cout
 #include <stdexcept> //invalid_argument
 #include <string> //string
+#include <array> //array
 
 namespace Geometry
 {
@@ -19,7 +20,7 @@ namespace Geometry
 				this->fill(0.0);
 			}
 
-			Point(initializer_list<double> coor)
+			Point(const initializer_list<double>& coor)
 			{
 				if (coor.size() != DIM)
 				{
@@ -29,21 +30,20 @@ namespace Geometry
 				else
 				{
 					size_t i(0);
-					for (auto val : coor)
-					{
+					for (const auto& val : coor)
 						(*this)[i++] = val;
-					}
 				}
 			};
 
-			Point(array<double,DIM> coor) : array<double,DIM>(coor){};
+			Point(const array<double, DIM>& coor) : array<double, DIM> (coor){};
 
-			//copy constructor, recall array copy constructor
+			//copy constructor
 			Point (Point const& x)
 			{
 				(*this) = x;
 			};
-			//assignment operator, recall array assignment
+
+			//assignment operator
 			Point& operator = (Point const& x)
 			{
 				if (&x != this)
@@ -52,34 +52,34 @@ namespace Geometry
 			};
 
 			// Returns coordinates in a array<double>.
-			const array<double,DIM>& get() const
+			array<double,DIM> get() const
 			{
 				return *this;
 			};
 
-			// Multiplication by scalar
-			Point<DIM> operator * (double& alfa)
+			// Product by scalar
+			Point<DIM> operator * (double& alfa) const
 			{
-				array<double, DIM> temp();
+				array<double, DIM> temp;
 				size_t i(0);
-				for (auto iter : (*this))
+				for (const auto& iter : (*this))
 					temp[i++] = alfa * iter;
 				return Point<DIM>(temp);
 			};
 
 			// Vector difference
-			Point<DIM> operator - (Point<DIM> const& x)
+			Point<DIM> operator - (Point<DIM> const& x) const
 			{
-				array<double, DIM> temp();
+				array<double, DIM> temp;
 				for (size_t i=0; i < DIM; ++i)
 					temp[i] = (*this)[i] - x[i];
 				return Point<DIM>(temp);
 			};
 
 			// Vector sum
-			Point<DIM> operator + (Point<DIM> const& x)
+			Point<DIM> operator + (Point<DIM> const& x) const
 			{
-				array<double, DIM> temp();
+				array<double, DIM> temp;
 				for (size_t i=0; i < DIM; ++i)
 					temp[i] = x[i] + (*this)[i];
 				return Point<DIM>(temp);
@@ -87,7 +87,7 @@ namespace Geometry
 
 			//tensor product
 			template <size_t N>
-				Point<DIM + N> operator * (const Point<N>& p2)
+				Point<DIM + N> tensor (const Point<N>& p2) const
 				{
 					array<double, DIM + N> coor;
 					size_t i(0);
@@ -101,21 +101,21 @@ namespace Geometry
 				}
 
 			// Modulus of the vector
-			double abs()
+			double abs() const
 			{
 				double result(0);
-				for (auto iter : (*this))
+				for (const auto& iter : (*this))
 					result += iter * iter;
 				return sqrt(result);
 			};
 
 			// Euclidean Distance from input vector
-			double distance (Point<DIM> const& x)
+			double distance (Point<DIM> const& x) const
 			{
-				return abs (*(this) - x);
+				return (*(this) - x).abs();
 			};
 
-			void print()
+			void print() const
 			{
 				cout << "(" << (*this)[0];
 				for (size_t i = 1; i < DIM; ++i)
