@@ -6,7 +6,7 @@
 #include <algorithm> //max
 #include <type_traits> //enable_if
 
-//#include "Tensorize.h"
+
 #include "Point.h"
 
 using namespace Geometry;
@@ -125,12 +125,50 @@ template <size_t DIM>
 				return _degree;
 			};
 
-			void print() const
+			void print(bool verbose = true) const
 			{
-				cout << "Polinomio " << DIM << "D di fattori:" << endl;
-				for (const auto& pol : _oneDFactors)
-					pol.print();
-				cout << endl;
+				if (verbose)
+				{
+					cout << "(";
+					switch(DIM)
+					{
+						case(1):
+							_oneDFactors[0].print(verbose, "x", false);
+							break;
+
+						case(2):
+							_oneDFactors[0].print(verbose, "x", false);
+							cout << ") * (";
+							_oneDFactors[1].print(verbose, "y", false);
+							break;
+
+						case(3):
+							_oneDFactors[0].print(verbose, "x", false);
+							cout << ") * (";
+							_oneDFactors[1].print(verbose, "y", false);
+							cout << ") * (";
+							_oneDFactors[2].print(verbose, "z", false);
+							break;
+
+						default:
+							size_t i(0);
+							for(const auto& pol : _oneDFactors)
+							{
+								pol.print(verbose, "x" + to_string(++i), false);
+								if (i != _oneDFactors.size())
+									cout << ") * (";
+							}
+							break;
+					}
+					cout << ")" << endl;	
+				}
+				else
+				{
+					cout << "Polinomio " << DIM << "D di fattori:" << endl;
+					for (const auto& pol : _oneDFactors)
+						pol.print(verbose);
+					cout << endl;
+				}
 			};
 
 		public:
@@ -260,7 +298,7 @@ every method that modifies polinomial coefficients must also set _degreeUpdated=
 			vector<double>::const_iterator begin() const;
 			vector<double>::const_iterator end() const;
 
-			void print() const;
+			void print(bool verbose = true, string = "x", bool new_line = true)	const;
 
 			protected:
 				void degree(size_t val);

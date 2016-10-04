@@ -1,8 +1,19 @@
 #COMPILER FLAGS
 CXX = g++ 
 OPTIMIZE_OPS = -O3
-CXXFLAGS = $(OPTIMIZE_OPS) -march=native -Wall -Wextra -std=c++11 $(INCLUDE_FLAGS) 
+CXXFLAGS = $(OPTIMIZE_OPS) -march=native -std=c++14 $(INCLUDE_FLAGS) #-Wall -Wextra
 INCLUDE_FLAGS = -I$(INCLUDE_DIR)
+
+EIGEN_DIR = /usr/local/include/Eigen
+LIBMESH_DIR = /usr/local/include/libmesh
+CXXFLAGS += -I$(EIGEN_DIR)
+CXXFLAGS += -I$(LIBMESH_DIR)
+#CXXFLAGS += -DLIBMESH_HAVE_CXX11_UNIQUE_PTR
+#CXXFLAGS += -DMYDEBUG
+#CXXFLAGS += -DSINGLETON_ENABLED
+
+LIBS = -lmesh_opt -lmesh_devel -lmesh_dbg -lpthread
+LDLFLAGS = -L/usr/local/lib
 
 #DIRECTORY TREE
 OBJ_DIR = obj
@@ -42,7 +53,7 @@ $(OBJ_DIR)/%.o : $(SRC_DIR)/%.cpp $(DEPS)
 	$(CXX) $(CXXFLAGS) -c -o $@ $<
 
 $(EXE_TEST): $(OBJ)
-	$(CXX) $(CXXFLAGS) $(OBJ) -o $@
+	$(CXX) $(CXXFLAGS) $(LDLFLAGS) $(OBJ) -o $@ $(LIBS)
 
 .PHONY:debug
 debug: OPTIMIZE_OPS = -g -DDEBUG
@@ -83,4 +94,24 @@ profile: $(SERIAL_EXE) #$(EXECUTABLES)
 	; else \
 		echo ERROR! you must run $< in order to profile it! \
 	; fi
+
+.PHONY:package
+WHOAMI = PACS_project
+package: clean
+	@if [ -e $(WHOAMI) ] ; then \
+		echo $(WHOAMI) exists! cleaning... \
+		; rm -rf $(WHOAMI)/* \
+	; else \
+		echo $(WHOAMI) does not exist! creating... \
+		; mkdir $(WHOAMI) \
+	; fi
+	@rm -f $(WHOAMI).zip
+	@echo ... preparing package inputs...
+	@cp Makefile $(WHOAMI)
+	@cp -r $(INCLUDE_DIR) $(WHOAMI)
+	@cp -r $(SRC_DIR) $(WHOAMI)
+	@echo ... creating zipfile...
+	@zip -q -r $(WHOAMI).zip $(WHOAMI)
+	@echo ... done!
+	@rm -r $(WHOAMI)
 
