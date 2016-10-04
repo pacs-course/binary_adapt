@@ -6,11 +6,13 @@
 #include <string> //string
 #include <array> //array
 
+#include <point.h> //libmesh::point
 namespace Geometry
 {
 	using namespace std;
 	// A class that holds {DIM}D points, equally vectors
-	
+
+	//TODO: derive Point class from an Eigen type instead of std::array
 	template <size_t DIM>
 		class Point : public array<double,DIM>
 		{
@@ -43,6 +45,16 @@ namespace Geometry
 				(*this) = x;
 			};
 
+			//implicit constructor from libmesh::point
+			//libmesh::point has 3 coordinates, so for DIM > 3 it does not make sense 
+			template <size_t DUMMY = DIM, typename enable_if< (DUMMY < 4), size_t>::type = 0>
+				Point(libMesh::Point& point)
+				{
+					size_t i(0);
+					for (auto iter : *this)
+						iter = point(i++);
+				};
+
 			//assignment operator
 			Point& operator = (Point const& x)
 			{
@@ -56,6 +68,11 @@ namespace Geometry
 			{
 				return *this;
 			};
+
+			double* data() const
+			{
+				return this->data();
+			}
 
 			// Product by scalar
 			Point<DIM> operator * (double& alfa) const
