@@ -24,10 +24,10 @@ namespace Geometry
 
 			Point(const initializer_list<double>& coor)
 			{
-				if (coor.size() != DIM)
+				auto l = coor.size();
+				if (l != DIM)
 				{
-					string ss("Invalid number of elements in Geometry::Point construction");
-					throw invalid_argument(ss);
+					throw invalid_argument("Invalid number of elements in Geometry::Point construction");
 				}
 				else
 				{
@@ -51,7 +51,7 @@ namespace Geometry
 				Point(libMesh::Point& point)
 				{
 					size_t i(0);
-					for (auto iter : *this)
+					for (auto& iter : *this)
 						iter = point(i++);
 				};
 

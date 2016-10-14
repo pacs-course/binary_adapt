@@ -8,6 +8,8 @@
 
 #include "AbstractFactory.h"
 
+//TODO: remove the enable_if syntax if possible
+
 using namespace std;
 namespace GenericFactory
 {
@@ -37,7 +39,7 @@ namespace GenericFactory
 					//get the factory. First time creates it.
 					Factory_type& factory(Factory_type::Instance());
 					// Insert the builder
-					factory.add(name, [&](){return Build();});
+					factory.add(name, Proxy<ConcreteProduct, Factory>::Build); //does not work
 #ifdef MYDEBUG
 					cout << "Added " << name << " to factory" << endl;
 #endif //MYDEBUG
@@ -45,6 +47,7 @@ namespace GenericFactory
 
 				virtual ~Proxy() = default;
 
+				//TODO: verify if there's a way to define a default case
 				template <	typename DUMMY = Return_type,
 								typename enable_if < !is_same<DUMMY, unique_ptr<AbstractProduct_type>>::value
 															&&
@@ -52,7 +55,7 @@ namespace GenericFactory
 															size_t
 														 >::type = 0
 							>
-					Return_type Build()
+					static Return_type Build()
 					{
 						throw runtime_error("Builder unknown for this return type");
 						return Return_type();
@@ -63,7 +66,7 @@ namespace GenericFactory
 															size_t
 														 >::type = 0
 							>
-					unique_ptr<AbstractProduct_type> Build()
+					static unique_ptr<AbstractProduct_type> Build()
 					{
 						return make_unique<ConcreteProduct>();
 					};
@@ -73,7 +76,7 @@ namespace GenericFactory
 															size_t
 														 >::type = 0
 							>
-					shared_ptr<AbstractProduct_type> Build()
+					static shared_ptr<AbstractProduct_type> Build()
 					{
 	#ifndef SINGLETON_ENABLED
 						static shared_ptr<AbstractProduct_type> ptr = make_shared<ConcreteProduct>();

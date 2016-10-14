@@ -70,9 +70,9 @@ namespace Maps
 				virtual ~AffineMap()
 				{
 					//TODO
-#ifdef MYDEBUG
+#ifdef DESTRUCTOR_ALERT
 				cout << "Distruggo AffineMap" << endl;
-#endif //MYDEBUG
+#endif //DESTRUCTOR_ALERT
 				};
 
 				//TODO derive Point<DIM> from Eigen type and modify consequently the evaluation
@@ -96,6 +96,8 @@ namespace Maps
 
 				virtual double	evaluateJacobian(const Point<DIM>& p)const
 				{
+					//to silence the warning compiler, since the map is affine the jacobian does not depend on the evaluation point 
+					(void)p;
 					return _jacobian;
 				};
 
@@ -135,8 +137,8 @@ namespace Maps
 //				cout << "Primo estremo: " << a << endl;
 //				cout << "Secondo estremo: " << b << endl;
 //#endif //MYMYMYDEBUG
-				this->_mat(0) = (b - a) / 2;
-				this->_trasl(0) = (a + b) / 2;
+//				this->_mat(0) = (b - a) / 2; //ECCOLO!!!
+//				this->_trasl(0) = (a + b) / 2; //ECCOLO!!!
 				this->_jacobian = this->_mat(0);
 				this->_inverse(0) = 1 / this->_mat(0);
 			};
@@ -230,21 +232,21 @@ namespace Maps
 		It maps the reference square in the reference triangle
 		It's a singular map
 	*/
-	class SquareToTriangleMap : public Map<2> 
+	class StdTriMap : public Map<2> 
 	{
 		public:
-			SquareToTriangleMap()
+			StdTriMap()
 			{
 				//TODO
 			};
 
-			virtual ~SquareToTriangleMap()
+			virtual ~StdTriMap()
 			{
 				//TODO
 			};
 
-			SquareToTriangleMap					(const SquareToTriangleMap&) = default;
-			SquareToTriangleMap& operator = 	(const SquareToTriangleMap&) = default;	
+			StdTriMap					(const StdTriMap&) = default;
+			StdTriMap& operator = 	(const StdTriMap&) = default;	
 
 			virtual Point<2> evaluate (const Point<2>& p)const override
 			{

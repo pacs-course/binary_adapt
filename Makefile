@@ -9,7 +9,6 @@ LIBMESH_DIR = /usr/local/include/libmesh
 CXXFLAGS += -I$(EIGEN_DIR)
 CXXFLAGS += -I$(LIBMESH_DIR)
 #CXXFLAGS += -DLIBMESH_HAVE_CXX11_UNIQUE_PTR
-#CXXFLAGS += -DMYDEBUG
 #CXXFLAGS += -DSINGLETON_ENABLED
 
 LIBS = -lmesh_opt -lmesh_devel -lmesh_dbg -lpthread
@@ -56,7 +55,7 @@ $(EXE_TEST): $(OBJ)
 	$(CXX) $(CXXFLAGS) $(LDLFLAGS) $(OBJ) -o $@ $(LIBS)
 
 .PHONY:debug
-debug: OPTIMIZE_OPS = -g -DDEBUG
+debug: OPTIMIZE_OPS = -g -DMYDEBUG
 debug: all
 
 .PHONY:dir_tree

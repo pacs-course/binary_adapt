@@ -5,6 +5,8 @@
 
 #include "Eigen/Dense"
 
+#include "enum_elem_type.h"
+
 #include <functional> //function
 
 using namespace std;
@@ -44,9 +46,9 @@ namespace BinaryTree
 
 				virtual ~AbstractElement()
 				{
-#ifdef MYDEBUG
+#ifdef DESTRUCTOR_ALERT
 				cout << "Distruggo AbstractElement" << endl;
-#endif //MYDEBUG
+#endif //DESTRUCTOR_ALERT
 				};
 
 				virtual elementType type() = 0;
@@ -56,7 +58,6 @@ namespace BinaryTree
 
 				double integrate(const function<double(Point<DIM>)>& f) const
 				{
-					double result(0);
 					QuadWeightVec w = getQuadWeights();
 					QuadWeightVec fval(w.size());
 					QuadPointVec<DIM> nodes = getQuadPoints();
@@ -88,9 +89,9 @@ namespace BinaryTree
 
 				virtual ~AbstractSpace()
 				{
-#ifdef MYDEBUG
+#ifdef DESTRUCTOR_ALERT
 				cout << "Distruggo AbstractSpace" << endl;
-#endif //MYDEBUG
+#endif //DESTRUCTOR_ALERT
 				};
 
 				//TODO: maybe if evaluateBasisFunction and evaluateBasis are defined separately they are better optimizable

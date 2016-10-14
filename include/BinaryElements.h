@@ -2,76 +2,48 @@
 #define __BINARY_ELEMENT_H
 
 #include "Point.h"
-#include "Maps.h"
 #include "Element.h"
-#include "FiniteFunction.h"
-
-#include <face_tri3.h> //libMesh::Tri3
-#include <edge_edge2.h> //libMesh::Edge2
 
 #include <memory> //std::shared_ptr
 #include <functional> //std::function
+#include <limits> //numeric_limits::max()
+
+#define ENABLE_IF_VERSION
+//TODO: verify if it can be written an ENABLE_IF_VERSION-undefined compiling version of the class
 
 using namespace std;
-using namespace Maps;
 
 namespace BinaryTree
-{
-	using LibmeshInterval = libMesh::Edge2;
-	using LibmeshTriangle = libMesh::Tri3;
-
-	
-	//TODO: verify if it's convenient to not derive BinTreeElement and then derive my concrete elements from three classes
-	template <size_t DIM>
-		class BinTreeElement : public FElement<DIM>
+{	
+	template <size_t DIM, Basis::basisType FETYPE = Basis::INVALID, class LibmeshGeometry = libMesh::Edge2>
+		class BinTreeElement : public FElement<DIM, FETYPE, LibmeshGeometry>
 		{
-			protected:
-				BinTreeElement()
-				{
-					//TODO
-				};
-
 			public:
+				BinTreeElement(shared_ptr<function<double(Point<DIM>)>> f): _f(f),
+																								_coeff(),
+																								_projectionError(numeric_limits<double>::max())
+				{};
+
 				virtual ~BinTreeElement()
 				{
-#ifdef MYDEBUG
+#ifdef DESTRUCTOR_ALERT
 				cout << "Distruggo BinTreeElement" << endl;
-#endif //MYDEBUG
-				};
-				virtual elementType type() = 0;
-				virtual nodes_ptr get_nodes() = 0;
-
-				virtual double projectionError() const
-				{
-					return _projectionError;
+#endif //DESTRUCTOR_ALERT
 				};
 
-				virtual double projectionError(const function<double(Point<DIM>)>& f, size_t order)
+				virtual double computeProjectionError()
 				{
-					FiniteFunction<DIM> fp (*this, f);
-
 					//TODO: let the error norm to be modifiable, maybe to be choosable at runtime 
-					//L2 norm of the interpolation error
-					_projectionError = this->integrate	(
-																		[&](const Point<DIM>& p){
-																											double val = f(p)-fp(p);
-																											return val*val;
-																										}
-																	);
-					return _projectionError;
+/*
+					L2 norm of the interpolation error
+*/
+					return this->integrate	(
+															[&](const Point<DIM>& p){
+																								double val = (*_f)(p) - projection(p);
+																								return val*val;
+																							}
+														);
 				};
-
-			//TODO: could it be useful?
-//				virtual double projectionError(size_t p_order, const function<double(Point<DIM>)>& f) const
-//				{
-//					FiniteFunction<DIM> fp (*this, f);
-//					return integrate(
-//											[&](const Point<DIM>& p){
-//																				double val = f(p)-fp(p);
-//																				return val*val;
-//																			}
-//										);
-//				};
 
 			protected:
 				void projectionError(const double& val)
@@ -79,56 +51,136 @@ namespace BinaryTree
 					_projectionError = val;
 				};
 
+				double projection(const Point<DIM>& point)
+				{
+					computeCoefficients();
+					double result(0);
+					vector<double> basisEvaluation = this->evaluateBasis(point);
+
+					//TODO: optimizable: use eigen dot product
+					for (size_t i(0); i < _coeff.size(); ++i)
+					{
+						result += _coeff[i] * basisEvaluation[i];
+					}
+					return result;
+				};
+
 			protected:
+#ifdef ENABLE_IF_VERSION
+				template <	Basis::basisType DUMMY = FETYPE,
+								typename enable_if<	DUMMY == Basis::LEGENDRE,
+															size_t
+														>::type = 0
+							>
+					void computeCoefficients()
+					{
+						
+						//I remember how many coefficients have been already computed
+						size_t cursor = _coeff.size();
+						//New number of coefficients
+						size_t s = this->basisSize();
+						if (cursor == s)
+							//Coefficients already computed
+							return;
+						_coeff.resize(s);
+
+						//I don't recompute already stored coefficients
+						for(; cursor < s; ++cursor)
+						{
+							_coeff[cursor] = this->L2prod	(
+																		*_f,
+																		[&](const Point<DIM>& p)	{
+																												return this->evaluateBasisFunction(cursor, p);
+																											}
+																	);
+						}
+					};
+
+				template <	Basis::basisType DUMMY = FETYPE,
+								typename enable_if<	DUMMY == Basis::INVALID,
+															size_t
+														>::type = 0
+							>
+					void computeCoefficients()
+					{
+#ifdef MYDEBUG
+						cout << "Trying to project function on INVALID finite element space!!!" << endl;
+#endif //MYDEBUG
+						throw bad_typeid();
+					};
+
+				//TODO: verify if there's a way to define a default case
+				template <	Basis::basisType DUMMY = FETYPE,
+								typename enable_if<	DUMMY != Basis::LEGENDRE && DUMMY != Basis::INVALID,
+															size_t
+														>::type = 0
+							>
+#endif //ENABLE_IF_VERSION
+					void computeCoefficients()
+					{
+						throw invalid_argument("I don't know how to project function on this finite element space!!!");
+					};
+
+			protected:
+				//function whom projection error has to be computed
+				shared_ptr<function<double(Point<DIM>)>> _f;
+				//coefficients of the projection
+				vector<double> _coeff;
+
 				double _projectionError;
+
 				//TODO: attributes needed by the algorithm
 		};
 
-	
-	//It must be modified the way libMesh elements divides theirselves
-	//The info about the procreation should be stored in the elem.embedding_matrix() method
+#ifndef ENABLE_IF_VERSION
+	template <size_t DIM, class LibmeshGeometry = libMesh::Edge2>
+			void BinTreeElement<DIM, Basis::LEGENDRE, LibmeshGeometry>::computeCoefficients()
+			{
+				
+				//I remember how many coefficients have been already computed
+				size_t cursor = _coeff.size();
+				//New number of coefficients
+				size_t s = this->basisSize();
+				if (cursor == s)
+					//Coefficients already computed
+					return;
+				_coeff.resize(s);
 
-	//TODO: check if the virtual inheritance could be dangerous in this case
-	class Interval : public LibmeshInterval, public BinTreeElement<1>
-	{
-		public:
-			Interval() : BinTreeElement<1>(){};
-			virtual ~Interval()
+				//I don't recompute already stored coefficients
+				for(; cursor < s; ++cursor)
+				{
+					_coeff[cursor] = this->L2prod	(
+																*_f,
+																[&](const Point<DIM>& p)	{
+																										return this->evaluateBasisFunction(cursor, p);
+																									}
+															);
+				}
+			};
+
+	template <size_t DIM, class LibmeshGeometry = libMesh::Edge2>
+			void BinTreeElement<DIM, Basis::INVALID, LibmeshGeometry>::computeCoefficients()
 			{
 #ifdef MYDEBUG
-				cout << "Distruggo Interval" << endl;
+				cout << "Trying to project function on INVALID finite element space!!!" << endl;
 #endif //MYDEBUG
+				throw bad_typeid();
 			};
 
-			virtual elementType type()override
-			{
-				return LibmeshInterval::type();
-			};
-			virtual nodes_ptr get_nodes()override
-			{
-				return LibmeshInterval::get_nodes();
-			};
-		protected:
+#endif //ENABLE_IF_VERSION
 
-	};
+	//TODO: use GetPot to select FElement basisType at runtime	
+	using Interval = BinTreeElement<1, Basis::LEGENDRE, LibmeshInterval>;
 
-	
-	class Triangle : public LibmeshTriangle, public BinTreeElement<2>
+	//It must be modified the way libMesh elements divides theirselves
+	//The info about the procreation should be stored in the elem.embedding_matrix() method
+	class Triangle : public BinTreeElement<2, Basis::LEGENDRE, LibmeshTriangle>
 	{
 		public:
-			Triangle() : BinTreeElement<2>(){};
+			Triangle(shared_ptr<function<double(Point<2>)>> f) : BinTreeElement(f){};
 			virtual ~Triangle(){};
 
-			virtual elementType type()override
-			{
-				return LibmeshTriangle::type();
-			};
-			virtual nodes_ptr get_nodes()override
-			{
-				return LibmeshTriangle::get_nodes();
-			};			
-		protected:
-
+			//TODO: override the divide method to make it bisective
 	};
 
 

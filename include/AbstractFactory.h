@@ -1,6 +1,7 @@
 #ifndef __FACTORY_H
 #define __FACTORY_H
 
+#include <iostream>
 #include <map>
 #include <vector>
 #include <memory>
@@ -29,6 +30,8 @@ namespace GenericFactory
 		{
 			static string value (Identifier const & id)
 			{
+				//to silence warning by the compiler 
+				(void)id;
 				return string("CANNOT RESOLVE NAME");
 			}
 		};
@@ -98,12 +101,18 @@ namespace GenericFactory
 					auto f = _storage.find(name);
 					if (f == _storage.end())
 					{
-						string out="Identifier " + identifierAsString(name) + " is not stored in the factory";
-						throw invalid_argument(out);
+#ifdef MYDEBUG
+						Return_type t;
+						cout << "Voglio creare un " << typeid(t).name() << " con chiave " << name << endl;
+#endif //MYDEBUG
+						throw invalid_argument(
+														string("Identifier")  
+																	 	+ identifierAsString(name) +
+														"is not stored in the factory");
 					}
 					else
 					{
-						return Return_type(f->second());
+						return (f->second)();
 					}
 				};
 

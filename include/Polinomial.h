@@ -81,6 +81,10 @@ template <size_t DIM>
 				return _oneDFactors.end();
 			};
 
+/*
+			I need the enable_if version since I need to fully specialize the Polinomial class with DIM = 1
+			so I cannot specialize this single method without specializing the full class
+*/
 			template <size_t N, typename enable_if< (N > 1), int>::type = 0>
 				Polinomial<DIM + N> tensor (const Polinomial<N>& p) const
 				{

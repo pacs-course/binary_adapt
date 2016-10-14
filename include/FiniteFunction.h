@@ -16,32 +16,25 @@ namespace BinaryTree
 	/*
 		It represents a polinomial function defined on the functional space FElement
 	*/
-	//TODO: to have a reference to AbstractSpace I need this one to derive from AbstractElement, since I need the L2prod method
-	//		  but deriving from AbstractElement I end to write two times on _elemType when I construct derived classes
-	//		  verify which solution is better
-	template <size_t DIM>
+	template <size_t DIM, Basis::basisType FETYPE = Basis::INVALID>
 		class FiniteFunction
 		{
 			public:
-				FiniteFunction(FElement<DIM>& domain) : _domain(domain)
-				{
-				};
+				FiniteFunction(shared_ptr<AbstractFElement<DIM, FETYPE>> domain, shared_ptr<function<double(Point<DIM>)>> f) :
+				_domain(domain),
+				_function(f)	
+				{};
 
-				FiniteFunction(FElement<DIM>& domain, const vector<double>& coeff) :	_domain(domain),
-																											_coeff(coeff)
-				{			};			
-
-				FiniteFunction(FElement<DIM>& domain, const function<double(Point<DIM>)>& f) :
-				FiniteFunction(domain)
-				{
-					computeCoefficients(f, _domain.FEType());
-				};
+				FiniteFunction(AbstractFElement<DIM, FETYPE>* domain, shared_ptr<function<double(Point<DIM>)>> f) :
+				_domain(domain),
+				_function(f)	
+				{};
 
 				double operator() (const Point<DIM>& point)
 				{
-					//TODO: recompute coefficients in case domain basis has been modified
+					computeCoefficients();
 					double result(0);
-					vector<double> basisEvaluation = _domain.evaluateBasis(point);
+					vector<double> basisEvaluation = _domain->evaluateBasis(point);
 
 					//TODO: optimizable: use eigen dot product
 					for (size_t i(0); i < _coeff.size(); ++i)
@@ -58,48 +51,67 @@ namespace BinaryTree
 					return _coeff[ind];
 				};
 
-/*
-				The computeCoefficients algorithm must depend on the Basis::basisType
-*/
-				//TODO: e' brutto! rendere piu' elegante e robusto
-				void computeCoefficients(const function<double(Point<DIM>)> f, Basis::basisType FEtype)
-				{
-					switch (FEtype)
+				template <	Basis::basisType DUMMY = FETYPE,
+								typename enable_if<	DUMMY == Basis::LEGENDRE,
+															size_t
+														>::type = 0
+							>
+					void computeCoefficients()
 					{
-						case(Basis::LEGENDRE):
+						
+						//I remember how many coefficients have been already computed
+						size_t cursor = _coeff.size();
+						//New number of coefficients
+						size_t s = _domain->basisSize();
+						if (cursor == s)
+							//Coefficients already computed
+							return;
+						_coeff.resize(s);
+
+						//I don't recompute already stored coefficients
+						for(; cursor < s; ++cursor)
 						{
-							size_t s = _domain.basisSize();
-							_coeff.resize(s);
-
-							for(size_t i(0); i < s; ++i)
-							{
-								_coeff[i] = _domain.L2prod	(
-																		f,
-																		[&](const Point<DIM>& p)	{
-																												return _domain.evaluateBasisFunction(i, p);
-																											}
-																	);
-							};
+							_coeff[cursor] = _domain->L2prod	(
+																			*_function,
+																			[&](const Point<DIM>& p)	{
+																													return _domain->evaluateBasisFunction(cursor, p);
+																												}
+																		);
 						}
-						break;
-
-						case(Basis::INVALID):
-//#ifdef MYDEBUG
-//							cout << "Trying to project function on INVALID finite element space!!!" << endl;
-//#endif //MYDEBUG
-							throw bad_typeid();
-						break;
-
-						default:
-							throw invalid_argument("Trying to project function on unknown finite element space!!!");
 					};
-				};
+
+				template <	Basis::basisType DUMMY = FETYPE,
+								typename enable_if<	DUMMY == Basis::INVALID,
+															size_t
+														>::type = 0
+							>
+					void computeCoefficients()
+					{
+#ifdef MYDEBUG
+						cout << "Trying to project function on INVALID finite element space!!!" << endl;
+#endif //MYDEBUG
+						throw bad_typeid();
+					};
+
+				//TODO: verify if there's a way to define a default case
+				template <	Basis::basisType DUMMY = FETYPE,
+								typename enable_if<	DUMMY != Basis::LEGENDRE && DUMMY != Basis::INVALID,
+															size_t
+														>::type = 0
+							>
+					void computeCoefficients()
+					{
+						throw invalid_argument("I don't know how to project function on this finite element space!!!");
+					};
 
 			protected:
+/*
+				The domain cannot be modified! It's needed in the construction of FiniteFunction
+				//TODO: is there a way to make this compulsory?
+*/
+				shared_ptr<AbstractFElement<DIM, FETYPE>> _domain;
+				shared_ptr<function<double(Point<DIM>)> > _function;
 				vector<double> _coeff;
-				//TODO: verify that the domain is not destroyed until the FiniteFunction defined on him is alive
-				//		or: make the reference a shared_ptr
-				FElement<DIM>& _domain;
 		};
 
 

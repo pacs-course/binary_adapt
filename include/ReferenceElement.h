@@ -7,33 +7,29 @@
 #include <point.h> //libMesh::Point
 #include <quadrature.h> //libMesh::QBase
 
-#include <memory> //make_unique
+#include <memory> //make_shared
 #include <utility> //move
 
 using namespace std;
 using namespace Maps;
+using namespace Basis;
 
 namespace BinaryTree
 {
 /*
-	This is a hat class for StdElements which represents the return type of the std elements factory
-	It must not depend on the elementType template parameter
-	Moreover it must guarantee the AbstractElement interface
+	renaming libMesh enumerators for the use in my program
+	since in libMesh there are multiple types describing the same geometry, in this way a potential switch is easier, since it must be done only ones here
 */
+#define LibmeshInvalidType libMesh::INVALID_ELEM
+#define LibmeshIntervalType libMesh::EDGE2
+#define LibmeshSquareType libMesh::QUAD4
+#define LibmeshCubeType libMesh::HEX8
 
 	template <size_t DIM>
-		class StdBananaElement : public AbstractElement<DIM>
-		{
-			public:
-				StdBananaElement(){};
-				virtual ~StdBananaElement(){};
-				virtual elementType type() = 0;
-				virtual QuadPointVec<DIM> getQuadPoints()const = 0;
-				virtual QuadWeightVec getQuadWeights()const = 0;
-		};
+		using StdMapFactory	= GenericFactory::ObjectFactory <Map<DIM>, elementType>;
 
-	template <size_t DIM, elementType TYPE = libMesh::INVALID_ELEM>
-		class StdElement : public StdBananaElement<DIM>
+	template <size_t DIM, elementType TYPE = LibmeshInvalidType>
+		class StdElement : public AbstractElement<DIM>
 		{
 			public:
 #ifdef SINGLETON_ENABLED
@@ -56,15 +52,18 @@ namespace BinaryTree
 					auto ptr = libMesh::QBase::build(libMesh::QGAUSS, DIM, libMesh::FORTYTHIRD);
 					_quadratureRule = unique_ptr<libMesh::QBase>(ptr.release());
 					_quadratureRule->init(TYPE);
+
+					auto& std_map_factory(StdMapFactory<DIM>::Instance());
+					_ipercubeMap = std_map_factory.create(TYPE);
 				};
 
 			public:
 				virtual ~StdElement()
 				{
 					//TODO
-#ifdef MYDEBUG
+#ifdef DESTRUCTOR_ALERT
 				cout << "Distruggo StdElement" << endl;
-#endif //MYDEBUG
+#endif //DESTRUCTOR_ALERT
 				};
 
 				virtual elementType type()
@@ -96,69 +95,129 @@ namespace BinaryTree
 					return result;
 				};
 
+				virtual Point<DIM> mapBackward(const Point<DIM>& p)const
+				{
+					return _ipercubeMap->computeInverse(p);
+				};
+
+				virtual Point<DIM> mapForward(const Point<DIM>& p)const
+				{
+					return _ipercubeMap->evaluate(p);
+				};
+
+				virtual double Jacobian(const Point<DIM>& p)const
+				{
+					return _ipercubeMap->evaluateJacobian(p);
+				};
+
 			protected:
 				unique_ptr<libMesh::QBase> _quadratureRule;
+				unique_ptr<Map<DIM>>	_ipercubeMap;
 		};
 
+
 /*
-	Simmetrically, for the std space class, as for the std element one
+	This is a hat class for StdFElement which represents the return type of the std FElements factory
+	It must not depend on the elementType template parameter, since it is known at runtime
+	Moreover it must guarantee the AbstractSpace interface
 */
-	template <size_t DIM>
-		class StdBananaSpace : public AbstractSpace<DIM>
+	template <size_t DIM, basisType FETYPE = INVALID>
+		class StdBananaFElement : public AbstractSpace<DIM>, public AbstractElement<DIM>
 		{
 			public:
-				StdBananaSpace(){};
-				virtual ~StdBananaSpace(){};
+				StdBananaFElement(){};
+				virtual ~StdBananaFElement(){};
+/*
+				AbstractSpace methods
+*/
 				virtual double				evaluateBasisFunction(size_t ind, const Point<DIM>& point)const = 0;
 				virtual vector<double>	evaluateBasis			(				 const Point<DIM>& point)const = 0;
 				virtual size_t	basisSize()const = 0;
 				virtual size_t basisDegree()const = 0;
 				virtual void basisDegree(size_t) = 0;
-
-				virtual Basis::basisType FEType() = 0;
+				virtual basisType FEType() = 0;
+/*
+				AbstractElement methods
+*/
+				virtual elementType type() = 0;
+				virtual QuadPointVec<DIM> getQuadPoints()const = 0;
+				virtual QuadWeightVec getQuadWeights()const = 0;
 		};
 
-//	template <size_t DIM>
-//		using MapFactory	= GenericFactory::ObjectFactory		<Map<DIM>, elementType>;
+/*
+	I don't have a general definition of std ipercube geometry since I depend on the libMesh geometries, which are defined only in 1, 2 and 3 dimensions.
+	In a more general setting, it's not a priori excluded the possibility to define my std ipercube, on which the quadrature nodes and weigths are constructed by tensorization of the 1d counterparts; this is similarly already done for basis functions.
+	However, in this case the default StdIperCube is set as Invalid, so the respectively stdInterval, stdSquare, stdCube are defined through specialization on the DIM parameter.
+*/
+namespace detail
+{
+	template <size_t DIM>
+	struct alias
+	{
+		using aliasIperCube = StdElement<DIM, LibmeshInvalidType	>;
+	};
 
-	template <size_t DIM, Basis::basisType FETYPE = Basis::INVALID>
-		class StdIperCube : public StdBananaSpace<DIM>
+	template <>
+	struct alias<1>
+	{
+		using aliasIperCube = StdElement<1,	LibmeshIntervalType	>;
+	};
+
+	template <>
+	struct alias<2>
+	{
+		using aliasIperCube = StdElement<2, LibmeshSquareType		>;
+	};
+
+	template <>
+	struct alias<3>
+	{
+		using aliasIperCube = StdElement<3,	LibmeshCubeType		>;
+	};
+}//namespace detail
+
+	template <size_t DIM>
+		using StdIperCube = typename detail::alias<DIM>::aliasIperCube;
+
+	template <size_t DIM, basisType FETYPE = INVALID>
+		class StdFIperCube : public StdBananaFElement<DIM, FETYPE>
 		{
+			public:
 #ifdef SINGLETON_ENABLED
+				static shared_ptr<StdFIperCube> Instance()
+				{
+					static shared_ptr<StdFIperCube> sic = shared_ptr<StdFIperCube>(new StdFIperCube);
+					return sic;
+				};
 /*
 			It is a Singleton
 */
 			protected:
-				StdIperCube()
-				{
-					_basis = Basis::PolinomialBasis<DIM, FETYPE>::Instance();
-				};
 
-				StdIperCube& operator = (const StdIperCube&) = delete;
-				StdIperCube					(const StdIperCube&) = delete;
-			public:
-				static shared_ptr<StdIperCube> Instance()
+				StdFIperCube& operator = (const StdFIperCube&) = delete;
+				StdFIperCube					(const StdFIperCube&) = delete;
+				StdFIperCube() : _std_geometry()
 				{
-					static shared_ptr<StdIperCube> sic = shared_ptr<StdIperCube>(new StdIperCube);
-					return sic;
-				};
+					_basis = PolinomialBasis<DIM, FETYPE>::Instance();
 #else
-			public:
-				StdIperCube()
+				StdFIperCube() : _std_geometry()
 				{
-					_basis = make_shared<Basis::PolinomialBasis<DIM, FETYPE> >();
-				};
+					//TODO: wrong!!! I'm not sharing anything! Use a factory!
+					_basis = make_shared<PolinomialBasis<DIM, FETYPE> >();
 #endif //SINGLETON_ENABLED
+					//add here other stuff the constructor is expected to do
+				};
 
-				virtual ~StdIperCube()
+			public:
+				virtual ~StdFIperCube()
 				{
 					//TODO
-#ifdef MYDEBUG
+#ifdef DESTRUCTOR_ALERT
 				cout << "Distruggo IperCube" << endl;
-#endif //MYDEBUG
+#endif //DESTRUCTOR_ALERT
 				};
 
-				virtual Basis::basisType FEType()
+				virtual basisType FEType()
 				{
 					return FETYPE;
 				};
@@ -193,49 +252,60 @@ namespace BinaryTree
 					return _basis->size();
 				};
 
+				virtual elementType type()
+				{
+					return _std_geometry.type();
+				};
+				virtual QuadPointVec<DIM> getQuadPoints()const
+				{
+					return _std_geometry.getQuadPoints();
+				};
+				virtual QuadWeightVec getQuadWeights()const
+				{
+					return _std_geometry.getQuadWeights();
+				};
+
 			protected:
-				shared_ptr<Basis::PolinomialBasis<DIM, FETYPE>> _basis;
+				shared_ptr<PolinomialBasis<DIM, FETYPE>> _basis;
+				StdIperCube<DIM> _std_geometry;
 		};
 
-	template <size_t DIM, Basis::basisType FETYPE = Basis::INVALID>
-		class StdSpace : public StdBananaSpace<DIM>
+	template <size_t DIM, elementType TYPE = LibmeshInvalidType, basisType FETYPE = INVALID>
+		class StdFElement : public StdBananaFElement<DIM, FETYPE>
 		{
-#ifdef SINGLETON_ENABLED
-			//It is a Singleton
-			protected:
-				StdSpace()
-				{
-					_stdCube = StdIperCube<DIM, FETYPE>::Instance();
-					//TODO: initialize _ipercubeMap through the call to a factory
-				};
-
-				StdSpace& operator = (const StdSpace&) = delete;
-				StdSpace					(const StdSpace&) = delete;
-
 			public:
-				static shared_ptr<StdSpace> Instance()
+#ifdef SINGLETON_ENABLED
+				static shared_ptr<StdFElement> Instance()
 				{
-					static shared_ptr<StdSpace> ss = shared_ptr<StdSpace>(new StdSpace);
+					static shared_ptr<StdFElement> ss = shared_ptr<StdFElement>(new StdFElement);
 					return ss;
 				};
-#else
-			public:
-				StdSpace()
+			//It is a Singleton
+			protected:
+				StdFElement& operator = (const StdFElement&) = delete;
+				StdFElement					(const StdFElement&) = delete;
+
+				StdFElement() : _std_geometry()
 				{
-					_stdCube = make_shared<StdIperCube<DIM, FETYPE> >();
-					//TODO: initialize _ipercubeMap through the call to a factory
+					_stdCube = StdFIperCube<DIM, FETYPE>::Instance();
+#else //SINGLETON_ENABLED
+				StdFElement() : _std_geometry()
+				{
+					//TODO: wrong!!! I'm not sharing anything! Use a factory!
+					_stdCube = make_shared<StdFIperCube<DIM, FETYPE> >();
+#endif //SINGLETON_ENABLED
+					//add here other stuff the constructor is expected to do
 				};
 
-#endif //SINGLETON_ENABLED
-
-				virtual ~StdSpace()
+			public:
+				virtual ~StdFElement()
 				{
 					//TODO
-#ifdef MYDEBUG
-				cout << "Distruggo StdSpace" << endl;
-#endif //MYDEBUG
+#ifdef DESTRUCTOR_ALERT
+				cout << "Distruggo StdFElement" << endl;
+#endif //DESTRUCTOR_ALERT
 				};
-				virtual Basis::basisType FEType()
+				virtual basisType FEType()
 				{
 					return FETYPE;
 				};
@@ -243,12 +313,12 @@ namespace BinaryTree
 				//TODO: optimize storing already evaluated points
 				virtual double evaluateBasisFunction (size_t ind, const Point<DIM>& point)const
 				{
-					return _stdCube->evaluateBasisFunction(ind, _ipercubeMap->computeInverse(point));
+					return _stdCube->evaluateBasisFunction(ind, _std_geometry.mapBackward(point));
 				};
 
 				virtual vector<double> evaluateBasis (const Point<DIM>& point)const
 				{
-					return _stdCube->evaluateBasis(_ipercubeMap->computeInverse(point));
+					return _stdCube->evaluateBasis(_std_geometry.mapBackward(point));
 				};
 
 				virtual size_t basisSize()const
@@ -266,9 +336,21 @@ namespace BinaryTree
 					_stdCube->basisDegree(d);
 				};
 
+				virtual elementType type()
+				{
+					return _std_geometry.type();
+				};
+				virtual QuadPointVec<DIM> getQuadPoints()const
+				{
+					return _std_geometry.getQuadPoints();
+				};
+				virtual QuadWeightVec getQuadWeights()const
+				{
+					return _std_geometry.getQuadWeights();
+				};
 			protected:
-				unique_ptr<Map<DIM>>							_ipercubeMap;
-				shared_ptr<StdIperCube<DIM, FETYPE>>	_stdCube;
+				shared_ptr<StdFIperCube<DIM, FETYPE>>	_stdCube;
+				StdElement<DIM, TYPE> _std_geometry;
 		};
 
 };//namespace BinaryTree

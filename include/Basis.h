@@ -8,6 +8,9 @@
 #include "BasisBuilderRule.h"
 #include "Maps.h"
 
+#define ENABLE_IF_VERSION
+//TODO: verify if it can be written an ENABLE_IF_VERSION-undefined compiling version of the class
+
 namespace Basis
 {
 	using namespace std;
@@ -85,8 +88,10 @@ namespace Basis
 
 					auto& factory(BasisBuilderFactory::Instance());
 					_rule = factory.create(FETYPE);
-					vector<Polinomial<1> > oneDPol = (*_rule)(degree);
-					constructBasis(oneDPol);
+
+					////TODO: is it necessary?
+//					vector<Polinomial<1> > oneDPol = (*_rule)(degree);
+//					constructBasis(oneDPol);
 				};
 
 			public:
@@ -163,6 +168,7 @@ namespace Basis
 					return begin() + size();
 				};
 			private:
+#ifdef ENABLE_IF_VERSION
 			//1D construction from 1D polinomial
 				template <size_t DUMMY = DIM, typename enable_if< (DUMMY == 1), size_t>::type = 0>
 					void constructBasis (const vector<Polinomial<1> >& input)
@@ -179,6 +185,7 @@ namespace Basis
 
 			//multidimensional construction from 1D polinomial
 				template <size_t DUMMY = DIM, typename enable_if< (DUMMY > 1), size_t>::type = 0>
+#endif //ENABLE_IF_VERSION
 					void constructBasis (const vector<Polinomial<1> >& input)
 					{
 						//memory allocation
@@ -200,9 +207,12 @@ namespace Basis
 							}			
 						}
 					};
-
+#ifdef ENABLE_IF_VERSION
 				//recursive initialization of the memory pointed by *position_ptr, the partial tensor product is stored in result
 				template <size_t N, size_t DUMMY = DIM, typename enable_if< (DUMMY > 1 && N > 1), size_t>::type = 0>
+#else //ENABLE_IF_VERSION
+				template <size_t N>				
+#endif //ENABLE_IF_VERSION
 					void initialize 	(	const vector<Polinomial<1> >& v,
 												size_t degree,
 												Polinomial<DIM>** position_ptr,
@@ -213,6 +223,7 @@ namespace Basis
 							initialize<N - 1> (v, degree - ind, position_ptr, result.tensor(v[ind]));
 					};
 
+#ifdef ENABLE_IF_VERSION
 				//specializing the last call to fillMemory in the multidimensional case: end of recursion
 				template <size_t N, size_t DUMMY = DIM, typename enable_if< (DUMMY > 1 && N == 1), size_t>::type = 0>
 					void initialize	(	const vector<Polinomial<1> >& v,
@@ -229,7 +240,7 @@ namespace Basis
 						**position_ptr = result.tensor(v[degree]);
 						++(*position_ptr);
 					};
-
+#endif //ENABLE_IF_VERSION
 			protected:
 				//size is (degree + DIM)! / degree! DIM!
 				virtual size_t computeSize (const size_t& degree) const
@@ -264,6 +275,36 @@ namespace Basis
 				size_t _size;
 				bool	 _sizeUpdated;
 		};
+
+#ifndef ENABLE_IF_VERSION
+	//1D construction from 1D polinomial
+		template <basisType FETYPE = INVALID>
+			void PolinomialBasis<1, FETYPE>::constructBasis (const vector<Polinomial<1> >& input)
+			{
+				if (_size != (_degree + 1))
+					throw length_error("In constructBasis basis degree and polinomial input size do not fit!");
+				
+				//memory allocation
+				_elements = move(unique_ptr<Polinomial<DIM>[]> (new Polinomial<DIM>[_size]));
+
+				for (size_t i = 0; i < _size; ++i)
+					_elements[i] = input[i];
+			};
+
+		//specializing the last call to fillMemory in the multidimensional case: end of recursion
+		template <>
+		template <size_t DIM, basisType FETYPE = INVALID>
+			void PolinomialBasis<DIM, FETYPE>::initialize<1>	(	const vector<Polinomial<1> >& v,
+																					size_t degree,
+																					Polinomial<DIM>** position_ptr,
+																					Polinomial<DIM - 1> result
+																				)
+			{
+				**position_ptr = result.tensor(v[degree]);
+				++(*position_ptr);
+			};
+
+#endif //ENABLE_IF_VERSION
 
 };//namespace Basis
 
