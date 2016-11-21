@@ -52,6 +52,15 @@
 		return result;
 	}
 
+	Polinomial<1> Polinomial<1>::operator / (const double& scalar) const
+	{
+		Polinomial<1> result(*this);
+		for (auto& c : result)
+			c /= scalar;
+
+		return result;
+	};
+
 	Polinomial<1> Polinomial<1>::operator * (const Polinomial<1>& p) const
 	{
 
@@ -78,6 +87,7 @@
 //#endif //MYDEBUG
 		return result;
 	};
+
 
 	Polinomial<1> Polinomial<1>::operator + (const Polinomial<1>& p) const
 	{
@@ -173,6 +183,12 @@
 		(*this) = (*this) * a;
 		return (*this);
 	};
+
+	Polinomial<1>& Polinomial<1>::operator /= (const double& a)
+	{
+		(*this) = (*this) / a;
+		return (*this);
+	}
 
 
 	double& Polinomial<1>::operator[] (size_t ind)

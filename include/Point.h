@@ -69,11 +69,6 @@ namespace Geometry
 				return *this;
 			};
 
-			double* data() const
-			{
-				return this->data();
-			}
-
 			// Product by scalar
 			Point<DIM> operator * (double& alfa) const
 			{
@@ -132,12 +127,14 @@ namespace Geometry
 				return (*(this) - x).abs();
 			};
 
-			void print() const
+			void print(bool newline = true) const
 			{
 				cout << "(" << (*this)[0];
 				for (size_t i = 1; i < DIM; ++i)
 					cout << "," << (*this)[i];
-				cout << ")" << endl;
+				cout << ")";
+				if(newline)
+					cout << endl;
 			}
 		};
 

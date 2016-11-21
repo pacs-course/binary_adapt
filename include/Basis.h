@@ -4,13 +4,16 @@
 #include <memory> //unique_ptr
 #include <stdexcept> //range_error
 
+#include "AbstractFactory.h"
 #include "Polinomial.h"
 #include "BasisBuilderRule.h"
 #include "Maps.h"
 
+#define MAXDEGREE 256
+
 #define ENABLE_IF_VERSION
 //TODO: verify if it can be written an ENABLE_IF_VERSION-undefined compiling version of the class
-
+//#define SINGLETON_ENABLED
 namespace Basis
 {
 	using namespace std;
@@ -43,7 +46,7 @@ namespace Basis
 
 				static shared_ptr<PolinomialBasis> Instance()
 				{
-					static shared_ptr<PolinomialBasis> pb = shared_ptr<PolinomialBasis>(new PolinomialBasis);
+					static shared_ptr<PolinomialBasis> pb(new PolinomialBasis);
 					return pb;
 				};
 
@@ -80,18 +83,17 @@ namespace Basis
 #endif //SINGLETON_ENABLED
 
 				//default constructor
-				PolinomialBasis (size_t degree = 0) : _degree(degree)
+				//TODO : set the degree as an input parameter of the program, maybe use GetPot
+				PolinomialBasis (size_t degree = 40) : _degree(degree)
 				{
 					//TODO: optimize it, maybe create a degree->size map
 					_size = computeSize (_degree);
 					_sizeUpdated = true;
-
 					auto& factory(BasisBuilderFactory::Instance());
 					_rule = factory.create(FETYPE);
 
-					////TODO: is it necessary?
-//					vector<Polinomial<1> > oneDPol = (*_rule)(degree);
-//					constructBasis(oneDPol);
+					vector<Polinomial<1> > oneDPol = (*_rule)(degree);
+					constructBasis(oneDPol);
 				};
 
 			public:
@@ -124,6 +126,12 @@ namespace Basis
 				}
 #endif //SINGLETON_ENABLED
 
+				virtual size_t size(size_t degree) const
+				{
+					//TODO : store the values in a map or (better) in a vector
+					return computeSize(degree);
+				};
+
 				virtual size_t size() const
 				{
 					if (!_sizeUpdated)
@@ -139,14 +147,30 @@ namespace Basis
 						pol.print();
 				};
 
-				virtual Polinomial<DIM>& operator[] (size_t ind)
+				virtual void print(size_t index) const
+				{
+					(*this)[index].print();
+				};
+
+				virtual double evaluate(size_t ind, const Point<DIM>& p)
 				{
 					if (ind > _size)
 					{
-						throw range_error("Trying to access out of range basis function!");
+						bool found;	
+						size_t newdegree = degree();
+
+						while (!found && newdegree < MAXDEGREE)
+							size(newdegree) < ind ? ++newdegree : found = true;
+
+						if (!found)
+							throw length_error("Index " + to_string(ind) + " exceeds available basis length!");
+
+						degree(newdegree);
 					}
-					return _elements[ind];
+					return _elements[ind](p);
 				};
+
+			protected:
 
 				//TODO: verify if these pseudo iterators work fine
 				virtual Polinomial<DIM>* begin()
@@ -167,6 +191,16 @@ namespace Basis
 				{
 					return begin() + size();
 				};
+
+				virtual Polinomial<DIM>& operator[] (size_t ind) const
+				{
+					if (ind > _size)
+					{
+						throw range_error("Trying to access out of range basis function!");
+					}
+					return _elements[ind];
+				};
+
 			private:
 #ifdef ENABLE_IF_VERSION
 			//1D construction from 1D polinomial
@@ -307,6 +341,8 @@ namespace Basis
 #endif //ENABLE_IF_VERSION
 
 };//namespace Basis
+
+//#undef SINGLETON_ENABLED
 
 #endif //__BASIS__HH
 

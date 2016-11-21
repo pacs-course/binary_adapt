@@ -3,7 +3,6 @@
 
 #include <utility> //pair
 
-#include "AbstractFactory.h"
 #include "Point.h"
 
 #include "Eigen/Dense"
@@ -11,12 +10,6 @@
 #include <face_quad4.h>
 #include <face_tri3.h>
 #include <edge_edge2.h>
-
-/*
-	maps from generic elements to reference element
-	the reference elements considered are the same of libmesh library,
-	in order to use quadrature nodes and weights provided by libmesh
-*/
 
 //TODO insert a control on library reference elements
 //		 be sure that if something changes the maps still do their job 
@@ -51,6 +44,11 @@ namespace Maps
 
 		};
 
+/*
+	maps from the reference element to the generic element
+	the reference elements considered are the same of libmesh library,
+	in order to use quadrature nodes and weights provided by libmesh
+*/
 	template <size_t DIM>
 		class AffineMap : public Map<DIM>
 		{
@@ -76,7 +74,11 @@ namespace Maps
 				};
 
 				//TODO derive Point<DIM> from Eigen type and modify consequently the evaluation
-				virtual Point<DIM> evaluate(const Point<DIM>& p)const override
+/*
+				The Point<DIM> p belongs to the reference element
+				The returned one belongs to the element which owns the map object	
+*/
+				virtual Point<DIM> evaluate(const Point<DIM>& p) const override
 				{
 					Point<DIM> result;
 					VecMapType eig_result(result.data());
@@ -85,7 +87,11 @@ namespace Maps
 					return result;
 				};
 
-				virtual Point<DIM> computeInverse	(const Point<DIM>& p)const override
+/*
+				It is the inverse function of the bijective map.
+				p belongs to the generic element, while the returned value to the reference element
+*/
+				virtual Point<DIM> computeInverse(const Point<DIM>& p) const override
 				{
 					Point<DIM> result;
 					VecMapType eig_result(result.data());
@@ -94,7 +100,7 @@ namespace Maps
 					return result;
 				};
 
-				virtual double	evaluateJacobian(const Point<DIM>& p)const
+				virtual double	evaluateJacobian(const Point<DIM>& p) const
 				{
 					//to silence the warning compiler, since the map is affine the jacobian does not depend on the evaluation point 
 					(void)p;
@@ -129,16 +135,16 @@ namespace Maps
 				//TODO
 			};
 			virtual ~IntervalMap(){};
-			virtual void init(nodes_ptr vert)
+			virtual void init(nodes_ptr vert) override
 			{
 				double a = (*(vert[0]))(0);
 				double b = (*(vert[1]))(0);
-//#ifdef MYMYMYDEBUG
+//#ifdef MYDEBUG
 //				cout << "Primo estremo: " << a << endl;
 //				cout << "Secondo estremo: " << b << endl;
-//#endif //MYMYMYDEBUG
-//				this->_mat(0) = (b - a) / 2; //ECCOLO!!!
-//				this->_trasl(0) = (a + b) / 2; //ECCOLO!!!
+//#endif //MYDEBUG
+				this->_mat(0) = (b - a) / 2;
+				this->_trasl(0) = (a + b) / 2;
 				this->_jacobian = this->_mat(0);
 				this->_inverse(0) = 1 / this->_mat(0);
 			};
@@ -167,7 +173,7 @@ namespace Maps
 				//TODO
 			};
 
-			void init(nodes_ptr vert)
+			void init(nodes_ptr vert) override
 			{
 				double x1 = (*(vert[0]))(0);
 				double y1 = (*(vert[0]))(1);
@@ -216,10 +222,9 @@ namespace Maps
 				//TODO
 			};
 
-			QuadMap(libMeshSquare* element)
-			{
-				//TODO
-			};
+
+			//TODO
+			virtual void init(nodes_ptr vert) = 0;
 
 			virtual ~QuadMap(){};
 
@@ -227,11 +232,13 @@ namespace Maps
 			QuadMap& operator = 	(const QuadMap&) = delete;	
 	};
 
-
-	/*
-		It maps the reference square in the reference triangle
-		It's a singular map
-	*/
+/*
+	Now maps (which are not affine) between standard elements and standard ipercube
+*/
+/*
+	It maps the reference square in the reference triangle
+	It's a singular map
+*/
 	class StdTriMap : public Map<2> 
 	{
 		public:

@@ -227,12 +227,15 @@ every method that modifies polinomial coefficients must also set _degreeUpdated=
 				Polinomial (size_t, double);
 				//constructor to initialize coefficients value
 				Polinomial (const vector<double>&);
-
+				//destructor
+				~Polinomial() = default;
 				Polinomial (const Polinomial<1>& p);
 				Polinomial<1>& operator = (const Polinomial<1>& p);
 
-				//1D polinomial product
+				//1D polinomial product by scalar
 				Polinomial<1> operator * (const double&) const;
+				//1D polinomial division by scalar
+				Polinomial<1> operator / (const double&) const;
 				//1D polinomial product
 				Polinomial<1> operator * (const Polinomial<1>&) const;
 				//1D polinomial sum
@@ -244,6 +247,7 @@ every method that modifies polinomial coefficients must also set _degreeUpdated=
 				Polinomial<1>& operator += (const Polinomial<1>&);
 				Polinomial<1>& operator *= (const Polinomial<1>&);
 				Polinomial<1>& operator *= (const double&);
+				Polinomial<1>& operator /= (const double&);
 
 				
 				//methods to access coefficient value of x^ind term

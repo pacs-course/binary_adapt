@@ -52,9 +52,6 @@ namespace BinaryTree
 					auto ptr = libMesh::QBase::build(libMesh::QGAUSS, DIM, libMesh::FORTYTHIRD);
 					_quadratureRule = unique_ptr<libMesh::QBase>(ptr.release());
 					_quadratureRule->init(TYPE);
-
-					auto& std_map_factory(StdMapFactory<DIM>::Instance());
-					_ipercubeMap = std_map_factory.create(TYPE);
 				};
 
 			public:
@@ -66,7 +63,7 @@ namespace BinaryTree
 #endif //DESTRUCTOR_ALERT
 				};
 
-				virtual elementType type()
+				virtual elementType type() const
 				{
 					return TYPE;
 				};
@@ -95,24 +92,8 @@ namespace BinaryTree
 					return result;
 				};
 
-				virtual Point<DIM> mapBackward(const Point<DIM>& p)const
-				{
-					return _ipercubeMap->computeInverse(p);
-				};
-
-				virtual Point<DIM> mapForward(const Point<DIM>& p)const
-				{
-					return _ipercubeMap->evaluate(p);
-				};
-
-				virtual double Jacobian(const Point<DIM>& p)const
-				{
-					return _ipercubeMap->evaluateJacobian(p);
-				};
-
 			protected:
 				unique_ptr<libMesh::QBase> _quadratureRule;
-				unique_ptr<Map<DIM>>	_ipercubeMap;
 		};
 
 
@@ -130,16 +111,15 @@ namespace BinaryTree
 /*
 				AbstractSpace methods
 */
-				virtual double				evaluateBasisFunction(size_t ind, const Point<DIM>& point)const = 0;
-				virtual vector<double>	evaluateBasis			(				 const Point<DIM>& point)const = 0;
-				virtual size_t	basisSize()const = 0;
-				virtual size_t basisDegree()const = 0;
-				virtual void basisDegree(size_t) = 0;
-				virtual basisType FEType() = 0;
+				virtual double	evaluateBasisFunction(size_t ind, const Point<DIM>& point)const = 0;
+				virtual size_t	basisSize	(size_t)const = 0;
+//				virtual size_t basisDegree	()const = 0;
+//				virtual void basisDegree	(size_t) = 0;
+				virtual basisType FEType	() = 0;
 /*
 				AbstractElement methods
 */
-				virtual elementType type() = 0;
+				virtual elementType type() const = 0;
 				virtual QuadPointVec<DIM> getQuadPoints()const = 0;
 				virtual QuadWeightVec getQuadWeights()const = 0;
 		};
@@ -206,6 +186,9 @@ namespace detail
 					_basis = make_shared<PolinomialBasis<DIM, FETYPE> >();
 #endif //SINGLETON_ENABLED
 					//add here other stuff the constructor is expected to do
+#ifdef DESTRUCTOR_ALERT
+					cerr << "Costruisco StdFIperCube" << endl;
+#endif //DESTRUCTOR_ALERT
 				};
 
 			public:
@@ -213,7 +196,7 @@ namespace detail
 				{
 					//TODO
 #ifdef DESTRUCTOR_ALERT
-				cout << "Distruggo IperCube" << endl;
+					cerr << "Distruggo StdFIperCube" << endl;
 #endif //DESTRUCTOR_ALERT
 				};
 
@@ -225,34 +208,35 @@ namespace detail
 				//TODO: optimize storing already evaluated points
 				virtual double evaluateBasisFunction (size_t ind, const Point<DIM>& point)const
 				{
-					return (*_basis)[ind](point);
+					return _basis->evaluate(ind, point);
 				};
 
-				virtual vector<double> evaluateBasis(const Point<DIM>& point)const
+//				virtual size_t basisDegree()const
+//				{
+//					return _basis->degree();
+//				};
+
+//				virtual void basisDegree(size_t deg)
+//				{
+//					_basis->degree(deg);
+//				};
+
+				virtual size_t basisSize(size_t degree)const
 				{
-					vector<double> result;
-					for (auto fun = _basis->begin(); fun != _basis->end(); ++fun)
-						result.push_back((*fun)(point));
-
-					return result;
+					return _basis->size(degree);
 				};
 
-				virtual size_t basisDegree()const
+				virtual void printBasis(size_t index) const
 				{
-					return _basis->degree();
+					_basis->print(index);
 				};
 
-				virtual void basisDegree(size_t deg)
+				virtual void printBasis() const
 				{
-					_basis->degree(deg);
+					_basis->print();
 				};
 
-				virtual size_t basisSize()const
-				{
-					return _basis->size();
-				};
-
-				virtual elementType type()
+				virtual elementType type()const
 				{
 					return _std_geometry.type();
 				};
@@ -294,6 +278,9 @@ namespace detail
 					//TODO: wrong!!! I'm not sharing anything! Use a factory!
 					_stdCube = make_shared<StdFIperCube<DIM, FETYPE> >();
 #endif //SINGLETON_ENABLED
+
+					auto& std_map_factory(StdMapFactory<DIM>::Instance());
+					_ipercubeMap = std_map_factory.create(TYPE);
 					//add here other stuff the constructor is expected to do
 				};
 
@@ -313,30 +300,25 @@ namespace detail
 				//TODO: optimize storing already evaluated points
 				virtual double evaluateBasisFunction (size_t ind, const Point<DIM>& point)const
 				{
-					return _stdCube->evaluateBasisFunction(ind, _std_geometry.mapBackward(point));
+					return _stdCube->evaluateBasisFunction(ind, mapBackward(point));
 				};
 
-				virtual vector<double> evaluateBasis (const Point<DIM>& point)const
+				virtual size_t basisSize(size_t degree)const
 				{
-					return _stdCube->evaluateBasis(_std_geometry.mapBackward(point));
+					return _stdCube->basisSize(degree);
 				};
 
-				virtual size_t basisSize()const
-				{
-					return _stdCube->basisSize();
-				};
+//				virtual size_t basisDegree()const
+//				{
+//					return _stdCube->basisDegree();
+//				};
 
-				virtual size_t basisDegree()const
-				{
-					return _stdCube->basisDegree();
-				};
+//				virtual void basisDegree(size_t d)
+//				{
+//					_stdCube->basisDegree(d);
+//				};
 
-				virtual void basisDegree(size_t d)
-				{
-					_stdCube->basisDegree(d);
-				};
-
-				virtual elementType type()
+				virtual elementType type()const
 				{
 					return _std_geometry.type();
 				};
@@ -348,9 +330,29 @@ namespace detail
 				{
 					return _std_geometry.getQuadWeights();
 				};
+
+/*
+				Public methods to use the _ipercubeMap attribute
+*/
+				virtual Point<DIM> mapBackward(const Point<DIM>& p)const
+				{
+					return _ipercubeMap->computeInverse(p);
+				};
+
+				virtual Point<DIM> mapForward(const Point<DIM>& p)const
+				{
+					return _ipercubeMap->evaluate(p);
+				};
+
+				virtual double Jacobian(const Point<DIM>& p)const
+				{
+					return _ipercubeMap->evaluateJacobian(p);
+				};
+
 			protected:
 				shared_ptr<StdFIperCube<DIM, FETYPE>>	_stdCube;
 				StdElement<DIM, TYPE> _std_geometry;
+				unique_ptr<Map<DIM>>	_ipercubeMap;
 		};
 
 };//namespace BinaryTree
