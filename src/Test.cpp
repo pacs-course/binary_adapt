@@ -711,11 +711,21 @@ void test13(int argc, char ** argv)
 	libMesh::LibMeshInit init (argc, argv);
 	libMesh::Mesh mesh(init.comm());
 
-	libMesh::MeshTools::Generation::build_line(mesh, 1, 0, 1, LibmeshIntervalType);
+	int n = 1;
+	libMesh::MeshTools::Generation::build_line(mesh, n, 0, 1, LibmeshIntervalType);
 
 	BinaryRefiner my_refiner(mesh);
-	size_t n_iter(1);
+	size_t n_iter(10);
 	my_refiner.refine_binary(f_ptr, n_iter);
+
+	int cont = mesh.n_elem();
+
+	for (auto iter = mesh.elements_begin(); iter != mesh.elements_end(); ++iter)
+		if ((*iter)->refinement_flag() == libMesh::Elem::INACTIVE)
+			--cont;
+
+	cout << "I have started from a mesh with " << n << " elements; after refinement it has " << mesh.n_elem() << " elements, " << cont << " of them are ACTIVE" << endl;
+
 
 	cout << "BinaryRefinement test ended" << endl;
 };

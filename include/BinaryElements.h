@@ -75,7 +75,7 @@ namespace BinaryTree
 			virtual BinaryNode* dad() = 0;
 
 			virtual double projectionError() = 0;
-			virtual void refine(libMesh::MeshRefinement &mesh_refinement) = 0;
+			virtual void bisect(libMesh::MeshRefinement &mesh_refinement) = 0;
 
 			virtual void	pLevel(size_t val) = 0;
 			virtual size_t pLevel() const = 0;
@@ -111,18 +111,52 @@ namespace BinaryTree
 				if (mesh.mesh_dimension() != DIM)
 					throw invalid_argument("In make_binary DIM parameter is different from mesh dimension!");
 
-
 				for (auto iter(mesh.elements_begin()); iter != mesh.elements_end(); ++iter)
 				{
 					auto& el_ptr(*iter);
+					auto dad = el_ptr->parent();
+					int index = -1;
+					if (dad)
+					{
+						for (int i(0); i < static_cast<int> (dad->n_children()); ++i)
+							if(dad->child(i) == el_ptr)
+								index = i;
+					}
 
 					auto bin_ptr = BinarityMap::binarize_node<DIM> (el_ptr, f_ptr);
 /*
 					since Interval constructor uses the default copy constructor of the LibmeshGeometry, I don't want to destroy the underlying libmesh object **iter; because of this I don't use the insert_elem method of the mesh, but I simply reassign the *iter address. Note that if the LibmeshGeometry class implemented the copy constructor, this instruction would cause a memory leak, since I insert the copy without freeing the memory pointed by *iter
 */
-					el_ptr = bin_ptr;
+					if (el_ptr != bin_ptr)
+					{
+						el_ptr = bin_ptr;
+
+						if (dad)
+							dad->replace_child(el_ptr, index);
+
+						if (el_ptr->has_children())
+							for (int i(0); i < static_cast<int> (el_ptr->n_children()); ++i)
+								el_ptr->child(i)->set_parent(el_ptr);
+
+#ifdef NEIGHBOR_REPLACEMENT
+						bool neighbor_exist = true;
+						while (neighbor_exist)
+						{
+							size_t i = 0;
+							auto neigh = el_ptr->neighbor(i);
+							if (!neigh)
+								neighbor_exist = false;
+							else
+								//TODO:
+							++i;
+						}
+#endif //NEIGHBOR_REPLACEMENT
+					}
 				}
-//				mesh.prepare_for_use(/*skip_renumber =*/ false);
+
+				//TODO (maybe, otherwise evaluate the possibility to "unbinarize" the mesh after the refinement)
+
+				mesh.prepare_for_use(/*skip_renumber =*/ false);
 
 #ifdef MYDEBUG
 				cout << "La mesh ha " << mesh.n_elem() << " miei elementi; li conto" << endl;
@@ -220,23 +254,6 @@ namespace BinaryTree
 					if(!type_recognized)
 						throw invalid_argument("Cannot convert the input libMesh element into requested type!");
 				}
-
-/*
-				I recursively binarize the children of the result
-*/
-				if (!result->active())
-				{
-					for (size_t i = 0; i < result->n_children(); ++i)
-						result->replace_child(
-														BinarityMap::template_node_binarization<DIM, BinaryClass, LibmeshClass>	(result->child(i), f_ptr),
-														i
-													);
-				}
-
-/*
-				I recursively binarize the neighbors of the result
-*/
-				//TODO (maybe, otherwise evaluate the possibility to "unbinarize" the mesh after the refinement)
 
 				return result;
 			};
@@ -352,7 +369,7 @@ namespace BinaryTree
 
 				//TODO:	studiarla meglio, magari spostando la "binarizzazione" da un'altra parte
 				//			l'ideale sarebbe in MeshRefinement::add_elem o in elem::build, ma non sono definiti virtual e quindi l'override non funzionerebbe, perche' nell'algoritmo vengono chiamati sempre i metodi delle classi base
-				virtual void refine(libMesh::MeshRefinement &mesh_refinement) override
+				virtual void bisect(libMesh::MeshRefinement &mesh_refinement) override
 				{
 #ifdef MYDEBUG
 					cout << "Sono in BinElement::refine" << endl;

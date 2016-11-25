@@ -101,18 +101,11 @@ namespace GenericFactory
 					auto f = _storage.find(name);
 					if (f == _storage.end())
 					{
-#ifdef MYDEBUG
-						Return_type t;
-						cout << "Voglio creare un " << typeid(t).name() << " con chiave " << name << endl;
-#endif //MYDEBUG
-						throw invalid_argument(
-														string("Identifier")  
-																	 	+ identifierAsString(name) +
-														"is not stored in the factory");
+						throw invalid_argument("Identifier " + identifierAsString(name) + " is not stored in the factory");
 					}
 					else
 					{
-						return (f->second)();
+						return Return_type(f->second());
 					}
 				};
 
@@ -143,7 +136,12 @@ namespace GenericFactory
 				};
 
 				//! Destructor
-				virtual ~Factory() = default;
+				virtual ~Factory()
+				{
+#ifdef DESTRUCTOR_ALERT
+					cerr << "Distruggo Factory" << endl;
+#endif //DESTRUCTOR_ALERT	
+				};
 
 			protected:
 				using Container_type = map<Identifier,Builder_type>;

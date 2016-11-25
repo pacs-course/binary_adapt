@@ -51,7 +51,7 @@ namespace BinaryTree
 #endif //DESTRUCTOR_ALERT
 				};
 
-				virtual elementType type() = 0;
+				virtual elementType type() const = 0;
 
 				virtual QuadPointVec<DIM> getQuadPoints()const = 0;
 				virtual QuadWeightVec getQuadWeights()const = 0;
@@ -94,12 +94,9 @@ namespace BinaryTree
 #endif //DESTRUCTOR_ALERT
 				};
 
-				//TODO: maybe if evaluateBasisFunction and evaluateBasis are defined separately they are better optimizable
-				//		  verify it and, if not, define here evaluateBasis in terms of evaluateBasisFunction
-				virtual double				evaluateBasisFunction(size_t ind, const Point<DIM>& point)const = 0;
-				virtual vector<double>	evaluateBasis			(				 const Point<DIM>& point)const = 0;
+				virtual double	evaluateBasisFunction(size_t ind, const Point<DIM>& point)const = 0;
 
-				virtual size_t	basisSize()const = 0;
+				virtual size_t	basisSize(size_t)const = 0;
 
 				virtual Basis::basisType FEType() = 0;
 		};
