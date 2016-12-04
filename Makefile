@@ -1,17 +1,30 @@
 #COMPILER FLAGS
 CXX = g++ 
-OPTIMIZE_OPS = -O3
-CXXFLAGS = $(OPTIMIZE_OPS) -march=native -std=c++14 $(INCLUDE_FLAGS) #-Wall -Wextra
+#OPTIMIZE_OPS = -O3
+CXXFLAGS = $(OPTIMIZE_OPS) -march=native -std=c++14 $(INCLUDE_FLAGS) -Wall -Wextra
 INCLUDE_FLAGS = -I$(INCLUDE_DIR)
 
 EIGEN_DIR = /usr/local/include/Eigen
 LIBMESH_DIR = /usr/local/include/libmesh
 CXXFLAGS += -I$(EIGEN_DIR)
 CXXFLAGS += -I$(LIBMESH_DIR)
-#CXXFLAGS += -DLIBMESH_HAVE_CXX11_UNIQUE_PTR
-#CXXFLAGS += -DSINGLETON_ENABLED
 
-LIBS = -lmesh_opt -lmesh_devel -lmesh_dbg -lpthread
+#CXXFLAGS += -DLIBMESH_HAVE_CXX11_UNIQUE_PTR
+#CXXFLAGS += -DLIBMESH_HAVE_CXX11_TO_STRING
+CXXFLAGS += -DLIBMESH_ENABLE_AMR
+
+CXXFLAGS += -DSINGLETON_ENABLED
+#CXXFLAGS += -DDESTRUCTOR_ALERT
+#CXXFLAGS += -DMYDEBUG
+
+LIBS = -lpthread
+#LIBS +=  -lmesh_devel 
+
+LIBS += -lmesh_opt
+
+#LIBS += -lmesh_dbg   
+#CXXFLAGS += -DDEBUG
+
 LDLFLAGS = -L/usr/local/lib
 
 #DIRECTORY TREE
@@ -29,9 +42,6 @@ DIRS = $(OBJ_DIRS) $(BIN_DIRS)
 #INCLUDES
 DEPS = $(INCLUDE_DIR)/*.h
 
-#SRC = $(SRC_DIR)/main.cpp \
-#		$(SRC_DIR)/Polinomial.cpp \
-#		$(SRC_DIR)/BaseBuilderRule.cpp
 SRC = $(wildcard $(SRC_DIR)/*.cpp)
 
 OBJ = $(patsubst $(SRC_DIR)/%.cpp,$(OBJ_DIR)/%.o,$(SRC))
@@ -55,7 +65,7 @@ $(EXE_TEST): $(OBJ)
 	$(CXX) $(CXXFLAGS) $(LDLFLAGS) $(OBJ) -o $@ $(LIBS)
 
 .PHONY:debug
-debug: OPTIMIZE_OPS = -g -DMYDEBUG
+debug: OPTIMIZE_OPS = -g -DMYDEBUG -O0
 debug: all
 
 .PHONY:dir_tree

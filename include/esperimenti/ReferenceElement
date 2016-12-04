@@ -1,0 +1,168 @@
+#ifndef __REFERENCE_H
+#define __REFERENCE_H
+
+#include "AbstractEl.h"
+#include "Maps.h"
+#include "Basis.h"
+
+#include <point.h> //libMesh::Point
+#include <quadrature.h> //libMesh::QBase
+
+#include <memory> //make_unique
+#include <utility> //move
+
+using namespace std;
+using namespace Maps;
+
+namespace BinaryTree
+{
+	//TODO: make it a singleton
+	template <size_t DIM>
+		class StdElement : public virtual AbstractElement<DIM>
+		{
+			public:
+				StdElement()
+				{
+					//TODO
+				};
+
+				virtual QuadPointVec<DIM> getMappedPoints(const Map<DIM>& map)
+				{
+					QuadPointVec<DIM> points = getQuadPoints();
+
+					for (auto p : points)
+						p = map.evaluate(p);
+
+					return points;
+				};
+
+				//TODO: find a clever way to take advantage from the fact that an affine map has constant jacobian (so points are not needed)
+				//		  maybe a solution could be to compute mappedPoints and mappedWeights in the same function
+				virtual QuadWeightVec getMappedWeights(const Map<DIM>& map)
+				{
+					QuadPointVec<DIM> points = getQuadPoints();
+					QuadWeightVec weights = getQuadWeights();
+					
+					for (size_t i(0); i < points.size(); ++i)
+						weights[i] = weights[i] * map.evaluateJacobian(points[i]);
+
+					return weights;
+				};
+
+				//TODO: verify if it's convenient to store the quadrature nodes and weights as an attribute of the element
+				virtual QuadPointVec<DIM> getQuadPoints()
+				{
+					//TODO: instead of convert here the libmesh::point, maybe it's convenient to define QuadPointVec in terms of the libmesh type 
+					vector<libMesh::Point> stdpoints = _quadratureRule->get_points();
+					QuadPointVec<DIM> result;
+					for (auto lp : stdpoints)
+						result.push_back(lp);
+
+					return result;
+				};
+
+				virtual QuadWeightVec getQuadWeights()
+				{
+					//TODO: instead of convert here the libmesh::Real, maybe it's convenient to define QuadWeightVec in terms of the libmesh type 
+					vector<libMesh::Real> stdweights = _quadratureRule->get_weights();
+					QuadWeightVec result(stdweights.size());
+					size_t i(0);
+					for (auto w : stdweights)
+						result(i++) = w;
+
+					return result;
+				};
+
+			protected:
+				unique_ptr<libMesh::QBase> _quadratureRule;
+		};
+
+	template <size_t DIM>
+		class StdFElement : public StdElement<DIM>, public AbstractFElement<DIM>
+		{
+			public:
+				StdFElement()
+				{
+					//TODO
+				}
+
+				/*
+					The idea is that instead of interpolate f on the generic element and its local basis functions, I interpolate the composition
+					of f and the affine map to the stdElement on the space spanned by the (always the same) std element basis function
+				*/
+				//TODO: possible optimization: I compute two times the quadrature points
+				virtual FiniteFunction<DIM> mappedInterpolation(size_t p_degree, const function<double(Point<DIM>)>& f, const Map<DIM>& map)
+				{
+					return interpolate(	p_degree,
+												[&](const Point<DIM>& p)	{
+																						auto temp = map.evaluate(p);
+																						return f(temp) * map.evaluateJacobian(p);
+																					}
+											);
+				};
+
+				
+				//TODO: salvare i valori della base nei nodi
+				//TODO: non mi piace!!! Non e' per niente elegante e non sfrutta l'ipercubo di riferimento
+				virtual FiniteFunction<DIM> interpolate (size_t p_degree, const function<double(Point<DIM>)>& f)
+				{
+					//le LocalBasis cosi' come sono fanno schifo, sono vincolato a crearle qui e impazzirebbero se le creassi nell'ipercubo
+					LocalBasis<DIM> local = LocalBasis<DIM>(_basis, _ipercubeMap);
+					
+					vector<double> coeff;
+					for(size_t i(0); i < _basis.size(); ++i)
+					{
+						double c = this->L2prod	(
+															f,
+															[&](const Point<DIM>& p)	{
+																									return local.evaluateFunction(i, p);
+																								}
+														);
+						coeff.push_back(c);
+					};
+
+					FiniteFunction<DIM> projection(&local, coeff);
+					return projection;
+				};
+
+				//TODO: optimize storing already evaluated points
+				virtual double evaluateBasisFunction (size_t ind, const Point<DIM>& point)const
+				{
+					return _stdFElement.evaluateBasisFunction(ind, (this->_map).computeInverse(point));
+				};
+
+				virtual vector<double> evaluateBasis (const Point<DIM>& point)const
+				{
+					return _stdFElement.evaluateBasis ( (this->_map).computeInverse(point) );
+				};
+
+
+			private:
+				shared_ptr<Map<DIM>> _ipercubeMap;
+//				StdIperCube& _stdCube;
+			//TODO: non mi piace!!! la base e' sull'ipercubo!
+			protected:
+				PolinomialBasis<DIM>& _basis;
+		};
+
+//	template <size_t DIM>
+//		class StdIperCube : public StdFElement<DIM>
+//		{
+//			public:
+//				StdIperCube()
+//				{
+//					//TODO
+//				};
+
+//				virtual FiniteFunction<DIM> interpolate(size_t p_degree, const function<double(Point<DIM>)>& f)
+//				{
+//					//TODO
+//				};
+
+//			protected:
+//				PolinomialBasis<DIM>& _basis;
+//		};
+		
+
+};//namespace BinaryTree
+#endif //__REFERENCE_H

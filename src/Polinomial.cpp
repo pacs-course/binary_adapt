@@ -1,5 +1,7 @@
 #include "Polinomial.h"
 
+namespace FiniteElements
+{
 	using namespace std;
 	
 	Polinomial<1>::Polinomial ()					 					: _coeff()	 					{};
@@ -298,3 +300,5 @@ begin() = rend()-1 : last one must not be multiplicated by x
 			cout << endl;
 		}
 	};
+
+} //FiniteElements

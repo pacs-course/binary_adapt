@@ -6,15 +6,16 @@
 #include <string> //string
 #include <array> //array
 
-#include <point.h> //libmesh::point
+#include <math.h> //sqrt, abs
+
 namespace Geometry
 {
 	using namespace std;
-	// A class that holds {DIM}D points, equally vectors
+	// A class that holds {dim}D points, equally vectors
 
 	//TODO: derive Point class from an Eigen type instead of std::array
-	template <size_t DIM>
-		class Point : public array<double,DIM>
+	template <size_t dim>
+		class Point : public array<double,dim>
 		{
 			public:
 			Point()
@@ -25,7 +26,7 @@ namespace Geometry
 			Point(const initializer_list<double>& coor)
 			{
 				auto l = coor.size();
-				if (l != DIM)
+				if (l != dim)
 				{
 					throw invalid_argument("Invalid number of elements in Geometry::Point construction");
 				}
@@ -37,23 +38,13 @@ namespace Geometry
 				}
 			};
 
-			Point(const array<double, DIM>& coor) : array<double, DIM> (coor){};
+			Point(const array<double, dim>& coor) : array<double, dim> (coor){};
 
 			//copy constructor
 			Point (Point const& x)
 			{
 				(*this) = x;
 			};
-
-			//implicit constructor from libmesh::point
-			//libmesh::point has 3 coordinates, so for DIM > 3 it does not make sense 
-			template <size_t DUMMY = DIM, typename enable_if< (DUMMY < 4), size_t>::type = 0>
-				Point(libMesh::Point& point)
-				{
-					size_t i(0);
-					for (auto& iter : *this)
-						iter = point(i++);
-				};
 
 			//assignment operator
 			Point& operator = (Point const& x)
@@ -64,44 +55,44 @@ namespace Geometry
 			};
 
 			// Returns coordinates in a array<double>.
-			array<double,DIM> get() const
+			array<double,dim> get() const
 			{
 				return *this;
 			};
 
 			// Product by scalar
-			Point<DIM> operator * (double& alfa) const
+			Point<dim> operator * (double& alfa) const
 			{
-				array<double, DIM> temp;
+				array<double, dim> temp;
 				size_t i(0);
 				for (const auto& iter : (*this))
 					temp[i++] = alfa * iter;
-				return Point<DIM>(temp);
+				return Point<dim>(temp);
 			};
 
 			// Vector difference
-			Point<DIM> operator - (Point<DIM> const& x) const
+			Point<dim> operator - (Point<dim> const& x) const
 			{
-				array<double, DIM> temp;
-				for (size_t i=0; i < DIM; ++i)
+				array<double, dim> temp;
+				for (size_t i=0; i < dim; ++i)
 					temp[i] = (*this)[i] - x[i];
-				return Point<DIM>(temp);
+				return Point<dim>(temp);
 			};
 
 			// Vector sum
-			Point<DIM> operator + (Point<DIM> const& x) const
+			Point<dim> operator + (Point<dim> const& x) const
 			{
-				array<double, DIM> temp;
-				for (size_t i=0; i < DIM; ++i)
+				array<double, dim> temp;
+				for (size_t i=0; i < dim; ++i)
 					temp[i] = x[i] + (*this)[i];
-				return Point<DIM>(temp);
+				return Point<dim>(temp);
 			};
 
 			//tensor product
 			template <size_t N>
-				Point<DIM + N> tensor (const Point<N>& p2) const
+				Point<dim + N> tensor (const Point<N>& p2) const
 				{
-					array<double, DIM + N> coor;
+					array<double, dim + N> coor;
 					size_t i(0);
 					for (auto val : *this)
 						coor[i++] = val;
@@ -122,7 +113,7 @@ namespace Geometry
 			};
 
 			// Euclidean Distance from input vector
-			double distance (Point<DIM> const& x) const
+			double distance (Point<dim> const& x) const
 			{
 				return (*(this) - x).abs();
 			};
@@ -130,7 +121,7 @@ namespace Geometry
 			void print(bool newline = true) const
 			{
 				cout << "(" << (*this)[0];
-				for (size_t i = 1; i < DIM; ++i)
+				for (size_t i = 1; i < dim; ++i)
 					cout << "," << (*this)[i];
 				cout << ")";
 				if(newline)
@@ -138,7 +129,7 @@ namespace Geometry
 			}
 		};
 
-	template <size_t DIM>
-		using Vector = Point<DIM>;
+	template <size_t dim>
+		using Vector = Point<dim>;
 }
 #endif //__POINT__HH

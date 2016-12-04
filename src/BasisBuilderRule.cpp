@@ -1,8 +1,9 @@
 #include "BasisBuilderRule.h"
 
-	using namespace Basis;
-	using namespace std;
+using namespace std;
 
+namespace FiniteElements
+{
 	////TODO: verify if it is optimizable
 	//it follows the alghoritm proposed in "Modellistica numerica per problemi differenziali", A.Quarteroni, 5a ed., p.234
 	vector<Polinomial<1>> LegendreBuilder::operator() (size_t degree)
@@ -124,3 +125,16 @@
 		return result;
 	};
 
+	InvalidBuilder::InvalidBuilder()
+	{
+		throw invalid_argument("Trying to construct a builder object for an INVALID type basis");
+	};
+
+	vector<Polinomial<1>> InvalidBuilder::operator() (size_t degree)
+	{
+		/*to avoid warning by the compiler*/
+		(void)degree;
+		return vector<Polinomial<1>>();
+	};
+
+} //namespace FiniteElements

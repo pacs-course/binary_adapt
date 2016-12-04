@@ -37,7 +37,7 @@ Integration on generic elements test
 void test7(int argc, char ** argv);
 
 /*
-Override of libMesh methods test
+libMesh version compatibility test
 */
 void test8(int argc, char ** argv);
 

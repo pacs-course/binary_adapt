@@ -5,16 +5,18 @@
 #include <utility> //std::move
 
 #include "Test.h"
-#include "BinaryRefiner.h"
+#include "LibMeshRefiner.h"
+#include "LibMeshBinaryElements.h"
 
 #include "libmesh/libmesh.h"
 #include "libmesh/mesh_generation.h" //MeshTools
+#include "libmesh/getpot.h" //Getpot
 
 using namespace std;
 using namespace Geometry;
 using namespace BinaryTree;
-using namespace Basis;
-
+using namespace FiniteElements;
+using namespace LibmeshBinary;
 
 namespace myhelpers
 {
@@ -143,18 +145,18 @@ void test3(int argc, char ** argv)
 
 	cout << endl << "Starting Basis test" << endl;
 
-	size_t degree(2);
 #ifndef SINGLETON_ENABLED
+	size_t degree(2);
 
 	cout << "Provo a costruire la base trivial:" << endl;
 	PoliBaseBuilderRule_ptr trivial = unique_ptr<TrivialBuilder>(new TrivialBuilder);
 	vector<Polinomial<1>> pol = (*trivial)(degree);
 ////TODO: confrontare polinomi
-	PolinomialBasis<1, TRIVIAL> not_orthonormal_first (degree);
+	PolinomialBasis<1, TrivialType> not_orthonormal_first (degree);
 	cout << "Base Trivial 1D : grado " << not_orthonormal_first.degree() << "; dimensione " << not_orthonormal_first.size() << endl;
 	not_orthonormal_first.print();
 
-	PolinomialBasis<3, TRIVIAL> not_orthonormal_third (degree);
+	PolinomialBasis<3, TrivialType> not_orthonormal_third (degree);
 	cout << "Base Trivial 3D : grado " << not_orthonormal_third.degree() << "; dimensione " << not_orthonormal_third.size() << endl;
 	not_orthonormal_third.print();
 
@@ -162,10 +164,10 @@ void test3(int argc, char ** argv)
 	PoliBaseBuilderRule_ptr legendre = unique_ptr<LegendreBuilder>(new LegendreBuilder);
 	vector<Polinomial<1>> orthoPol = (*legendre)(degree);
 ////TODO: confrontare polinomi
-	PolinomialBasis<1, LEGENDRE> orthonormal_first (degree);
+	PolinomialBasis<1, LegendreType> orthonormal_first (degree);
 	cout << "Base Legendre 1D : grado " << orthonormal_first.degree() << "; dimensione " << orthonormal_first.size() << endl;
 	orthonormal_first.print();
-	PolinomialBasis<2, LEGENDRE> orthonormal_second (degree);
+	PolinomialBasis<2, LegendreType> orthonormal_second (degree);
 	cout << "Base Legendre 2D : grado " << orthonormal_second.degree() << "; dimensione " << orthonormal_second.size() << endl;
 	orthonormal_second.print();
 
@@ -189,17 +191,18 @@ void test4(int argc, char ** argv)
 //	libMesh::out << "Running " << argv[0];
 
 	libMesh::Mesh mesh(init.comm());
+	libMesh::MeshRefinement mesh_refiner(mesh);
 
 	// Build a 1D mesh with n elements from x=0 to x=1, using
 	libMesh::MeshTools::Generation::build_line(mesh, n, 0., 1., LibmeshIntervalType);
 
-	function_ptr<1> f_ptr = make_shared<function<double(Point<1>)>>([](Point<1> x){return x[0]*x[0];});
+	BinaryTree::FunctionPtr<1> f_ptr = make_shared<function<double(Point<1>)>>([](Point<1> x){return x[0]*x[0];});
 
-	BinarityMap::make_binary<1> (mesh, f_ptr);
+	BinarityMap::MakeBinary<1> (mesh_refiner, f_ptr);
 
 #ifdef MYDEBUG
 	cout << "Sono uscito da make binary" << endl;
-	if (BinarityMap::check_binarity(mesh))
+	if (BinarityMap::CheckBinarity(mesh))
 		cout << "Good! La mesh e' binaria" << endl;
 	else
 		cout << "ATTENZIONE! La mesh non e' binaria!" << endl;
@@ -223,25 +226,37 @@ void test5(int argc, char ** argv)
 	cout << endl << "Starting Integration on standard elements test" << endl;
 
 	//interval (-1, 1)
+#ifndef SINGLETON_ENABLED
 	StdIperCube<1> std_interval;
+#else //SINGLETON_ENABLED
+	shared_ptr<StdIperCube<1>> interval_ptr = StdIperCube<1>::Instance();
+	StdIperCube<1>& std_interval(*interval_ptr);
+#endif //SINGLETON_ENABLED
+
 	cout << "Calcolo l'integrale tra -1 e 1 di x" << endl;
-	double val1 = std_interval.integrate([](const Point<1>& x){return x[0];});
+	double val1 = std_interval.Integrate([](const Point<1>& x){return x[0];});
 	double solex1 = 0;
 	cout << "Soluzione esatta : " << solex1 << endl;
 	cout << "Soluzione numerica : " << val1 << endl;
 	cout << "errore : " << abs(val1 - solex1) << endl;
 
 	cout << "Calcolo l'integrale tra -1 e 1 di x^2" << endl;
-	double val2 = std_interval.integrate([](const Point<1>& x){return x[0]*x[0];});
+	double val2 = std_interval.Integrate([](const Point<1>& x){return x[0]*x[0];});
 	double solex2 = 2; solex2 /= 3;
 	cout << "Soluzione esatta : " << solex2 << endl;
 	cout << "Soluzione numerica : " << val2 << endl;
 	cout << "errore : " << abs(val2 - solex2) << endl;
 
 	//standard square
+#ifndef SINGLETON_ENABLED
 	StdIperCube<2> std_square;
+#else //SINGLETON_ENABLED
+	shared_ptr<StdIperCube<2>> square_ptr = StdIperCube<2>::Instance();
+	StdIperCube<2>& std_square(*square_ptr);
+#endif //SINGLETON_ENABLED
+
 	cout << "Calcolo l'integrale sul quadrato tra -1 e 1 di x^2 + y^2" << endl;
-	double val4 = std_square.integrate([](const Point<2>& x){return x[0]*x[0]+x[1]*x[1];});
+	double val4 = std_square.Integrate([](const Point<2>& x){return x[0]*x[0]+x[1]*x[1];});
 	double solex4 = 4 * solex2;
 	cout << "Soluzione esatta : " << solex4 << endl;
 	cout << "Soluzione numerica : " << val4 << endl;
@@ -266,7 +281,7 @@ void test6(int argc, char ** argv)
 	// Build a 1D mesh with n elements from x=1 to x=2
 	libMesh::MeshTools::Generation::build_line(mesh1, n, 1., 2., LibmeshIntervalType);
 
-	libMesh::Elem* element = mesh1.elem(0);
+	libMesh::Elem* element = mesh1.elem_ptr(0);
 
 	Point<1> p1({-1});
 	Point<1> p2({0});
@@ -274,38 +289,53 @@ void test6(int argc, char ** argv)
 
 	cout << "Creo la mappa da (-1, 1) a (1, 2)" << endl;
 	IntervalMap map1;
-	map1.init(element->get_nodes());
+
+	//TODO: avoid to repeat always this same code, rewrite after the code is library independent
+	auto geometry_nodes1 = element->get_nodes();
+	auto length1 = element->n_nodes();
+	NodesVector<1> result1;
+	for (size_t i(0); i < length1; ++i)
+	{
+		auto current_ptr = geometry_nodes1[i];
+		Point<1> p;
+		for (size_t j(0); j < 1; ++j)
+			p[j] = (*current_ptr)(j);
+
+		result1.push_back(p);
+	}
+
+	map1.Init(result1);
 	cout << "Mappa creata" << endl;
 
-	Point<1> mapped_p1 = map1.evaluate(p1);
+	Point<1> mapped_p1 = map1.Evaluate(p1);
 	p1.print(false);
 	cout << " viene mappato in ";
 	mapped_p1.print();
 
-	Point<1> mapped_p2 = map1.evaluate(p2);
+	Point<1> mapped_p2 = map1.Evaluate(p2);
 	p2.print(false);
 	cout << " viene mappato in ";
 	mapped_p2.print();
 
-	Point<1> mapped_p3 = map1.evaluate(p3);
+	Point<1> mapped_p3 = map1.Evaluate(p3);
 	p3.print(false);
 	cout << " viene mappato in ";
 	mapped_p3.print();
 
 	cout << "Provo l'inversa" << endl;
-	Point<1> inverse_p1 = map1.computeInverse(mapped_p1);
+	Point<1> inverse_p1 = map1.ComputeInverse(mapped_p1);
 	cout << "Voglio riottenere : ";
 	p1.print();
 	cout << "Ho : ";
 	inverse_p1.print();
 
-	Point<1> inverse_p2 = map1.computeInverse(mapped_p2);
+	Point<1> inverse_p2 = map1.ComputeInverse(mapped_p2);
 	cout << "Voglio riottenere : ";
 	p2.print();
 	cout << "Ho : ";
 	inverse_p2.print();
 
-	Point<1> inverse_p3 = map1.computeInverse(mapped_p3);
+	Point<1> inverse_p3 = map1.ComputeInverse(mapped_p3);
 	cout << "Voglio riottenere : ";
 	p3.print();
 	cout << "Ho : ";
@@ -328,55 +358,83 @@ void test6(int argc, char ** argv)
 	Point<2> p6({0.5,0.5});
 	Point<2> p7({0,1});
 
-	libMesh::Elem* tri_elem1 = mesh2.elem(0);
-	libMesh::Elem* tri_elem2 = mesh2.elem(1);
+	libMesh::Elem* tri_elem1 = mesh2.elem_ptr(0);
+	libMesh::Elem* tri_elem2 = mesh2.elem_ptr(1);
 
 	cout << "Creo la mappa per il primo triangolo" << endl;
 	TriMap map2;
-	map2.init(tri_elem1->get_nodes());
+
+	auto geometry_nodes2 = tri_elem1->get_nodes();
+	auto length2 = tri_elem1->n_nodes();
+	NodesVector<2> result2;
+	for (size_t i(0); i < length2; ++i)
+	{
+		auto current_ptr = geometry_nodes2[i];
+		Point<2> p;
+		for (size_t j(0); j < 2; ++j)
+			p[j] = (*current_ptr)(j);
+
+		result2.push_back(p);
+	}
+
+	map2.Init(result2);
 	cout << "Mappa creata" << endl;
 
-	Point<2> mapped_p4 = map2.evaluate(p4);
+	Point<2> mapped_p4 = map2.Evaluate(p4);
 	p4.print(false);
 	cout << " viene mappato in ";
 	mapped_p4.print();
 
-	Point<2> mapped_p5 = map2.evaluate(p5);
+	Point<2> mapped_p5 = map2.Evaluate(p5);
 	p5.print(false);
 	cout << " viene mappato in ";
 	mapped_p5.print();
 
-	Point<2> mapped_p6 = map2.evaluate(p6);
+	Point<2> mapped_p6 = map2.Evaluate(p6);
 	p6.print(false);
 	cout << " viene mappato in ";
 	mapped_p6.print();
 
-	Point<2> mapped_p7 = map2.evaluate(p7);
+	Point<2> mapped_p7 = map2.Evaluate(p7);
 	p7.print(false);
 	cout << " viene mappato in ";
 	mapped_p7.print();
-
+	
 	cout << "Creo la mappa per il secondo triangolo" << endl;
 	TriMap map3;
-	map3.init(tri_elem2->get_nodes());
+
+	auto geometry_nodes3 = tri_elem2->get_nodes();
+	auto length3 = tri_elem2->n_nodes();
+	NodesVector<2> result3;
+	for (size_t i(0); i < length3; ++i)
+	{
+		auto current_ptr = geometry_nodes3[i];
+		Point<2> p;
+		for (size_t j(0); j < 2; ++j)
+			p[j] = (*current_ptr)(j);
+
+		result3.push_back(p);
+	}
+
+	map3.Init(result3);
 	cout << "Mappa creata" << endl;
 
-	Point<2> mapped_p8 = map3.evaluate(p4);
+	Point<2> mapped_p8 = map3.Evaluate(p4);
 	p4.print(false);
 	cout << " viene mappato in ";
 	mapped_p8.print();
 
-	Point<2> mapped_p9 = map3.evaluate(p5);
+	Point<2> mapped_p9 = map3.Evaluate(p5);
 	p5.print(false);
 	cout << " viene mappato in ";
 	mapped_p9.print();
 
-	Point<2> mapped_p10 = map3.evaluate(p6);
+	Point<2> mapped_p10 = map3.Evaluate(p6);
 	p6.print(false);
 	cout << " viene mappato in ";
 	mapped_p10.print();
 
-	Point<2> mapped_p11 = map3.evaluate(p7);
+	Point<2> mapped_p11 = map3.Evaluate(p7);
 	p7.print(false);
 	cout << " viene mappato in ";
 	mapped_p11.print();
@@ -401,54 +459,37 @@ void test7(int argc, char ** argv)
 	libMesh::MeshTools::Generation::build_line(mesh1, n, 1., 2., LibmeshIntervalType);
 
 	auto iter = mesh1.elements_begin();
-	libMesh::Elem* element = *iter;
+	auto& element = *iter;
 	libMesh::Edge2* libmesh_interval = dynamic_cast<libMesh::Edge2*> (element);
 	unique_ptr<libMesh::Edge2> int_ptr (libmesh_interval);
 
-	FElement<1, TRIVIAL, LibmeshInterval>* interval = new FElement<1, TRIVIAL, LibmeshInterval>(move(int_ptr));
-	interval->init();
-	*iter = interval;
-
-	libMesh::Elem* myparent = interval->parent();
-	if(myparent == libmesh_nullptr)
-		cout << "EVVIVA! Sono senza padre come l'elemento da cui sono stato creato!" << endl;
+	FElement<1, TrivialType, LibmeshIntervalClass> interval(move(int_ptr));
+	interval.Init();
+	element = nullptr;
 
 	cout << "Calcolo l'integrale tra 1 e 2 di x^2" << endl;	
-	double val5 = interval->integrate([](const Point<1>& x){return x[0]*x[0];});
+	double val5 = interval.Integrate([](const Point<1>& x){return x[0]*x[0];});
 	double solex5 = 7; solex5 /= 3; 
 	cout << "Soluzione esatta : " << solex5 << endl;
 	cout << "Soluzione numerica : " << val5 << endl;
 	cout << "errore : " << abs(val5 - solex5) << endl;	
 
 	cout << "Integration on generic elements test ended" << endl;
+	//HERE I HAVE THE PROBLEM!!!
 };
 
 
 void test8(int argc, char ** argv)
 {
-	cout << endl << "Starting Override of libMesh methods test" << endl;
+	cout << endl << "Starting libMesh version compatibility test" << endl;
 
-	libMesh::LibMeshInit init (argc, argv);
+	//to silence warning by the compiler 
+	(void)argc;
+	(void)argv;
 
-	int n = 1;
+	//TODO
 
-	libMesh::Mesh mesh1(init.comm());
-
-	// Build a 1D mesh with n elements from x=1 to x=2
-	libMesh::MeshTools::Generation::build_line(mesh1, n, 1., 2., LibmeshIntervalType);
-
-	auto iter = mesh1.elements_begin();
-	libMesh::Elem* element = *iter;
-	libMesh::Edge2* libmesh_interval = dynamic_cast<libMesh::Edge2*> (element);
-	unique_ptr<libMesh::Edge2> smart = unique_ptr<libMesh::Edge2>(libmesh_interval);
-
-	auto interval = new FElement<1, TRIVIAL, LibmeshInterval> (move(smart));
-	interval->init();
-	*iter = interval;
-
-	myhelpers::dim_helper(interval);
-
-	cout << "Override of libMesh methods test ended" << endl;
+	cout << "libMesh version compatibility test ended" << endl;
 };
 
 
@@ -460,19 +501,23 @@ void test9(int argc, char ** argv)
 
 	cout << endl << "Starting Basis orthonormality test" << endl;
 
-	StdFIperCube<1, Basis::LEGENDRE> sfic;
-
+#ifndef SINGLETON_ENABLED
+	StdFIperCube<1, LegendreType> sfic;
+#else //SINGLETON_ENABLED
+	shared_ptr<StdFIperCube<1, LegendreType> > sfic_ptr = StdFIperCube<1, LegendreType>::Instance();
+	StdFIperCube<1, LegendreType>& sfic(*sfic_ptr);
+#endif //SINGLETON_ENABLED
 	cout << "Let's check the orthogonality on the standard interval:" << endl;
 	for (size_t i(0); i < 8; ++i)
 	{
 		double I = sfic.L2prod	(
-											[&](const Point<1>& p){ return sfic.evaluateBasisFunction(i+2, p);},
-											[&](const Point<1>& p){ return sfic.evaluateBasisFunction(i, p);}
+											[&](const Point<1>& p){ return sfic.EvaluateBasisFunction(i+2, p);},
+											[&](const Point<1>& p){ return sfic.EvaluateBasisFunction(i, p);}
 										);
 #ifdef MYDEBUG
 		cout << "Integrating" << endl;
-		sfic.printBasis(i+2);
-		sfic.printBasis(i);
+		sfic.PrintBasis(i+2);
+		sfic.PrintBasis(i);
 #endif //MYDEBUG
 		cout << "Integral #" << i << " : " << I << endl;
 	}
@@ -481,12 +526,12 @@ void test9(int argc, char ** argv)
 	for (size_t i(0); i < 8; ++i)
 	{
 		double I = sfic.L2prod	(
-											[&](const Point<1>& p){ return sfic.evaluateBasisFunction(i, p);},
-											[&](const Point<1>& p){ return sfic.evaluateBasisFunction(i, p);}
+											[&](const Point<1>& p){ return sfic.EvaluateBasisFunction(i, p);},
+											[&](const Point<1>& p){ return sfic.EvaluateBasisFunction(i, p);}
 										);
 #ifdef MYDEBUG
 		cout << "Integrating the square of" << endl;
-		sfic.printBasis(i);
+		sfic.PrintBasis(i);
 #endif //MYDEBUG
 		cout << "Integral #" << i << " : " << I << endl;
 	}	
@@ -498,74 +543,66 @@ void test10(int argc, char ** argv)
 {
 	cout << endl << "Starting Projection on element test" << endl;
 
-	function_ptr<1> f_ptr = make_shared<function<double(Point<1>)>>([](Point<1> x){return x[0]*x[0];});
+	BinaryTree::FunctionPtr<1> f_ptr = make_shared<function<double(Point<1>)>>([](Point<1> x){return x[0]*x[0];});
 
 	libMesh::LibMeshInit init (argc, argv);
 	libMesh::Mesh mesh(init.comm());
-
+	libMesh::MeshRefinement mesh_refiner(mesh);
 	libMesh::MeshTools::Generation::build_line(mesh, 1, 0, 1, LibmeshIntervalType);
 
-	BinarityMap::make_binary<1> (mesh, f_ptr);
+	BinarityMap::MakeBinary<1> (mesh_refiner, f_ptr);
 
-	auto el = dynamic_cast<BinTreeElement<1, Basis::LEGENDRE, LibmeshInterval>*> (mesh.elem_ptr(0));
+	auto el = dynamic_cast<BinaryTreeElement<1, LegendreType, LibmeshIntervalClass>*> (mesh.elem_ptr(0));
+	const auto& f_el(el->GetFElement());
 
 	cout << "Let's check the basis orthogonality on the (0, 1) interval:" << endl;
 	for (size_t i(0); i < 8; ++i)
 	{
-		double I = el->L2prod	(
-											[&](const Point<1>& p){ return el->evaluateBasisFunction(i+2, p);},
-											[&](const Point<1>& p){ return el->evaluateBasisFunction(i, p);}
-										);
-//#ifdef MYDEBUG
-//		cout << "Integrating" << endl;
-//		el->printBasis(i+2);
-//		el->printBasis(i);
-//#endif //MYDEBUG
+		double I = f_el.L2prod(
+										[&](const Point<1>& p){ return f_el.EvaluateBasisFunction(i+2, p);},
+										[&](const Point<1>& p){ return f_el.EvaluateBasisFunction(i, p);}
+									 );
 		cout << "Integral #" << i << " : " << I << endl;
 	}
 
 	cout << "Let's check the basis normality on the (0, 1) interval :" << endl;
 	for (size_t i(0); i < 8; ++i)
 	{
-		double I = el->L2prod(
-										[&](const Point<1>& p){ return el->evaluateBasisFunction(i, p);},
-										[&](const Point<1>& p){ return el->evaluateBasisFunction(i, p);}
-									);
-//#ifdef MYDEBUG
-//		cout << "Integrating the square of" << endl;
-//		el->printBasis(i);
-//#endif //MYDEBUG
+		double I = f_el.L2prod	(
+											[&](const Point<1>& p){ return f_el.EvaluateBasisFunction(i, p);},
+											[&](const Point<1>& p){ return f_el.EvaluateBasisFunction(i, p);}
+										);
 		cout << "Integral #" << i << " : " << I << endl;
 	}
 
 
 
-	cout << "P level : " << el->pLevel() << endl;
+	cout << "P level : " << el->PLevel() << endl;
 	cout << "coefficienti : ";
-	el->printCoefficients();
-	double error = el->projectionError();
-	cout << "Errore di interpolazione su P" << el->pLevel() << " : " << error << endl;
+	el->PrintCoefficients();
+	double error = el->ProjectionError();
+	cout << "Errore di interpolazione su P" << el->PLevel() << " : " << error << endl;
 
-	el->pLevel(1);
-	cout << "P level : " << el->pLevel() << endl;
+	el->PLevel(1);
+	cout << "P level : " << el->PLevel() << endl;
 	cout << "coefficienti : ";
-	el->printCoefficients();
-	error = el->projectionError();
-	cout << "Errore di interpolazione su P" << el->pLevel() << " : " << error << endl;
+	el->PrintCoefficients();
+	error = el->ProjectionError();
+	cout << "Errore di interpolazione su P" << el->PLevel() << " : " << error << endl;
 
-	el->pLevel(2);
-	cout << "P level : " << el->pLevel() << endl;
+	el->PLevel(2);
+	cout << "P level : " << el->PLevel() << endl;
 	cout << "coefficienti : ";
-	el->printCoefficients();
-	error = el->projectionError();
-	cout << "Errore di interpolazione su P" << el->pLevel() << " : " << error << endl;
+	el->PrintCoefficients();
+	error = el->ProjectionError();
+	cout << "Errore di interpolazione su P" << el->PLevel() << " : " << error << endl;
 
-	el->pLevel(3);
-	cout << "P level : " << el->pLevel() << endl;
+	el->PLevel(3);
+	cout << "P level : " << el->PLevel() << endl;
 	cout << "coefficienti : ";
-	el->printCoefficients();
-	error = el->projectionError();
-	cout << "Errore di interpolazione su P" << el->pLevel() << " : " << error << endl;
+	el->PrintCoefficients();
+	error = el->ProjectionError();
+	cout << "Errore di interpolazione su P" << el->PLevel() << " : " << error << endl;
 
 	cout << "Projection on element test ended" << endl;
 };
@@ -653,18 +690,22 @@ void test12(int argc, char ** argv)
 	libMesh::MeshTools::Generation::build_line(mesh, n, 1., 2., libMesh::EDGE2);
 	libMesh::MeshRefinement refiner(mesh);
 
-	function_ptr<1> f_ptr = make_shared<function<double(Point<1>)>>([](Point<1> x){return x[0]*x[0];});
+	BinaryTree::FunctionPtr<1> f_ptr = make_shared<function<double(Point<1>)>>([](Point<1> x){return x[0]*x[0];});
 
 //#define MAKE_OPTION
 #ifdef MAKE_OPTION
-
-	BinarityMap::make_binary<1>(mesh, f_ptr);
+//TODO: does not work since I don't replace the mesh element
+//		  maybe it could work if the libMeshBinaryElement takes
+//		  as constructor parameter the mesh iterator instead of
+//		  the poiter to the element, so in constructor it can do
+//		  the replacement by itself 
+	BinarityMap::MakeBinary<1>(refiner, f_ptr);
 	Interval* I = dynamic_cast<Interval*>(mesh.elem(0));
 	if (I == nullptr)
-		cout << "make_binary has not worked properly!";
+		cout << "MakeBinary has not worked properly!";
 
 	cout << "I directly call the Interval refine method" << endl;
-	I->refine(refiner);
+	I->Bisect();
 
 #else //MAKE_OPTION
 
@@ -672,24 +713,18 @@ void test12(int argc, char ** argv)
 	auto iter = mesh.elements_begin();
 	auto ptr = dynamic_cast<libMesh::Edge2*>(*iter);
 	auto smart_ptr = unique_ptr<libMesh::Edge2>(ptr);
-	Interval* I = new Interval(move(smart_ptr), f_ptr);
-	I->init();
+	Interval* I = new Interval(move(smart_ptr), f_ptr, refiner);
+	I->Init();
 	*iter = I;
-	
+
 	//to check if I has a LibmeshGeometry method as expected
 	cout << "The interval has refinement_flag = " << I->refinement_flag() << endl;
 
-	*(mesh.elements_begin()) = I;
 	cout << "I directly call the Interval refine method" << endl;
-	//critical instruction : it generates the two children of I, both of type Interval
-	I->refine(refiner);
+	I->Bisect();
 #endif //MAKE_OPTION
 
-	BinarityMap::make_binary<1>(mesh, f_ptr);
-
-#ifdef MYDEBUG
-	cout << "Indirizzo prima : " << &refiner << endl;
-#endif //MYDEBUG
+	BinarityMap::MakeBinary<1>(refiner, f_ptr);
 
 	int cont = mesh.n_elem();
 
@@ -706,26 +741,29 @@ void test13(int argc, char ** argv)
 {
 	cout << endl << "Starting BinaryRefinement test" << endl;
 
-	function_ptr<1> f_ptr = make_shared<function<double(Point<1>)>>([](Point<1> x){return x[0]*x[0];});
+	BinaryTree::FunctionPtr<1> f_ptr = make_shared<function<double(Point<1>)>>([](Point<1> x){return x[0]*x[0];});
 
 	libMesh::LibMeshInit init (argc, argv);
-	libMesh::Mesh mesh(init.comm());
+	auto mesh_ptr = make_shared<libMesh::Mesh> (init.comm());
 
-	int n = 1;
-	libMesh::MeshTools::Generation::build_line(mesh, n, 0, 1, LibmeshIntervalType);
+	int n = 2;
+	libMesh::MeshTools::Generation::build_line(*mesh_ptr, n, 0, 1, LibmeshIntervalType);
 
-	BinaryRefiner my_refiner(mesh);
+	LibmeshBinary::BinaryRefiner<1> binary_refiner(f_ptr);
+	binary_refiner.SetMesh(mesh_ptr);
+
 	size_t n_iter(10);
-	my_refiner.refine_binary(f_ptr, n_iter);
+	cout << "Starting Binary Tree hp Refinement with " << n_iter << " degrees of freedom that can be added" << endl;
+	binary_refiner.Refine(n_iter);
 
-	int cont = mesh.n_elem();
+	int cont = mesh_ptr->n_elem();
 
-	for (auto iter = mesh.elements_begin(); iter != mesh.elements_end(); ++iter)
+	for (auto iter = mesh_ptr->elements_begin(); iter != mesh_ptr->elements_end(); ++iter)
 		if ((*iter)->refinement_flag() == libMesh::Elem::INACTIVE)
 			--cont;
-
-	cout << "I have started from a mesh with " << n << " elements; after refinement it has " << mesh.n_elem() << " elements, " << cont << " of them are ACTIVE" << endl;
-
+		else
+			cout << "Active Element of polinomial degree : " << (*iter)->p_level() << endl;
+	cout << "I have started from a mesh with " << n << " elements; after refinement it has " << mesh_ptr->n_elem() << " elements, " << cont << " of them are ACTIVE" << endl;
 
 	cout << "BinaryRefinement test ended" << endl;
 };
