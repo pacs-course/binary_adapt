@@ -111,13 +111,6 @@ namespace Geometry
 				VecType		_trasl;
 				double		_jacobian;
 		};
-/*
-	Factory for maps between standard elements (i.e. between reference triangle and reference square)
-	The key is the type of the element to be mapped in the corresponding standard ipercube
-	The registration is done by a global variable of type BinaryTree::Register
-*/
-	template <size_t dim>
-		using StdMapFactory = GenericFactory::ObjectFactory <Map<dim>, ElementType>;
 
 /*
 	reference interval:
@@ -128,24 +121,9 @@ namespace Geometry
 	class IntervalMap : public AffineMap<1>
 	{
 		public:
-			IntervalMap()
-			{
-				//TODO
-			};
+			IntervalMap(){};
 			virtual ~IntervalMap(){};
-			virtual void Init(const NodesVector<1>& vert) override
-			{
-				double a = vert[0][0];
-				double b = vert[1][0];
-//#ifdef MYDEBUG
-//				cout << "Primo estremo: " << a << endl;
-//				cout << "Secondo estremo: " << b << endl;
-//#endif //MYDEBUG
-				this->_mat(0) = (b - a) / 2;
-				this->_trasl(0) = (a + b) / 2;
-				this->_jacobian = this->_mat(0);
-				this->_inverse(0) = 1 / this->_mat(0);
-			};
+			virtual void Init(const NodesVector<1>& vert) override;
 
 			IntervalMap					(const IntervalMap&) = default;
 			IntervalMap& operator = (const IntervalMap&) = default;	
@@ -166,33 +144,9 @@ namespace Geometry
 	class TriMap : public AffineMap<2>
 	{
 		public:
-			TriMap()
-			{
-				//TODO
-			};
+			TriMap(){};
 
-			void Init(const NodesVector<2>& vert) override
-			{
-				double x1 = vert[0][0];
-				double y1 = vert[0][1];
-				double x2 = vert[1][0];
-				double y2 = vert[1][1];
-				double x3 = vert[2][0];
-				double y3 = vert[2][1];
-
-				this->_mat(0,0) = x2 - x1;
-				this->_mat(0,1) = x3 - x1;
-				this->_mat(1,0) = y2 - y1;
-				this->_mat(1,1) = y3 - y1;
-
-				this->_jacobian = this->_mat.determinant();
-
-				this->_trasl(0) = x1;
-				this->_trasl(1) = y1;
-
-				//TODO: optimize it
-				this->_inverse = this->_mat.inverse();
-			};
+			virtual void Init(const NodesVector<2>& vert) override;
 
 			virtual ~TriMap(){};
 
@@ -215,10 +169,7 @@ namespace Geometry
 	class QuadMap : public AffineMap<2>
 	{
 		public:
-			QuadMap()
-			{
-				//TODO
-			};
+			QuadMap(){};
 
 			//TODO
 			virtual void Init(const NodesVector<2>& vert) = 0;
@@ -232,6 +183,7 @@ namespace Geometry
 /*
 	Now maps (which are not affine) between standard elements and standard ipercube
 */
+
 /*
 	It maps the reference square in the reference triangle
 	It's a singular map
@@ -239,44 +191,20 @@ namespace Geometry
 	class StdTriMap : public Map<2> 
 	{
 		public:
-			StdTriMap()
-			{
-				//TODO
-			};
+			StdTriMap(){};
 
-			virtual ~StdTriMap()
-			{
-				//TODO
-			};
+			virtual ~StdTriMap(){};
 
 			StdTriMap					(const StdTriMap&) = default;
 			StdTriMap& operator = 	(const StdTriMap&) = default;	
 
-			virtual Point<2> Evaluate (const Point<2>& p)const override
-			{
-				Point<2> result;
-				double a = p[0];
-				double b = p[1];
-				result[0] = (1 + a) * (1 - b) / 4;
-				result[1] = (1 + b) / 2;
-				return result;
-			};
+			virtual Point<2> Evaluate (const Point<2>& p)const override;
 
-			virtual Point<2> ComputeInverse (const Point<2>& p)const override
-			{
-				Point<2> result;
-				double csi = p[0];
-				double eta = p[1];
-				result[0] = 2 * csi / (1 - eta) - 1;
-				result[1] = 2 * eta - 1;
-				return result;
-			};
+			virtual Point<2> ComputeInverse (const Point<2>& p)const override;
 
-			virtual double	EvaluateJacobian (const Point<2>& p)const override
-			{
-				return (1 - p[1]) / 4;
-			};
+			virtual double	EvaluateJacobian (const Point<2>& p)const override;
 	};
-};//namespace Geometry
+
+} //namespace Geometry
 
 #endif //__MAPS_H

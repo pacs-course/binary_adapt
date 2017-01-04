@@ -23,16 +23,12 @@ namespace LibmeshBinary
 		cout << "Interpreto come binario l'indirizzo : " << el << endl;
 #endif //MYDEBUG
 
-#ifdef REINTERPRET_VERSION
-		return reinterpret_cast<BinaryTree::BinaryNode*> (el);
-#else //REINTERPRET_VERSION
 		return dynamic_cast<BinaryTree::BinaryNode*> (el);
-#endif //REINTERPRET_VERSION
 	};
 
 	template <>
 		libMesh::Elem* BinarityMap::BinarizeNode<1> (libMesh::Elem* el_ptr,
-																	shared_ptr<function<double(Geometry::Point<1>)>> f_ptr,
+																	BinaryTree::FunctionPtr<1> f_ptr,
 																	libMesh::MeshRefinement& mesh_refinement)
 		{
 			libMesh::Elem* result (nullptr);
@@ -50,7 +46,7 @@ namespace LibmeshBinary
 
 	template <>
 		libMesh::Elem* BinarityMap::BinarizeNode<2> (libMesh::Elem* el_ptr,
-																	shared_ptr<function<double(Geometry::Point<2>)>> f_ptr,
+																	BinaryTree::FunctionPtr<2> f_ptr,
 																	libMesh::MeshRefinement& mesh_refinement)
 		{
 			libMesh::Elem* result (nullptr);
@@ -65,20 +61,6 @@ namespace LibmeshBinary
 			}
 			return result;
 		};
-
-//	template <>
-//		libMesh::Elem* BinarityMap::BinarizeNode<3> (libMesh::Elem* el_ptr,
-//																	shared_ptr<function<double(Geometry::Point<3>)>> f_ptr,
-//																	libMesh::MeshRefinement& mesh_refinement)
-//		{
-//			libMesh::Elem* result (nullptr);
-//			switch (el_ptr->type())
-//			{
-//				default :
-//					throw logic_error("I don't know how to binarize " + to_string(el_ptr->type()) + " type node");
-//			}
-//			return result;
-//		};
 
 } //namespace LibmeshBinary
 

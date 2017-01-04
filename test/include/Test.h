@@ -66,4 +66,14 @@ BinaryRefinement test
 */
 void test13(int argc, char ** argv);
 
+/*
+libMesh file IO test
+*/
+void test14(int argc, char ** argv);
+
+/*
+1D refining complete test
+*/
+void test15(int argc, char ** argv);
+
 #endif //__TEST_H

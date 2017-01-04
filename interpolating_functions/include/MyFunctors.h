@@ -10,7 +10,7 @@ namespace MyFunctions
 		{
 			public:
 				XExpBeta(){};
-				virtual double operator() (const Geometry::Point<1>& p)override
+				virtual double operator() (const Geometry::Point<1>& p)const override
 				{
 					double result(1.0);
 					for(std::size_t e(0); e < exp; ++e)
@@ -22,11 +22,18 @@ namespace MyFunctions
 
 	using XSquared = XExpBeta<2>;
 
+	class HalfStep : public BinaryTree::Functor<1>
+	{
+		public:
+			HalfStep(){};
+			virtual double operator() (const Geometry::Point<1>&)const override;			
+	};
+
 	class SqrtX : public BinaryTree::Functor<1>
 	{
 		public:
 			SqrtX(){};
-			virtual double operator() (const Geometry::Point<1>&)override;
+			virtual double operator() (const Geometry::Point<1>&)const override;
 	};
 
 } //namespace MyFunctions

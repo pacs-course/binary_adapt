@@ -1,7 +1,7 @@
 #ifndef __BINARY_TREE_HELPER_H
 #define __BINARY_TREE_HELPER_H
 
-#include "Point.h"
+#include "Functor.h"
 
 #include <memory> //std::shared_ptr, std::make_shared, std::make_unique
 #include <functional> //std::function
@@ -9,7 +9,7 @@
 namespace BinaryTree
 {
 	template <std::size_t dim>
-		using FunctionPtr = std::shared_ptr<std::function<double(Geometry::Point<dim>)>>;
+		using FunctionPtr = std::shared_ptr<Functor<dim>>;
 } //namespace BinaryTree
 
 namespace HelperFunctions

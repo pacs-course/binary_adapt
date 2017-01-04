@@ -1,0 +1,17 @@
+[3;J[H[2Jcompiling: src/main.cpp
+g++  -DOPT -I./include -I./../refine_binary/include -I./../library_bridges/libmesh_bridge/include -I/usr/local/include/libmesh -I./../interpolating_functions/include  -march=native -std=c++14  -Wall -Wextra -O3 -c -o 'obj/Opt/main.o' 'src/main.cpp'
+compiling: src/Test.cpp
+g++  -DOPT -I./include -I./../refine_binary/include -I./../library_bridges/libmesh_bridge/include -I/usr/local/include/libmesh -I./../interpolating_functions/include  -march=native -std=c++14  -Wall -Wextra -O3 -c -o 'obj/Opt/Test.o' 'src/Test.cpp'
+g++: generating test
+g++   -o ./bin/'test' 'obj/Opt/main.o' 'obj/Opt/Test.o' -L./../lib -L/usr/local/lib  -lpthread -lrefine_binary -lmy_functions -lmesh_bridge -lmesh_opt
+compiling: src/main.cpp
+g++   -I./include -I./../refine_binary/include -I./../library_bridges/libmesh_bridge/include -I/usr/local/include/libmesh -I./../interpolating_functions/include  -march=native -std=c++14  -Wall -Wextra -g -c -o 'obj/Debug/main.o' 'src/main.cpp'
+compiling: src/Test.cpp
+g++   -I./include -I./../refine_binary/include -I./../library_bridges/libmesh_bridge/include -I/usr/local/include/libmesh -I./../interpolating_functions/include  -march=native -std=c++14  -Wall -Wextra -g -c -o 'obj/Debug/Test.o' 'src/Test.cpp'
+g++: generating test_Debug
+g++   -o ./bin/'test_Debug' 'obj/Debug/main.o' 'obj/Debug/Test.o' -L./../lib -L/usr/local/lib  -lpthread -lrefine_binary_Debug -lmy_functions_Debug -lmesh_bridge_Debug -lmesh_opt
+
+Starting Integration on generic elements test
+terminate called after throwing an instance of 'std::invalid_argument'
+  what():  Identifier CANNOT RESOLVE NAME is not stored in the factory
+Aborted (core dumped)

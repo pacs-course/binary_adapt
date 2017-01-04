@@ -1,8 +1,7 @@
 #ifndef __BINARY_REGISTER_H
 #define __BINARY_REGISTER_H
 
-#include "AbstractFElement.h"
-#include "Basis.h"
+#include "StdFElement.h"
 #include "BinaryTreeHelper.h"
 
 /*
@@ -20,7 +19,6 @@ namespace BinaryTree
 			//get the factories. First time creates them.
 			auto& fe_one_d_factory(StdFElementFactory<1, FeType >::Instance());
 			auto& fe_two_d_factory(StdFElementFactory<2, FeType >::Instance());
-
 /*
 			in the 1D case the reference element is directly the ipercube
 */
@@ -38,8 +36,6 @@ namespace BinaryTree
 																				 StdBananaFElement<2, FeType>
 																				>::BuildSingleton
 										);
-
-//				//TODO: 3d
 		};
 
 	class Register

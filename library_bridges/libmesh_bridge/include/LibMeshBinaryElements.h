@@ -110,7 +110,7 @@ namespace LibmeshBinary
 				{
 					/* when I activate my binary node, I also change the libMesh::Elem::_p_level,
 						so that the p-refinement can be see also in a libMesh framework */
-					this->set_p_level(this->PLevel());
+//					this->set_p_level(this->PLevel());
 
 					if (!(this->active()))
 						this->set_refinement_flag(libMesh::Elem::JUST_REFINED);

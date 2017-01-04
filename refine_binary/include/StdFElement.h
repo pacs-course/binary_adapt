@@ -1,40 +1,15 @@
 #ifndef __STD_F_ELEMENT_H
 #define __STD_F_ELEMENT_H
 
-#include "ReferenceElement.h"
+#include "StdBananaFElement.h"
 #include "BinaryTreeHelper.h"
-#include "AbstractSpace.h"
+#include "ConcreteFactories.h"
 
 using namespace std;
 using namespace Geometry;
 
 namespace FiniteElements
 {
-/*
-	This is a hat class for StdFElement which represents the return type of the std FElements factory
-	It must not depend on the ElementType template parameter, since it is known at runtime
-	Moreover it must guarantee the AbstractSpace_Interface interface
-*/
-	template <size_t dim, BasisType FeType = InvalidFeType>
-		class StdBananaFElement : public AbstractSpace_Interface<dim>, public AbstractElement<dim>
-		{
-			public:
-				virtual ~StdBananaFElement(){};
-/*
-				AbstractSpace_Interface methods
-*/
-				virtual double	EvaluateBasisFunction (size_t ind, const Point<dim>& point)const = 0;
-				virtual size_t	BasisSize (size_t)const = 0;
-				virtual BasisType GetFeType ()const = 0;
-/*
-				AbstractElement methods
-*/
-				virtual ElementType GetType() const = 0;
-				virtual QuadPointVec<dim> GetQuadPoints()const = 0;
-				virtual QuadWeightVec GetQuadWeights()const = 0;
-		};
-
-
 	template <size_t dim, BasisType FeType = InvalidFeType>
 		class StdFIperCube : public StdBananaFElement<dim, FeType>
 		{
@@ -57,13 +32,14 @@ namespace FiniteElements
 				StdFIperCube () : _basis(nullptr), _std_geometry(nullptr)
 				{
 					_std_geometry = StdIperCube<dim>::Instance();
-					_basis = PolinomialBasis<dim, FeType>::Instance();
 #else
 				StdFIperCube()
 				{
 					_std_geometry = HelperFunctions::Builders<StdIperCube<dim>>::BuildSingleton ();
-					_basis = HelperFunctions::Builders<PolinomialBasis<dim, FeType>>::BuildSingleton ();
 #endif //SINGLETON_ENABLED
+
+					auto& basis_factory (GenericFactory::BasisFactory<dim>::Instance());
+					_basis = move(basis_factory.create(FeType));
 
 					//add here other stuff the constructor is expected to do
 #ifdef DESTRUCTOR_ALERT
@@ -91,20 +67,20 @@ namespace FiniteElements
 					return this->_basis->Evaluate(ind, point);
 				};
 
+				virtual vector<double> EvaluateBasis (size_t degree, const Point<dim>& point)const
+				{
+					return this->_basis->EvaluateBasis(degree, point);
+				};
+
 				virtual size_t BasisSize(size_t degree)const
 				{
-					return this->_basis->Size(degree);
+					return this->_basis->ComputeSize(degree);
 				};
 
-				virtual void PrintBasis(size_t index) const
-				{
-					this->_basis->Print(index);
-				};
-
-				virtual void PrintBasis() const
-				{
-					this->_basis->Print();
-				};
+//				virtual void PrintBasis(size_t index) const
+//				{
+//					this->_basis->Print(index);
+//				};
 
 				virtual ElementType GetType()const
 				{
@@ -120,7 +96,7 @@ namespace FiniteElements
 				};
 
 			protected:
-				shared_ptr<PolinomialBasis<dim, FeType>> _basis;
+				unique_ptr<AbstractBasis<dim>> _basis;
 				shared_ptr<StdIperCube<dim> > _std_geometry;
 		};
 
@@ -151,7 +127,7 @@ namespace FiniteElements
 					_std_cube = HelperFunctions::Builders<StdFIperCube<dim, FeType> >::BuildSingleton ();
 #endif //SINGLETON_ENABLED
 
-					auto& std_map_factory(Geometry::StdMapFactory<dim>::Instance());
+					auto& std_map_factory(GenericFactory::StdMapFactory<dim>::Instance());
 					_ipercube_map = std_map_factory.create(Type);
 					//add here other stuff the constructor is expected to do
 				};
@@ -174,6 +150,12 @@ namespace FiniteElements
 				{
 					return this->_std_cube->EvaluateBasisFunction(ind, MapBackward(point));
 				};
+
+				virtual vector<double> EvaluateBasis (size_t degree, const Point<dim>& point)const
+				{
+					return this->_std_cube->EvaluateBasis(degree, MapBackward(point));
+				};
+
 
 				virtual size_t BasisSize(size_t degree)const
 				{

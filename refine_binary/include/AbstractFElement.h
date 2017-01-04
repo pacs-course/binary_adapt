@@ -1,8 +1,7 @@
 #ifndef __ABSTRACT_F_ELEMENT_H
 #define __ABSTRACT_F_ELEMENT_H
 
-#include "Maps.h"
-#include "StdFElement.h"
+#include "ConcreteFactories.h"
 #include "AbstractSpace.h"
 
 #include <memory> //std::shared_ptr, std::unique_ptr
@@ -13,12 +12,6 @@ using namespace Geometry;
 
 namespace FiniteElements
 {
-	template <size_t dim, BasisType FeType>
-		using StdFElementFactory = GenericFactory::SingletonFactory <StdBananaFElement<dim, FeType>, ElementType> ;
-
-	template <size_t dim>
-		using AffineMapFactory = GenericFactory::ObjectFactory <AffineMap<dim>, ElementType> ;
-
 	template <size_t dim, BasisType FeType = InvalidFeType>
 		class	AbstractFElement : public AbstractElement<dim>, public AbstractSpace_Interface<dim>
 		{
@@ -43,7 +36,7 @@ namespace FiniteElements
 						cout << "Provo a inizializzare AbstractFElement" << endl;
 	#endif //MYDEBUG
 					//TODO: create helper function to combine factory instantiation and call to the object creation
-						auto& felem_factory(StdFElementFactory <dim, FeType> ::Instance());
+						auto& felem_factory(GenericFactory::StdFElementFactory <dim, FeType> ::Instance());
 	#ifdef MYDEBUG
 						cout << "cerco in StdFElementFactory<" << dim << ", " << FeType <<"> con chiave " << GetType() << endl;
 	#endif //MYDEBUG
@@ -51,7 +44,7 @@ namespace FiniteElements
 	#ifdef MYDEBUG
 						cout << "refFElement creato" << endl;
 	#endif //MYDEBUG
-						auto& map_factory(AffineMapFactory<dim>::Instance());
+						auto& map_factory(GenericFactory::AffineMapFactory<dim>::Instance());
 						this->_map = move(map_factory.create(GetType()));
 	#ifdef MYDEBUG
 						cout << "mappa creata" << endl;
@@ -114,6 +107,19 @@ namespace FiniteElements
 								;
 				};
 
+				//TODO: optimize storing already evaluated points
+				virtual vector<double> EvaluateBasis (const Point<dim>& point)const
+				{
+					CheckInitialization();
+					auto result = this->_ref_felement->EvaluateBasis(this->_p_level,_map->ComputeInverse(point));
+
+					/* to normalize the basis I divide by the constant jacobian^1/2 of the map */
+					for (auto& iter : result)
+						iter /= sqrt(_map->Jacobian());
+
+					return result;
+				};
+
 				virtual size_t	BasisSize(size_t degree)const
 				{
 					CheckInitialization();
@@ -123,16 +129,16 @@ namespace FiniteElements
 				virtual size_t BasisSize()const
 				{
 					CheckInitialization();
-					return _ref_felement->BasisSize(_p_level);
+					return _ref_felement->BasisSize(this->_p_level);
 				};
 
 				virtual size_t PLevel() const
 				{
-					return _p_level;
+					return this->_p_level;
 				};
 				virtual void PLevel(size_t new_p)
 				{
-					_p_level = new_p;
+					this->_p_level = new_p;
 				};
 
 			protected:

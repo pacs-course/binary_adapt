@@ -2,7 +2,7 @@
 #define __ABSTRACT_BINARY_ELEMENT_H
 
 #include "BinaryNode.h"
-#include "AbstractFElement.h"
+#include "CoefficientComputer.h"
 
 #include <limits> //numeric_limits::max()
 
@@ -22,11 +22,9 @@ namespace BinaryTree
 												_coeff (),
 												_f_element (el_ptr),
 												_projection_error (numeric_limits<double>::max()),
-												_error_updated (false),
-												_tilde_error (numeric_limits<double>::max())
+												_error_updated (false)
 				{};
 
-//				AbstractBinaryElement() : AbstractBinaryElement(nullptr, nullptr){};
 				virtual void Init()
 				{
 					_f_element->Init();
@@ -37,15 +35,15 @@ namespace BinaryTree
 					//TODO : check the correctness
 					daddy == nullptr ?	this->_tilde_error = this->_projection_error :
 												//TODO : optimize it
-												this->_tilde_error = this->_projection_error * daddy->ProjectionError()
+												this->_tilde_error = this->_projection_error * daddy->TildeError()
 																			/
-																			(this->_projection_error + daddy->ProjectionError());
+																			(this->_projection_error + daddy->TildeError());
 					this->_E			= this->_projection_error;
 					this->_E_tilde	= this->_tilde_error;
 					this->_q			= this->_tilde_error;
 				};
 
-				double ProjectionError()
+				virtual double ProjectionError()
 				{
 					if (! _error_updated)
 						UpdateProjectionError();
@@ -77,7 +75,7 @@ namespace BinaryTree
 				};
 
 			protected:
-				void ProjectionError(const double& val)
+				virtual void ProjectionError(const double& val)
 				{
 					this->_projection_error = val;
 				};
@@ -104,67 +102,22 @@ namespace BinaryTree
 				{
 					ComputeCoefficients();
 					double result(0);
-//					vector<double> basisEvaluation = this->evaluateBasis(point);
+					vector<double> basis_evaluation = this->_f_element->EvaluateBasis(point);
 
 					//TODO: optimizable: use eigen dot product
 					for (size_t i(0); i < this->_coeff.size(); ++i)
 					{
-						result += this->_coeff[i] * _f_element->EvaluateBasisFunction(i, point);
+						result += this->_coeff[i] * basis_evaluation[i];
 					}
 					return result;
 				};
 
-//TODO: verify if it can be written an ENABLE_IF_VERSION-undefined compiling version of the class
-				template <	BasisType Dummy = FeType,
-								typename enable_if<	Dummy == LegendreType,
-															size_t
-														>::type = 0
-							>
-					void ComputeCoefficients()
-					{
-						
-						//I remember how many coefficients have been already computed
-						size_t cursor = this->_coeff.size();
-						//New number of coefficients
-						size_t s = _f_element->BasisSize();
-						if (cursor == s)
-							//Coefficients already computed
-							return;
-						this->_coeff.resize(s);
-
-						//I don't recompute already stored coefficients
-						for(; cursor < s; ++cursor)
-						{
-							(this->_coeff)[cursor] = _f_element->L2prod( *(this->_f),
-																						[&](const Point<dim>& p)
-																						{ return _f_element->EvaluateBasisFunction(cursor, p);}
-																					 );
-						}
-					};
-
-				template <	BasisType Dummy = FeType,
-								typename enable_if<	Dummy == InvalidFeType,
-															size_t
-														>::type = 0
-							>
-					void ComputeCoefficients()
-					{
-#ifdef MYDEBUG
-						cout << "Trying to project function on InvalidFeType finite element space!!!" << endl;
-#endif //MYDEBUG
-						throw bad_typeid();
-					};
-
-				//TODO: verify if there's a way to define a default case
-				template <	BasisType Dummy = FeType,
-								typename enable_if<	Dummy != LegendreType && Dummy != InvalidFeType,
-															size_t
-														>::type = 0
-							>
-					void computeCoefficients()
-					{
-						throw invalid_argument("I don't know how to project function on this finite element space!!!");
-					};
+				void ComputeCoefficients()
+				{
+					FiniteElements::CoefficientComputer<dim, FeType>::ComputeCoefficients(*(this->_f_element),
+																												 this->_f,
+																												 &(this->_coeff));
+				};
 
 			protected:
 				//function whom projection error has to be computed
@@ -177,7 +130,6 @@ namespace BinaryTree
 
 				double _projection_error;
 				bool	 _error_updated;
-				double _tilde_error;
 		};
 } //namespace BinaryTree
 

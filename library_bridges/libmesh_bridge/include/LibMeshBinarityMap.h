@@ -8,6 +8,7 @@
 
 #include "BinaryNode.h"
 #include "Point.h"
+#include "BinaryTreeHelper.h"
 
 using namespace std;
 
@@ -19,7 +20,7 @@ namespace LibmeshBinary
 
 		//TODO: introduce support for meshes containing different dimension elements (i.e. both hexes and quads in the same mesh)
 		template <size_t dim>
-			static void MakeBinary(libMesh::MeshRefinement& mesh_refinement, shared_ptr<function<double(Geometry::Point<dim>)>> f_ptr)
+			static void MakeBinary(libMesh::MeshRefinement& mesh_refinement, BinaryTree::FunctionPtr<dim> f_ptr)
 			{
 #ifdef MYDEBUG
 				cout << "Sono in MakeBinary" << endl;
@@ -93,7 +94,7 @@ namespace LibmeshBinary
 
 		template <size_t dim>
 			static libMesh::Elem* BinarizeNode (libMesh::Elem* el_ptr,
-															shared_ptr<function<double(Geometry::Point<dim>)>> f_ptr, 
+															BinaryTree::FunctionPtr<dim> f_ptr, 
 															libMesh::MeshRefinement& mesh_refinement)
 			{
 				/*to silence warning by the compiler*/
@@ -108,7 +109,7 @@ namespace LibmeshBinary
 //TODO: optimize the function in order to not check for all the elements if the cast has already been done (maybe give the element you want to binarize as input parameter, setted nullptr by default, and if it is nullptr check all the elements)
 		template <size_t dim, class BinaryClass, class LibmeshClass>
 			static libMesh::Elem* TemplateNodeBinarization (libMesh::Elem* el_ptr,
-																			shared_ptr<function<double(Geometry::Point<dim>)>> f_ptr,
+																			BinaryTree::FunctionPtr<dim> f_ptr,
 																			libMesh::MeshRefinement& mesh_refinement)
 			{
 #ifdef THROW_EXCEPTION
@@ -198,18 +199,13 @@ namespace LibmeshBinary
 
 	template <>
 		libMesh::Elem* BinarityMap::BinarizeNode<1> (libMesh::Elem* el_ptr,
-																	shared_ptr<function<double(Geometry::Point<1>)>> f_ptr,
+																	BinaryTree::FunctionPtr<1> f_ptr,
 																	libMesh::MeshRefinement& mesh_refinement);
 
 	template <>
 		libMesh::Elem* BinarityMap::BinarizeNode<2> (libMesh::Elem* el_ptr,
-																	shared_ptr<function<double(Geometry::Point<2>)>> f_ptr,
+																	BinaryTree::FunctionPtr<2> f_ptr,
 																	libMesh::MeshRefinement& mesh_refinement);
-
-//	template <>
-//		libMesh::Elem* BinarityMap::BinarizeNode<3> (libMesh::Elem* el_ptr,
-//																	shared_ptr<function<double(Geometry::Point<3>)>> f_ptr,
-//																	libMesh::MeshRefinement& mesh_refinement);
 
 } //namespace LibmeshBinary
 

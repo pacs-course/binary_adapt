@@ -9,7 +9,8 @@ namespace BinaryTree
 	BinaryNode::BinaryNode() : _s_element	(this),
 										_E				(numeric_limits<double>::max()),
 										_E_tilde		(numeric_limits<double>::max()),
-										_q				(numeric_limits<double>::max())
+										_q				(numeric_limits<double>::max()),
+										_tilde_error(numeric_limits<double>::max())
 	{};
 
 	BinaryNode::BinaryNode (const BinaryNode& bn)
@@ -25,6 +26,7 @@ namespace BinaryTree
 			_E = bn._E;
 			_E_tilde = bn._E_tilde;
 			_q = bn._q;
+			_tilde_error = bn._tilde_error;
 		}
 		return *this;
 	};
@@ -67,6 +69,16 @@ namespace BinaryTree
 	void BinaryNode::Q(double val)
 	{
 		_q = val;
+	};
+
+	double BinaryNode::TildeError() const
+	{
+		return _tilde_error;
+	};
+
+	void BinaryNode::TildeError(double val)
+	{
+		_tilde_error = val;
 	};
 
 	void BinaryGodfather::SelectActiveNodes()

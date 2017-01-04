@@ -10,7 +10,7 @@
 #########################
 # LIBNAME Specific Part #
 #########################
-LIBNAME		:= mesh_bridge
+LIBNAME		:= my_functions
 Modes			:= Debug Release
 #LibType		:= static
 LibType		:= dynamic
@@ -20,7 +20,7 @@ LibVers		:= $(MajLibVers).$(MinLibVers)
 
 
 #DIRECTORY TREE
-BaseDir 		= $(THIS_DIR)/../..
+BaseDir 		= $(THIS_DIR)/../
 InstallDir	= $(BaseDir)/lib
 CurrentDir	= $(PWD)
 THIS_DIR		= .
@@ -36,17 +36,11 @@ DIRS		= $(OBJ_DIRS) $(SO_DIRS)
 RefineDir = $(BaseDir)/refine_binary
 RefineInclude = $(RefineDir)/include
 
-#libmesh headers directory
-LibMeshInclude = /usr/local/include/libmesh
-
-#Directory where libmesh libraries are stored
-LibMeshDir = /usr/local/lib
-
 # Directory where target binary is created and object files
 ObjDir				:= $(OBJ_DIR)
 LibDir				:= $(SO_DIR)
 # Search Path For Include Files (InclPaths is included before mode specific InclPaths_MODE)
-InclPaths			:= $(INCLUDE_DIR) $(RefineInclude) $(LibMeshInclude)
+InclPaths			:= $(INCLUDE_DIR) $(RefineInclude)
 InclPaths_Debug	:=
 InclPaths_Release	:=
 # Defined values used by CPP preprocessor (Defines is included before mode specific Defines_MODE)
@@ -72,11 +66,11 @@ CXXFlags		+= -fPIC -rdynamic
 LibSuffix	:= .so.$(LibVers)
 LD				:= g++
 # List of Library Names (Libs is included before mode specific Libs_MODE)
-Libs				:= pthread
-Libs_Debug		:= mesh_dbg
-Libs_Release	:= mesh_opt
+Libs				:=
+Libs_Debug		:=
+Libs_Release	:=
 # Search Paths for Libraries (LibPaths is included before mode specific LibPaths_MODE)
-LibPaths				:= $(LibMeshDir)
+LibPaths				:=
 LibPaths_Debug		:=
 LibPaths_Release	:=
 # Linker specific flags (LFlags is included before mode specific LFlags_MODE)
@@ -123,6 +117,7 @@ ifeq ($(LibType), dynamic)
 				./lib$(LIBNAME)$(subst _install,,$(subst _Release,,_$@)).so.$(MajLibVers); \
 	ln -s -f ./lib$(LIBNAME)$(subst _install,,$(subst _Release,,_$@))$(LibSuffix) \
 				./lib$(LIBNAME)$(subst _install,,$(subst _Release,,_$@)).so; \
+
 	cd $(CurrentDir)
 endif
 
@@ -134,7 +129,6 @@ $(Modes:%=uninstall_%):
 	@echo uninstalling $(subst uninstall_,,$@)
 ifeq ($(LibType), dynamic)
 	rm -f $(InstallDir)/lib$(LIBNAME)$(subst _uninstall,,$(subst _Release,,_$@)).so
-	rm -f $(InstallDir)/lib$(LIBNAME)$(subst _uninstall,,$(subst _Release,,_$@)).so.$(MajLibVers)
 endif
 	rm -f $(InstallDir)/lib$(LIBNAME)$(subst _uninstall,,$(subst _Release,,_$@))$(LibSuffix)
 

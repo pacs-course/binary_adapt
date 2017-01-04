@@ -4,6 +4,7 @@
 #include "BinaryNode.h"
 #include "BinaryTreeHelper.h"
 #include "AbstractFactory.h"
+#include "Functor.h"
 
 #include <algorithm> //std::min
 #include <string> //std::string
@@ -29,24 +30,42 @@ namespace BinaryTree
 			double& _error_variable;
 	};
 
+	class PlevelsExtractor : public NodeOperator
+	{
+		public:
+			PlevelsExtractor() : _p_levels(){};
+			virtual void operator()(BinaryNode*)override;
+			
+			std::vector<size_t> GetPLevels();
+		protected:
+			std::vector<size_t> _p_levels;
+	};
+
 	template <std::size_t dim>
 		class MeshRefiner
 		{
 			public:
-				//TODO: make f loadable dinamically
 				MeshRefiner() : _objective_function(nullptr),
 									 _godfather(),
 									 _global_error(numeric_limits<double>::max()),
 									 _error_updated(false)
 				{};
 
-				void Init(FunctionPtr<dim> f, int argc, char** argv)
+/*
+				functor is the identifier to be passed to FunctionsFactory
+				from the resultant object will be initialized the _objective_function attribute
+*/
+				void Init(std::string functor, int argc, char** argv)
 				{
-					this->_objective_function = f;
+					auto& f_factory(FunctionsFactory<dim>::Instance());
+					std::unique_ptr<Functor<dim>> f_ptr = f_factory.create(functor);
+
+					Init(move(f_ptr));
+
 					DerivedInitialization(argc, argv);
 				};
 
-				virtual void LoadXdaXta(std::string input) = 0;
+				virtual void LoadMesh(std::string input) = 0;
 				virtual void ExportMesh(std::string output) = 0;
 
 				/*	n_iter is the number of degrees of freedom,
@@ -59,6 +78,13 @@ namespace BinaryTree
 						UpdateGlobalError();
 
 					return this->_global_error;
+				};
+
+				std::vector<size_t> ExtractPLevels()
+				{
+					PlevelsExtractor p_ex;
+					this->IterateActiveNodes(p_ex);
+					return p_ex.GetPLevels();
 				};
 
 			protected:
@@ -80,6 +106,14 @@ namespace BinaryTree
 				*/
 				virtual void IterateActiveNodes(NodeOperator&) = 0;
 				virtual void InitializeGodfather() = 0;
+
+			protected:
+				void Init(unique_ptr<Functor<dim>> f_ptr)
+				{
+					/* I convert the unique_ptr in a shared_ptr,
+					since I need to share it with the BinaryNode elements */
+					this->_objective_function = FunctionPtr<dim>(f_ptr.release());
+				};
 
 			protected:
 /*
@@ -157,6 +191,7 @@ namespace BinaryTree
 			} //while(n_iter)
 
 			(this->_godfather).SelectActiveNodes();
+			this->_error_updated = false;
 		}; //Refine()
 
 } //namespace BinaryTree

@@ -4,9 +4,9 @@
 #include <memory> //unique_ptr
 #include <stdexcept> //range_error
 
-#include "BasisBuilderRule.h"
-
-#define MAXDEGREE 256
+#include "AbstractFactory.h"
+#include "TypeEnumerations.h"
+#include "Point.h"
 
 #define ENABLE_IF_VERSION
 //TODO: verify if it can be written an ENABLE_IF_VERSION-undefined compiling version of the class
@@ -18,319 +18,164 @@ namespace FiniteElements
 	//TODO: maybe checks on the object to be effectively a basis (linearly independent and maximal)
 	//have to be inserted in the construction or after it
 
-/*
-	The basis is a Singleton. Here I store the basis functions, which can be accessed through operator[] or through iterator
-	basis functions are computed only one time, while the degree, stored in the _degree attribute, could change at runtime.
-*/
-	template <size_t dim, BasisType FeType = InvalidFeType> //working in |R ^ dim
-		class PolinomialBasis
+	template <size_t dim> //working in |R ^ dim
+		class AbstractBasis
 		{
+			protected:
+				/* For degree 0 I always have that the basis is given by 1 element */
+				AbstractBasis() : _size_map(0, 1){};
 			public:
-#ifdef SINGLETON_ENABLED
+				/* This function implements the tensorization */
+				virtual double Evaluate(size_t ind, const Geometry::Point<dim>& p);
 
-				PolinomialBasis& operator =	(const PolinomialBasis&) = delete;
-				PolinomialBasis					(const PolinomialBasis&) = delete;
+				virtual vector<double> EvaluateBasis(size_t degree, const Geometry::Point<dim>& p);
 
-				static shared_ptr<PolinomialBasis> Instance()
-				{
-					static shared_ptr<PolinomialBasis> pb(new PolinomialBasis);
-					return pb;
-				};
-
-			protected:
-/*
-				It is a singleton
-*/
-#else //SINGLETON_ENABLED
-
-				PolinomialBasis& operator = (const PolinomialBasis& input_basis)
-				{
-					if (this != &input_basis)
-					{
-						_degree = input_basis._degree;
-						_size = input_basis._size;
-						_sizeUpdated = input_basis._sizeUpdated;
-						if (!_sizeUpdated)
-							throw length_error("Trying to copy a basis of unknown size!");
-
-						_elements = move(unique_ptr<Polinomial<dim>[]> (new Polinomial<dim>[_size]));
-
-						size_t i = 0;
-						for (const auto& pol : input_basis)
-							_elements[i++] = pol;
-
-					}
-					return *this;
-				};
-
-				PolinomialBasis(const PolinomialBasis& input_basis)
-				{
-					*this = input_basis;
-				};
-
-#endif //SINGLETON_ENABLED
-
-				//default constructor
-				//TODO : set the degree as an input parameter of the program, maybe use GetPot
-				PolinomialBasis (size_t degree = 40) : _degree(degree)
-				{
-					//TODO: optimize it, maybe create a degree->size map
-					_size = ComputeSize (_degree);
-					_sizeUpdated = true;
-					auto& factory(BasisBuilderFactory::Instance());
-					_rule = factory.create(FeType);
-
-					vector<Polinomial<1> > oneDPol = (*_rule)(degree);
-
-					//memory allocation
-					_elements = move(unique_ptr<Polinomial<dim>[]> (new Polinomial<dim>[_size]));
-
-					ConstructBasis(oneDPol);
-				};
-
-			public:
-
-				using BasisFunction = Polinomial<dim>;
-
-				virtual size_t Degree()const
-				{
-					return _degree;
-				};
-
-#ifndef SINGLETON_ENABLED
-
-				//TODO: evaluate the possibility of having a unique basis, adding new elements if the degree is increased, reducing the _size attribute otherwise, without distroying already computed elements, but keeping memory of what has been computed (when _size attribute is modified, all informations on the effectively length of the smart array _elements are definitely lost)
-				virtual void Degree(size_t new_degree)
-				{
-					//TODO: creepy! Recomputation of already stored functions must be avoided!
-					//solution: create directly the maximal basis needed by the alghorithm (it's given by the degree of freedom) when the program begins
-					//WORSE alternative: use vectors instead of arrays
-					(*this) = PolinomialBasis(new_degree);
-				};
-
-#else //SINGLETON_ENABLED
-				virtual void Degree(size_t new_degree)
-				{
-					//TODO: as above
-					this->_size = ComputeSize(new_degree);
-					this->_degree = new_degree;
-					ConstructBasis((*_rule)(_degree));
-				}
-#endif //SINGLETON_ENABLED
-
-				virtual size_t Size(size_t degree) const
-				{
-					//TODO : store the values in a map or (better) in a vector
-					return ComputeSize(degree);
-				};
-
-				virtual size_t Size() const
-				{
-					if (!this->_sizeUpdated)
-					{
-						throw length_error("_elements length and _size attribute does not fit!");
-					}
-					return this->_size;
-				};
-
-				virtual void Print() const
-				{
-					for (const auto& pol : *this)
-						pol.Print();
-				};
-
-				virtual void Print(size_t index) const
-				{
-					(*this)[index].Print();
-				};
-
-				virtual double Evaluate(size_t ind, const Point<dim>& p)
-				{
-					if (ind > this->_size)
-					{
-						bool found;	
-						size_t newdegree = Degree();
-
-						while (!found && newdegree < MAXDEGREE)
-							Size(newdegree) < ind ? ++newdegree : found = true;
-
-						if (!found)
-							throw length_error("Index " + to_string(ind) + " exceeds available basis length!");
-
-						Degree(newdegree);
-					}
-					return this->_elements[ind](p);
-				};
-
-			protected:
-
-				//TODO: verify if these pseudo iterators work fine
-				virtual Polinomial<dim>* begin()
-				{
-					return this->_elements.get();
-				};
-				virtual Polinomial<dim>* end()
-				{
-					return begin() + Size();
-				};
-
-				//want to mime const_iterators
-				virtual Polinomial<dim>* begin() const
-				{
-					return _elements.get();
-				};
-				virtual Polinomial<dim>* end() const
-				{
-					return begin() + Size();
-				};
-
-				virtual Polinomial<dim>& operator[] (size_t ind) const
-				{
-					if (ind > _size)
-					{
-						throw range_error("Trying to access out of range basis function!");
-					}
-					return this->_elements[ind];
-				};
-
-			private:
-			//1D construction from 1D polinomial
-				template <size_t DUMMY = dim, typename enable_if< (DUMMY == 1), size_t>::type = 0>
-					void ConstructBasis (const vector<Polinomial<1> >& input)
-					{
-						for (size_t i = 0; i < _size; ++i)
-							_elements[i] = input[i];
-					};
-
-			//multidimensional construction from 1D polinomial
-				template <size_t DUMMY = dim, typename enable_if< (DUMMY > 1), size_t>::type = 0>
-					void ConstructBasis (const vector<Polinomial<1> >& input)
-					{
-						Polinomial<dim>*	position	= _elements.get();
-						Polinomial<dim>** position_ptr = &(position);
-
-						//I store elements in degree-ascendent order
-						for (size_t current_degree(0); current_degree <= _degree; ++current_degree)
-						{
-							for (size_t ind = current_degree; ind + 1; --ind)
-							{
-								Initialize<dim - 1> (input, current_degree - ind, position_ptr, input[ind]);
-							}			
-						}
-					};
-
-				//recursive initialization of the memory pointed by *position_ptr, the partial tensor product is stored in result
-				template <size_t N, size_t DUMMY = dim, typename enable_if< (DUMMY > 1 && N > 1), size_t>::type = 0>
-					void Initialize 	(	const vector<Polinomial<1> >& v,
-												size_t degree,
-												Polinomial<dim>** position_ptr,
-												Polinomial<dim - N> result
-											)
-					{
-						for (size_t ind = degree; ind + 1; --ind)
-							Initialize<N - 1> (v, degree - ind, position_ptr, result.tensor(v[ind]));
-					};
-
-				//specializing the last call to fillMemory in the multidimensional case: end of recursion
-				template <size_t N, size_t DUMMY = dim, typename enable_if< (DUMMY > 1 && N == 1), size_t>::type = 0>
-					void Initialize	(	const vector<Polinomial<1> >& v,
-												size_t degree,
-												Polinomial<dim>** position_ptr,
-												Polinomial<dim - N> result
-											)
-					{
-						**position_ptr = result.tensor(v[degree]);
-						++(*position_ptr);
-					};
-
-			protected:
 				//size is (degree + dim)! / degree! dim!
-				virtual size_t ComputeSize (const size_t& degree) const
-				{
-					if (dim == 1)
-						return degree + 1;
+				virtual size_t ComputeSize (const size_t& degree);			
 
-					size_t dim_fact(1), degree_plus_dim(1);
-					for (size_t i(2); i <= dim; ++i)
-						dim_fact *= i;
-					for (size_t k(1); k <= dim; ++k)
-						degree_plus_dim *= (degree + k);
-
-					return degree_plus_dim / dim_fact;
-				};
-			
 			protected:
-	//a 1D base is built calling the Functor pointed by _rule
-	//then a multivariate base is obtained doing the tensor product between 1D polinomials
-	//the degree of the basis remains the same
-				PoliBaseBuilderRule_ptr _rule;
+				virtual double OneDEvaluation(size_t index, double x)const = 0;
 
-	//elements are stored in degree ascendent order;
-	//if dim > 1 there are multiple elements with the same degree;
-	//say x, y, z... the variables order, elements with the same degree are stored:
-	//	ascendent by variable, then descendent by order
-	//	e.g. if dim=3, degree=2, I have:
-	// 1, x, y, z, x^2, xy, xz, y^2, yz, z^2
-				unique_ptr< Polinomial<dim>[] > _elements;
+				virtual void InitializeIndexes(size_t* index, size_t degree, size_t d = dim);
 
-				size_t _degree;
-				size_t _size;
-				bool	 _sizeUpdated;
+				virtual void UpdateSize(size_t);
+
+				void PrintIndexes();
+			protected:
+				/* _size_map[d] stores the size of an AbstractBasis<dim> of degree d */
+				vector<size_t> _size_map;	
+
+				vector<array<size_t, dim>> _tensorial_indexes;
+		};
+
+	template <size_t dim>
+		vector<double> AbstractBasis<dim>::EvaluateBasis(size_t degree, const Geometry::Point<dim>& p)
+		{
+			UpdateSize(ComputeSize(degree));
+			vector<double> result;
+			for (size_t i(0); i < ComputeSize(degree); ++i)
+				result.push_back(Evaluate(i, p));
+
+			return result;
+		};
+
+	template <size_t dim>
+		double AbstractBasis<dim>::Evaluate(size_t ind, const Geometry::Point<dim>& p)
+		{
+			UpdateSize(ind + 1);
+
+			auto ind_iter = this->_tensorial_indexes[ind].begin();
+			auto point_iter = p.begin();
+
+			double result(1);
+
+			for (size_t i(0); i < dim; ++i)
+				result *= OneDEvaluation(*(ind_iter++), *(point_iter++));
+
+			return result;
+		};
+
+	template <size_t dim>
+		void AbstractBasis<dim>::UpdateSize(size_t new_length)
+		{
+			size_t current_length = this->_tensorial_indexes.size();
+
+			if (new_length > current_length)
+			{
+				size_t degree(0);
+
+				while(ComputeSize(degree) <= current_length)
+					++degree;
+				size_t start_degree = degree;
+
+				while(ComputeSize(degree) < new_length)
+					++degree;
+
+				this->_tensorial_indexes.resize(ComputeSize(degree));
+				for(size_t current_degree = start_degree; current_degree <= degree; ++current_degree)
+					InitializeIndexes(&current_length, current_degree);
+			}
+		};
+
+	/* recursive construction, here I set the dim-d component of the index tuple in position *index
+		the update of the *index parameter will be done when d=1,
+		that is after that the last element of the tuple has been set */
+	template <size_t dim>
+		void AbstractBasis<dim>::InitializeIndexes(size_t* index, size_t degree, size_t d)
+		{
+#ifdef MYDEBUG
+			cout << "Sono in InitializeIndexes" << endl;
+
+			cout << "Gli indici attuali sono : " << endl;
+			PrintIndexes();
+			cout << "Voglio il grado " << degree << " in posizione " << *index << endl; 
+#endif //MYDEBUG
+
+			/* end of recursion, here I update the index parameter*/
+			if (d == 1)
+			{
+				(this->_tensorial_indexes)[(*index)++][dim-1] = degree;
+
+#ifdef MYDEBUG
+				cout << "Ho settato l'indice " << degree << " in posizione " << *index - 1 << endl;
+
+				cout << "I nuovi indici sono : " << endl;
+				PrintIndexes();
+#endif //MYDEBUG
+			}
+			else
+			{ 
+				for(size_t current_degree = degree; current_degree + 1; --degree)
+				{
+					this->_tensorial_indexes[(*index)][dim-d] = current_degree;
+					InitializeIndexes (index, degree - current_degree, d - 1);
+				}
+			}
 		};
 
 
-//	template <size_t dim, BasisType FeType = InvalidFeType>
-//		//1D construction from 1D polinomial
-//		template <size_t DUMMY = dim, typename enable_if< (DUMMY == 1), size_t>::type = 0>
-//			void Basis <dim, FeType> ::ConstructBasis (const vector<Polinomial<1> >& input)
-//			{
-//				for (size_t i = 0; i < _size; ++i)
-//					_elements[i] = input[i];
-//			};
+	template <size_t dim>
+		size_t AbstractBasis<dim>::ComputeSize (const size_t& degree)
+		{
+			try
+			{
+				return this->_size_map.at(degree);
+			}
+			catch(std::out_of_range&)
+			{
+				size_t old_size = this->_size_map.size();
+				this->_size_map.resize(degree + 1);
 
-//	template <size_t dim, BasisType FeType = InvalidFeType>
-//		//multidimensional construction from 1D polinomial
-//		template <size_t DUMMY = dim, typename enable_if< (DUMMY > 1), size_t>::type = 0>
-//			void Basis <dim, FeType> ::ConstructBasis (const vector<Polinomial<1> >& input)
-//			{
-//				Polinomial<dim>*	position	= _elements.get();
-//				Polinomial<dim>** position_ptr = &(position);
+				for (size_t deg = old_size; deg <= degree; ++deg)
+				{
+					if (dim == 1)
+						this->_size_map[deg] = deg + 1;
+					else
+					{
+						size_t dim_fact(1), degree_plus_dim(deg + 1);
+						for (size_t i(2); i <= dim; ++i)
+						{
+							dim_fact *= i;
+							degree_plus_dim *= (deg + i);
+						}
 
-//				//I store elements in degree-ascendent order
-//				for (size_t current_degree(0); current_degree <= _degree; ++current_degree)
-//				{
-//					for (size_t ind = current_degree; ind + 1; --ind)
-//					{
-//						Initialize<dim - 1> (input, current_degree - ind, position_ptr, input[ind]);
-//					}			
-//				}
-//			};
+						this->_size_map[deg] = degree_plus_dim / dim_fact;
+					}
+				}
+			}
+			return this->_size_map[degree];
+		};
 
-//	template <size_t dim, BasisType FeType = InvalidFeType>
-//		//recursive initialization of the memory pointed by *position_ptr, the partial tensor product is stored in result
-//		template <size_t N, size_t DUMMY = dim, typename enable_if< (DUMMY > 1 && N > 1), size_t>::type = 0>
-//			void Basis <dim, FeType> ::Initialize 	(	const vector<Polinomial<1> >& v,
-//										size_t degree,
-//										Polinomial<dim>** position_ptr,
-//										Polinomial<dim - N> result
-//									)
-//			{
-//				for (size_t ind = degree; ind + 1; --ind)
-//					Initialize<N - 1> (v, degree - ind, position_ptr, result.tensor(v[ind]));
-//			};
-
-//	template <size_t dim, BasisType FeType = InvalidFeType>
-//		//specializing the last call to fillMemory in the multidimensional case: end of recursion
-//		template <size_t N, size_t DUMMY = dim, typename enable_if< (DUMMY > 1 && N == 1), size_t>::type = 0>
-//			void Basis <dim, FeType> ::Initialize	(	const vector<Polinomial<1> >& v,
-//										size_t degree,
-//										Polinomial<dim>** position_ptr,
-//										Polinomial<dim - N> result
-//									)
-//			{
-//				**position_ptr = result.tensor(v[degree]);
-//				++(*position_ptr);
-//			};
+	template <size_t dim>
+		void AbstractBasis<dim>::PrintIndexes()
+		{
+			for (auto ind_tuple : this->_tensorial_indexes)
+			{
+				for (auto ind : ind_tuple)
+					cout << ind << " ";
+				cout << endl;
+			}			
+		};
 
 };//namespace FiniteElements
 

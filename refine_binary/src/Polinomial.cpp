@@ -1,9 +1,9 @@
 #include "Polinomial.h"
 
+using namespace std;
+
 namespace FiniteElements
-{
-	using namespace std;
-	
+{	
 	Polinomial<1>::Polinomial ()					 					: _coeff()	 					{};
 	Polinomial<1>::Polinomial (size_t degree) 					: _coeff(degree + 1, 0)		{};
 	Polinomial<1>::Polinomial (const vector<double>& v) 		: _coeff(v) 					{};
@@ -246,9 +246,10 @@ begin() = rend()-1 : last one must not be multiplicated by x
 			tot *= x;
 		}
 		tot += *c_i;
-		return tot;
 
+		return tot;
 	};
+
 	size_t Polinomial<1>::Degree() const
 	{
 		return _coeff.size() - 1;

@@ -17,6 +17,7 @@ namespace BinaryTree
 			BinaryNode();
 			BinaryNode (const BinaryNode&);
 			BinaryNode& operator = (const BinaryNode&);
+			virtual void Init() = 0;
 
 			virtual BinaryNode* S() const;
 			virtual void S(BinaryNode*);
@@ -29,6 +30,9 @@ namespace BinaryTree
 
 			virtual double Q() const;
 			virtual void Q(double val);
+
+			virtual double TildeError() const;
+			virtual void TildeError(double val);
 
 			/* They return nullptr if the node is a leaf */
 			virtual BinaryNode* Left() = 0;
@@ -53,6 +57,7 @@ namespace BinaryTree
 			double _E;
 			double _E_tilde;
 			double _q;
+			double _tilde_error;
 	};
 
 /*

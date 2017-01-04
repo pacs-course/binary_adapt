@@ -1,5 +1,5 @@
-#ifndef __REFERENCE_H
-#define __REFERENCE_H
+#ifndef __STD_ELEMENT_H
+#define __STD_ELEMENT_H
 
 #include "AbstractElement.h"
 #include "Maps.h"
@@ -100,4 +100,4 @@ namespace detail
 		using StdIperCube = typename detail::alias<dim>::AliasIperCube;
 
 };//namespace Geometry
-#endif //__REFERENCE_H
+#endif //__STD_ELEMENT_H

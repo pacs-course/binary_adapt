@@ -1,0 +1,50 @@
+#include "BasisBuilderRule.h"
+
+using namespace std;
+
+namespace FiniteElements
+{
+	////TODO: verify if it is optimizable
+/*
+	it follows the alghoritm proposed in "Modellistica numerica per problemi differenziali", A.Quarteroni, 5a ed., p.234
+*/
+	vector<double> LegendreEvaluator::operator() (size_t degree, double x)
+	{
+		vector<double> result;
+		double before = 1.0;
+
+		result.push_back(before);
+		double before_before = x;
+		if (degree)
+			result.push_back(before_before);
+
+		for(size_t k(1); k < degree; ++k)
+		{
+			//at each step I calculate di k+1 degree polinomial
+			double k_d = static_cast<double>(k);
+
+			/* L_(k + 1) computation */
+			double new_val =  x * (2 * k_d + 1);
+			new_val *= before;
+			new_val -= (before_before) * k_d;
+			new_val /= (k_d + 1);
+
+			result.push_back(new_val);
+			before_before = before;
+			before = new_val;
+		}
+		return result;
+	};
+
+	vector<double> TrivialEvaluator::operator() (size_t degree, double x)
+	{	
+		vector<double> result;
+		result.push_back(1.0);
+
+		for (size_t cont(1); cont <= degree; ++cont)
+			result.push_back(x * result[cont-1]);
+		return result;
+	};
+
+
+} //namespace FiniteElements

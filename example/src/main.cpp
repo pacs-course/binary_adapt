@@ -1,13 +1,16 @@
 #include "PluginLoader.h"
 #include "MeshRefiner.h"
 #include "Functor.h"
+
 #include <iostream>
+#include <memory> //std::unique_ptr
+#include <utility> //std::move
 
 using namespace std;
 
 int main(int argc, char ** argv)
 {
-	cerr << "SONO NEL MAIN" << endl;
+	cerr << "Example started" << endl;
 
 	auto& mrf(BinaryTree::MeshRefinerFactory<1>::Instance());
 	cerr << "Indirizzo della factory 1D di refiner : " << &mrf << endl;
@@ -25,23 +28,14 @@ int main(int argc, char ** argv)
 	pl.Load();
 	cerr << "Plugin caricati" << endl;
 
-//	cerr << "la factory di refiner contiene : " << endl;
-//	vector<string> reg1 = mrf.registered();
-//	for (auto i : reg1)
-//		cout << i << endl;
-
-	auto refiner = mrf.create("libmesh");
+	unique_ptr<BinaryTree::MeshRefiner<1>> refiner = mrf.create("libmesh");
 	cerr << "Refiner creato" << endl;
-	refiner->Init(nullptr, argc, argv);
 
-//	cerr << "la factory di funzioni contiene : " << endl;
-//	vector<string> reg2 = funfac.registered();
-//	for (auto i : reg2)
-//		cerr << i << endl;
-	auto interpolating_function = funfac.create("sqrt_x");
-	cerr << "Funzione da interpolare creata" << endl;
+	refiner->Init("sqrt_x", argc, argv);
+	cerr << "Refiner inizializzato con sqrt_x" << endl;
 
-	cout << "Example ended" << endl;
+//	refiner->LoadMesh("mesh_files/example_1.TODO");
+	cerr << "Example ended" << endl;
 
 	return 0;
 };

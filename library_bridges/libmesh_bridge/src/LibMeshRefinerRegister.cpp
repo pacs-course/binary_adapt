@@ -22,10 +22,6 @@ namespace LibmeshBinary
 																		 BinaryTree::MeshRefiner<1>
 																		>::BuildObject);
 
-		cerr << "Sono in Register, provo a costruire l'oggetto appena aggiunto alla factory" << endl;
-		auto stcz = r_one_d_factory.create("libmesh");
-		cerr << "Costruito con successo" << endl;
-
 		r_two_d_factory.add ("libmesh",
 									&HelperFunctions::Builders <BinaryRefiner<2>,
 																		 BinaryTree::MeshRefiner<2>

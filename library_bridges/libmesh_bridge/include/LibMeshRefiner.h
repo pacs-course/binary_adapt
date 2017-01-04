@@ -8,7 +8,11 @@
 #include "libmesh.h"
 #include "mesh.h"
 #include "mesh_base.h"
+//The MeshData class is deprecated from libMesh and will be removed in future releases 
+#ifdef MESH_DATA_VERSION
 #include "mesh_data.h"
+#endif //MESH_DATA_VERSION
+
 #include "boundary_info.h"
 #include "elem.h"
 
@@ -26,7 +30,9 @@ namespace LibmeshBinary
 
 				BinaryRefiner() : BinaryTree::MeshRefiner<dim>(),
 										_mesh_ptr(nullptr),
+#ifdef MESH_DATA_VERSION
 										_mesh_data_ptr(nullptr),
+#endif //MESH_DATA_VERSION
 										_mesh_refinement_ptr(nullptr),
 										_initialized(false),
 										_libmesh_init_ptr (nullptr)
@@ -50,40 +56,61 @@ namespace LibmeshBinary
 				through file input and it is accessed only through base class BinaryTree::MeshRefiner methods
 				With this simpler Init I can avoid to pass the main parameters
 */
-				void Init(BinaryTree::FunctionPtr<dim> f)
+				void Init(std::unique_ptr<BinaryTree::Functor<dim>> f)
 				{
-					this->_objective_function = f;
+					BinaryTree::MeshRefiner<dim>::Init(std::move(f));
 				};
 
-				void SetMesh(std::shared_ptr<libMesh::MeshBase> mesh_ptr, std::shared_ptr<libMesh::MeshData> data_ptr = nullptr)
+				void Init(std::string functor_id)
+				{
+					auto& f_factory(BinaryTree::FunctionsFactory<dim>::Instance());
+					BinaryTree::MeshRefiner<dim>::Init(std::move(f_factory.create(functor_id)));
+				};
+
+				void SetMesh(std::shared_ptr<libMesh::MeshBase> mesh_ptr
+#ifdef MESH_DATA_VERSION
+								, std::shared_ptr<libMesh::MeshData> data_ptr = nullptr
+#endif //MESH_DATA_VERSION
+								)
 				{
 					this->_mesh_ptr = mesh_ptr;
+#ifdef MESH_DATA_VERSION
 					this->_mesh_data_ptr = data_ptr;
+#endif //MESH_DATA_VERSION
 					this->_mesh_refinement_ptr = std::make_unique<libMesh::MeshRefinement> (*(this->_mesh_ptr));
 					BinarityMap::MakeBinary<dim>(*(this->_mesh_refinement_ptr), this->_objective_function);
 					InitializeGodfather();
 					this->_initialized = true;
 				};
 				
-				std::shared_ptr<libMesh::MeshBase> GetMesh(std::shared_ptr<libMesh::MeshData> data_ptr = nullptr) const
+				std::shared_ptr<libMesh::MeshBase> GetMesh(
+#ifdef MESH_DATA_VERSION
+																		std::shared_ptr<libMesh::MeshData> data_ptr = nullptr
+#endif //MESH_DATA_VERSION
+																		) const
 				{
 					CheckInitialization();
 					/* If the class */
 					if (this->_libmesh_init_ptr)
 						throw logic_error("The mesh can't be exported outside the class that owns the LibMeshInit communicator");
-
+#ifdef MESH_DATA_VERSION
 					if (data_ptr)
 						data_ptr = this->_mesh_data_ptr;
+#endif //MESH_DATA_VERSION
 					return this->_mesh_ptr;
 				};
 
-				virtual void LoadXdaXta(std::string input) override
+				virtual void LoadMesh(std::string input) override
 				{
 					CheckInitialization();
-#ifdef MYDEBUG
+
 					std::cout << "\n\n========== reading the mesh ========= \n\n";
-#endif //MYDEBUG
-					this->_mesh_ptr->read(input + ".xda");
+
+					this->_mesh_ptr->read(input
+#ifdef MESH_DATA_VERSION
+														, this->_mesh_data_ptr
+#endif //MESH_DATA_VERSION
+														);
 
 					//Replacing the libMesh elements with the BinaryTree ones
 					//TODO: maybe it's better to put it at the end of the Init method
@@ -93,22 +120,24 @@ namespace LibmeshBinary
 					this->_mesh_ptr->print_info();
 					this->_mesh_ptr->boundary_info->print_info();
 
-					std::cout << "\n\n========== reading the mesh data ========= \n\n";
 #endif //MYDEBUG
-
-					// Create and read the mesh data.
-					this->_mesh_data_ptr->enable_compatibility_mode();
-					this->_mesh_data_ptr->read(input + ".xta"); 
+#ifdef MESH_DATA_VERSION
 #ifdef MYDEBUG
 					this->_mesh_data_ptr->print_info();
 #endif //MYDEBUG
+#endif //MESH_DATA_VERSION
 				};
 				
 				virtual void ExportMesh(std::string output) override
 				{
 					CheckInitialization();
 
-					this->_mesh_ptr->write(output, this->_mesh_data_ptr.get());
+					this->_mesh_ptr->write	(output
+#ifdef MESH_DATA_VERSION
+													,this->_mesh_data_ptr.get()
+#endif //MESH_DATA_VERSION
+													);
+					//TODO:	evaluate the other way given by libMesh to write a mesh
 					//TODO:	after the refinement evaluate if it is the case to "unbinarize" the mesh
 					//			remember that the binarization guarantees that also the children are binary elements
 					//			but for the _elemlinks attribute it cannot be guaranteed the same (binarize a boundary object is meaningless in our
@@ -118,12 +147,14 @@ namespace LibmeshBinary
 
 			protected:
 
-				virtual void DerivedInitialization(int argc, char** argv)
+				virtual void DerivedInitialization(int argc, char** argv)override
 				{
 					this->_libmesh_init_ptr = make_unique<libMesh::LibMeshInit> (argc, argv);
 
 					_mesh_ptr = std::make_shared<libMesh::Mesh> (this->_libmesh_init_ptr->comm(), static_cast<unsigned char> (dim));
+#ifdef MESH_DATA_VERSION
 					_mesh_data_ptr = std::make_shared<libMesh::MeshData> (*_mesh_ptr);
+#endif //MESH_DATA_VERSION
 					_mesh_refinement_ptr = std::make_unique<libMesh::MeshRefinement> (*_mesh_ptr);
 
 					this->_initialized = true;
@@ -155,8 +186,9 @@ namespace LibmeshBinary
 
 			protected:
 				std::shared_ptr<libMesh::MeshBase> _mesh_ptr;
+#ifdef MESH_DATA_VERSION
 				std::shared_ptr<libMesh::MeshData> _mesh_data_ptr;
-
+#endif //MESH_DATA_VERSION
 				std::unique_ptr<libMesh::MeshRefinement> _mesh_refinement_ptr;
 /*
 				libMesh need a LibMeshInit object which has to be constructed before the mesh and destructed after mesh destruction

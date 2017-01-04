@@ -147,7 +147,7 @@ namespace GenericFactory
 				using Container_type = map<Identifier,Builder_type>;
 
 				//! Made private since it is a Singleton
-				Factory() = default;
+				Factory() {};
 
 				//! Deleted since it is a Singleton
 				Factory					(Factory const&) = delete;
@@ -169,7 +169,7 @@ namespace GenericFactory
 				>
 		using SingletonFactory = Factory<AbstractProduct, Identifier, shared_ptr<AbstractProduct>>;
 
-}// end namespace
+} //namespace GenericFactory
 
 
 #endif //__FACTORY_H

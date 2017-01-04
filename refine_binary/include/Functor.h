@@ -16,7 +16,7 @@ namespace BinaryTree
 		{
 			public:
 				Functor(){};
-				virtual double operator() (const Geometry::Point<dim>& p) = 0;
+				virtual double operator() (const Geometry::Point<dim>& p)const = 0;
 		};
 
 /*
