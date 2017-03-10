@@ -80,6 +80,10 @@ namespace GenericFactory
 														 StdBananaFElement<1, LegendreType>
 														>::BuildSingleton
 				);
+#ifdef MYDEBUG
+			cout << "Aggiunto StdFIperCube a stdfelementfactory di indirizzo: " << this << endl;
+			cout << "Chiave: " << IntervalType << endl;
+#endif //MYDEBUG
 		};
 
 	template <>

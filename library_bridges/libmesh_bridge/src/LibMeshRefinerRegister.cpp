@@ -11,7 +11,6 @@ namespace LibmeshBinary
 	{
 		auto& r_one_d_factory (BinaryTree::MeshRefinerFactory<1>::Instance());
 		auto& r_two_d_factory (BinaryTree::MeshRefinerFactory<2>::Instance());
-
 #ifdef MYDEBUG
 		cerr << "Indirizzo della factory 1D di refiner : " << &r_one_d_factory << endl;
 		cerr << "Indirizzo della factory 2D di refiner : " << &r_two_d_factory << endl;
@@ -44,5 +43,21 @@ namespace LibmeshBinary
 */
 namespace
 {
-	LibmeshBinary::RefinerRegister& rr(LibmeshBinary::RefinerRegister::Instance());
+//	LibmeshBinary::RefinerRegister& rr(LibmeshBinary::RefinerRegister::Instance());
+	__attribute__((constructor))
+		static void RegisterFunction()
+		{
+			auto& qr(LibmeshBinary::RefinerRegister::Instance());
+			(void) qr;
+		};
 }
+
+//namespace Banana
+//{
+//	void RefinerBananaFun()
+//	{
+//		auto& rr(LibmeshBinary::RefinerRegister::Instance());
+//		(void) rr;
+//	};
+//} //namespace Banana
+

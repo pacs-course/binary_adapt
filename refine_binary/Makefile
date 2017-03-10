@@ -41,12 +41,12 @@ InclPaths_Debug	:=
 InclPaths_Release	:=
 # Defined values used by CPP preprocessor (Defines is included before mode specific Defines_MODE)
 Defines				:= 
-Defines_Debug		:= DEBUG
+Defines_Debug		:= DEBUG _GLIBCXX_DEBUG
 Defines_Release	:= RELEASE
 # Compiler specific flags (CXXFlags is included before mode specific CXXFlags_MODE)
-CXXFlags				:= -march=native -std=c++14 $(INCLUDE_FLAGS) -Wall -Wextra
-CXXFlags_Debug		:= -g
-CXXFlags_Release	:= -O3
+CXXFlags				:= -march=native $(INCLUDE_FLAGS) -Wall -Wextra
+CXXFlags_Debug		:= -g -std=gnu++11 -O2 -felide-constructors -funroll-loops -fstrict-aliasing -Wdisabled-optimization -Wno-variadic-macros -fopenmp -DNDEBUG
+CXXFlags_Release	:= -O3 -std=c++14
 
 
 ifeq ($(LibType), static)
@@ -62,7 +62,7 @@ CXXFlags		+= -fPIC -rdynamic
 LibSuffix	:= .so.$(LibVers)
 LD				:= g++
 # List of Library Names (Libs is included before mode specific Libs_MODE)
-Libs				:= #TODO
+Libs				:=
 Libs_Debug		:=
 Libs_Release	:=
 # Search Paths for Libraries (LibPaths is included before mode specific LibPaths_MODE)
@@ -71,14 +71,10 @@ LibPaths_Debug		:=
 LibPaths_Release	:=
 # Linker specific flags (LFlags is included before mode specific LFlags_MODE)
 LFlags			:= -shared -Wl,-rpath,$(LibDir)
-LFlags_Debug	:= -g -Wl,-soname,$(LIBNAME)_Debug.so.$(MajLibVers)
-LFlags_Release	:= -O3 -Wl,-soname,$(LIBNAME).so.$(MajLibVers)
+LFlags_Debug	:= -g -Wl,-soname,lib$(LIBNAME)_Debug.so.$(MajLibVers)
+LFlags_Release	:= -O3 -Wl,-soname,lib$(LIBNAME).so.$(MajLibVers)
 endif
 
-
-
-#INCLUDES
-DEPS = $(INCLUDE_DIR)/*.h
 
 # Source files
 SRC := $(notdir $(wildcard $(SRC_DIR)/*.cpp))
@@ -110,6 +106,8 @@ ifeq ($(LibType), dynamic)
 	cd $(InstallDir); \
 	pwd; \
 	ln -s -f ./lib$(LIBNAME)$(subst _install,,$(subst _Release,,_$@))$(LibSuffix) \
+				./lib$(LIBNAME)$(subst _install,,$(subst _Release,,_$@)).so.$(MajLibVers); \
+	ln -s -f ./lib$(LIBNAME)$(subst _install,,$(subst _Release,,_$@))$(LibSuffix) \
 				./lib$(LIBNAME)$(subst _install,,$(subst _Release,,_$@)).so; \
 	cd $(CurrentDir)
 endif
@@ -122,13 +120,14 @@ $(Modes:%=uninstall_%):
 	@echo uninstalling $(subst uninstall_,,$@)
 ifeq ($(LibType), dynamic)
 	rm -f $(InstallDir)/lib$(LIBNAME)$(subst _uninstall,,$(subst _Release,,_$@)).so
+	rm -f $(InstallDir)/lib$(LIBNAME)$(subst _uninstall,,$(subst _Release,,_$@)).so.$(MajLibVers)
 endif
 	rm -f $(InstallDir)/lib$(LIBNAME)$(subst _uninstall,,$(subst _Release,,_$@))$(LibSuffix)
 
 .PHONY:dir_tree
 dir_tree: $(DIRS)
 
-$(DIRS) :
+$(DIRS):
 	@test -d $@ || (echo creating $@ ; mkdir -p $@)
 
 
@@ -154,10 +153,17 @@ define ObjectFilename
 $(ObjDir)/$(1)/$(subst .cpp,.o,$(2))
 endef
 
+define DependFilename
+$(ObjDir)/$(1)/$(subst .cpp,.d,$(2))
+endef
+
 define CompileObject
-$(call ObjectFilename,$(1),$(2)): $(SRC_DIR)/$(2) $(DEPS)
+$(call ObjectFilename,$(1),$(2)): $(SRC_DIR)/$(2)
 	@echo compiling: '$$<'
 	$$(CXX_$(1)) -c -o '$$@' '$$<'
+	$$(CXX_$(1)) '$$<' -MM -MF temp.dep
+	sed -e"s#$(subst .cpp,.o,$(2))#$$@#" temp.dep > $(call DependFilename,$(1),$(file))
+	rm temp.dep
 endef
 
 define TargetTemplate
@@ -170,6 +176,13 @@ $(1):	init_$(1) $(call TargetFilename,$(1))
 $(call TargetFilename,$(1)): $$(Objects_$(1))
 	@echo $(LD): generating '$$(notdir $$@)'
 	$(LD) $(LFlags) $$(LFlags_$(1)) -o $(LibDir)/'$$(notdir $$@)' $$(^:%='%') $(LibPaths:%=$(LibPathFlag)%) $$(LibPaths_$(1):%=$(LibPathFlag)%) $(Libs:%=$(LibraryFlag)%) $$(Libs_$(1):%=$(LibraryFlag)%)
+ifeq ($(LibType), dynamic)
+	cd $(LibDir); \
+	pwd; \
+	ln -s -f $$(notdir $$@) $$(subst $(LibSuffix),.so.$(MajLibVers),$$(notdir $$@)); \
+	ln -s -f $$(notdir $$@) $$(subst $(LibSuffix),.so,$$(notdir $$@)); \
+	cd $(CurrentDir)
+endif
 
 $(foreach file,$(SRC),$(eval $(call CompileObject,$(1),$(file))))
 

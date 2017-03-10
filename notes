@@ -1,6 +1,6 @@
-introdurre la possibilita' di usare una quadrature construita su una libreria diversa da quella che gestisce la mesh
+rimuovere jacobi_polinomials dalla mia libreria, metterlo come libreria esterna
 
-per basi e nodi sandia_rules
+example linka direttamente i file (non dipende quindi da install), ma poi il codice del main ha bisogno dell'installazione
 
 per la visualizzazione tradurre: https://sourceforge.net/p/octave/fpl/ci/default/tree/inst/fpl_vtk_raw_write_field.m
 

@@ -3,6 +3,7 @@
 
 #include "MeshRefiner.h"
 #include "LibMeshBinarityMap.h"
+#include "BinaryTreeHelper.h"
 
 //Basic include file needed for the mesh functionality.
 #include "libmesh.h"
@@ -77,7 +78,7 @@ namespace LibmeshBinary
 #ifdef MESH_DATA_VERSION
 					this->_mesh_data_ptr = data_ptr;
 #endif //MESH_DATA_VERSION
-					this->_mesh_refinement_ptr = std::make_unique<libMesh::MeshRefinement> (*(this->_mesh_ptr));
+					this->_mesh_refinement_ptr = HelperFunctions::MakeUnique<libMesh::MeshRefinement> (*(this->_mesh_ptr));
 					BinarityMap::MakeBinary<dim>(*(this->_mesh_refinement_ptr), this->_objective_function);
 					InitializeGodfather();
 					this->_initialized = true;
@@ -149,13 +150,13 @@ namespace LibmeshBinary
 
 				virtual void DerivedInitialization(int argc, char** argv)override
 				{
-					this->_libmesh_init_ptr = make_unique<libMesh::LibMeshInit> (argc, argv);
+					this->_libmesh_init_ptr = HelperFunctions::MakeUnique<libMesh::LibMeshInit> (argc, argv);
 
 					_mesh_ptr = std::make_shared<libMesh::Mesh> (this->_libmesh_init_ptr->comm(), static_cast<unsigned char> (dim));
 #ifdef MESH_DATA_VERSION
 					_mesh_data_ptr = std::make_shared<libMesh::MeshData> (*_mesh_ptr);
 #endif //MESH_DATA_VERSION
-					_mesh_refinement_ptr = std::make_unique<libMesh::MeshRefinement> (*_mesh_ptr);
+					_mesh_refinement_ptr = HelperFunctions::MakeUnique<libMesh::MeshRefinement> (*_mesh_ptr);
 
 					this->_initialized = true;
 

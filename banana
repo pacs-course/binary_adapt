@@ -1,0 +1,120 @@
+[3;J[H[2Jmake --directory=interpolating_functions 
+make[1]: Entering directory '/media/soblinsky/Data/Documents/Ingegneria_Matematica/Specialistica/PACS/project/code/interpolating_functions'
+make[1]: Leaving directory '/media/soblinsky/Data/Documents/Ingegneria_Matematica/Specialistica/PACS/project/code/interpolating_functions'
+make --directory=library_bridges/libmesh_bridge 
+make[1]: Entering directory '/media/soblinsky/Data/Documents/Ingegneria_Matematica/Specialistica/PACS/project/code/library_bridges/libmesh_bridge'
+compiling: src/LibMeshRefinerRegister.cpp
+g++  -DDEBUG -D_GLIBCXX_DEBUG -I./include -I./../../refine_binary/include -I/usr/local/include/libmesh  -march=native  -Wall -Wextra -fPIC -rdynamic -g -std=gnu++11 -O2 -felide-constructors -funroll-loops -fstrict-aliasing -Wdisabled-optimization -Wno-variadic-macros -fopenmp -DNDEBUG -c -o 'obj/Debug/LibMeshRefinerRegister.o' 'src/LibMeshRefinerRegister.cpp'
+g++  -DDEBUG -D_GLIBCXX_DEBUG -I./include -I./../../refine_binary/include -I/usr/local/include/libmesh  -march=native  -Wall -Wextra -fPIC -rdynamic -g -std=gnu++11 -O2 -felide-constructors -funroll-loops -fstrict-aliasing -Wdisabled-optimization -Wno-variadic-macros -fopenmp -DNDEBUG 'src/LibMeshRefinerRegister.cpp' -MM -MF temp.dep
+sed -e"s#LibMeshRefinerRegister.o#obj/Debug/LibMeshRefinerRegister.o#" temp.dep > ./obj/Debug/LibMeshRefinerRegister.d
+rm temp.dep
+g++: generating libmesh_bridge_Debug.so.1.0
+g++ -shared -Wl,-rpath,./lib -g -Wl,-soname,libmesh_bridge_Debug.so.1 -o ./lib/'libmesh_bridge_Debug.so.1.0' 'obj/Debug/LibMeshBinaryElements.o' 'obj/Debug/LibMeshBinarityMap.o' 'obj/Debug/LibMeshRefinerRegister.o' 'obj/Debug/LibMeshHelper.o' -L/usr/local/lib  -lpthread -lmesh_dbg
+cd ./lib; pwd; ln -s -f libmesh_bridge_Debug.so.1.0 libmesh_bridge_Debug.so.1; ln -s -f libmesh_bridge_Debug.so.1.0 libmesh_bridge_Debug.so; cd /home/soblinsky/pacsProject
+/media/soblinsky/Data/Documents/Ingegneria_Matematica/Specialistica/PACS/project/code/library_bridges/libmesh_bridge/lib
+compiling: src/LibMeshRefinerRegister.cpp
+g++  -DRELEASE -I./include -I./../../refine_binary/include -I/usr/local/include/libmesh  -march=native  -Wall -Wextra -fPIC -rdynamic -O3 -std=c++14 -c -o 'obj/Release/LibMeshRefinerRegister.o' 'src/LibMeshRefinerRegister.cpp'
+g++  -DRELEASE -I./include -I./../../refine_binary/include -I/usr/local/include/libmesh  -march=native  -Wall -Wextra -fPIC -rdynamic -O3 -std=c++14 'src/LibMeshRefinerRegister.cpp' -MM -MF temp.dep
+sed -e"s#LibMeshRefinerRegister.o#obj/Release/LibMeshRefinerRegister.o#" temp.dep > ./obj/Release/LibMeshRefinerRegister.d
+rm temp.dep
+g++: generating libmesh_bridge.so.1.0
+g++ -shared -Wl,-rpath,./lib -O3 -Wl,-soname,libmesh_bridge.so.1 -o ./lib/'libmesh_bridge.so.1.0' 'obj/Release/LibMeshBinaryElements.o' 'obj/Release/LibMeshBinarityMap.o' 'obj/Release/LibMeshRefinerRegister.o' 'obj/Release/LibMeshHelper.o' -L/usr/local/lib  -lpthread -lmesh_opt
+cd ./lib; pwd; ln -s -f libmesh_bridge.so.1.0 libmesh_bridge.so.1; ln -s -f libmesh_bridge.so.1.0 libmesh_bridge.so; cd /home/soblinsky/pacsProject
+/media/soblinsky/Data/Documents/Ingegneria_Matematica/Specialistica/PACS/project/code/library_bridges/libmesh_bridge/lib
+make[1]: Leaving directory '/media/soblinsky/Data/Documents/Ingegneria_Matematica/Specialistica/PACS/project/code/library_bridges/libmesh_bridge'
+make --directory=plugin_loading 
+make[1]: Entering directory '/media/soblinsky/Data/Documents/Ingegneria_Matematica/Specialistica/PACS/project/code/plugin_loading'
+make[1]: Leaving directory '/media/soblinsky/Data/Documents/Ingegneria_Matematica/Specialistica/PACS/project/code/plugin_loading'
+make --directory=quadrature_rules/libmesh_quadrature 
+make[1]: Entering directory '/media/soblinsky/Data/Documents/Ingegneria_Matematica/Specialistica/PACS/project/code/quadrature_rules/libmesh_quadrature'
+make[1]: Leaving directory '/media/soblinsky/Data/Documents/Ingegneria_Matematica/Specialistica/PACS/project/code/quadrature_rules/libmesh_quadrature'
+make --directory=refine_binary 
+make[1]: Entering directory '/media/soblinsky/Data/Documents/Ingegneria_Matematica/Specialistica/PACS/project/code/refine_binary'
+make[1]: Leaving directory '/media/soblinsky/Data/Documents/Ingegneria_Matematica/Specialistica/PACS/project/code/refine_binary'
+make --directory=example 
+make[1]: Entering directory '/media/soblinsky/Data/Documents/Ingegneria_Matematica/Specialistica/PACS/project/code/example'
+make[1]: Leaving directory '/media/soblinsky/Data/Documents/Ingegneria_Matematica/Specialistica/PACS/project/code/example'
+make --directory=test 
+make[1]: Entering directory '/media/soblinsky/Data/Documents/Ingegneria_Matematica/Specialistica/PACS/project/code/test'
+compiling: src/main.cpp
+g++  -DOPT -I./include -I./../refine_binary/include -I./../library_bridges/libmesh_bridge/include -I./../quadrature_rules/libmesh_quadrature/include -I/usr/local/include/libmesh -I./../interpolating_functions/include -I./../plugin_loading/include  -march=native  -Wall -Wextra -std=c++14 -O3 -c -o 'obj/Opt/main.o' 'src/main.cpp'
+g++  -DOPT -I./include -I./../refine_binary/include -I./../library_bridges/libmesh_bridge/include -I./../quadrature_rules/libmesh_quadrature/include -I/usr/local/include/libmesh -I./../interpolating_functions/include -I./../plugin_loading/include  -march=native  -Wall -Wextra -std=c++14 -O3 'src/main.cpp' -MM -MF temp.dep
+sed -e"s#main.o#obj/Opt/main.o#" temp.dep > ./obj/Opt/main.d
+rm temp.dep
+g++: generating test
+g++   -o ./bin/'test' 'obj/Opt/main.o' 'obj/Opt/Test.o' '../refine_binary/lib/librefine_binary.a' ./../library_bridges/libmesh_bridge/lib/libmesh_bridge.so ./../library_bridges/libmesh_bridge/lib/libmesh_bridge.so.1 ./../library_bridges/libmesh_bridge/lib/libmesh_bridge.so.1.0 ./../quadrature_rules/libmesh_quadrature/lib/libmesh_quadrature.so.1 ./../quadrature_rules/libmesh_quadrature/lib/libmesh_quadrature.so ./../quadrature_rules/libmesh_quadrature/lib/libmesh_quadrature.so.1.0 ./../interpolating_functions/lib/libmy_functions.so.1.0 ./../interpolating_functions/lib/libmy_functions.so.1 ./../interpolating_functions/lib/libmy_functions.so ./../plugin_loading/lib/libplugin_loader.so ./../plugin_loading/lib/libplugin_loader.so.1.0 ./../plugin_loading/lib/libplugin_loader.so.1 -L/usr/local/lib  -lpthread -lmesh_opt
+compiling: src/main.cpp
+g++  -DDEBUG -D_GLIBCXX_DEBUG -I./include -I./../refine_binary/include -I./../library_bridges/libmesh_bridge/include -I./../quadrature_rules/libmesh_quadrature/include -I/usr/local/include/libmesh -I./../interpolating_functions/include -I./../plugin_loading/include  -march=native  -Wall -Wextra -g -std=gnu++11 -O2 -felide-constructors -funroll-loops -fstrict-aliasing -Wdisabled-optimization -Wno-variadic-macros -fopenmp -DNDEBUG -c -o 'obj/Debug/main.o' 'src/main.cpp'
+g++  -DDEBUG -D_GLIBCXX_DEBUG -I./include -I./../refine_binary/include -I./../library_bridges/libmesh_bridge/include -I./../quadrature_rules/libmesh_quadrature/include -I/usr/local/include/libmesh -I./../interpolating_functions/include -I./../plugin_loading/include  -march=native  -Wall -Wextra -g -std=gnu++11 -O2 -felide-constructors -funroll-loops -fstrict-aliasing -Wdisabled-optimization -Wno-variadic-macros -fopenmp -DNDEBUG 'src/main.cpp' -MM -MF temp.dep
+sed -e"s#main.o#obj/Debug/main.o#" temp.dep > ./obj/Debug/main.d
+rm temp.dep
+g++: generating test_Debug
+g++   -o ./bin/'test_Debug' 'obj/Debug/main.o' 'obj/Debug/Test.o' '../refine_binary/lib/librefine_binary_Debug.a' ./../library_bridges/libmesh_bridge/lib/libmesh_bridge_Debug.so.1.0 ./../library_bridges/libmesh_bridge/lib/libmesh_bridge_Debug.so.1 ./../library_bridges/libmesh_bridge/lib/libmesh_bridge_Debug.so ./../quadrature_rules/libmesh_quadrature/lib/libmesh_quadrature_Debug.so ./../quadrature_rules/libmesh_quadrature/lib/libmesh_quadrature_Debug.so.1.0 ./../quadrature_rules/libmesh_quadrature/lib/libmesh_quadrature_Debug.so.1 ./../interpolating_functions/lib/libmy_functions_Debug.so.1 ./../interpolating_functions/lib/libmy_functions_Debug.so ./../interpolating_functions/lib/libmy_functions_Debug.so.1.0 ./../plugin_loading/lib/libplugin_loader_Debug.so.1.0 ./../plugin_loading/lib/libplugin_loader_Debug.so.1 ./../plugin_loading/lib/libplugin_loader_Debug.so -L/usr/local/lib  -lpthread -lmesh_dbg
+make[1]: Leaving directory '/media/soblinsky/Data/Documents/Ingegneria_Matematica/Specialistica/PACS/project/code/test'
+Sono nel main
+Registrata in QuadratureFactory<1> quadratura con chiave: 0
+Indirizzo factory: 0x681a80
+
+Starting Integration on generic elements test
+Costruisco FElement
+Inizializzo interval
+Sono nel costruttore di StdElement
+Cerco nella factory QuadratureFactory<1> la quadrature_rule con chiave 0
+Indirizzo factory: 0x681a80
+Quadrature_rule creata correttamente
+interval inizializzato
+Calcolo l'integrale tra 1 e 2 di x^2
+Soluzione esatta : 2.33333
+Soluzione numerica : 2.33333
+errore : 4.44089e-16
+Integration on generic elements test ended
+
+ ---------------------------------------------------------------------------- 
+| Reference count information                                                |
+ ---------------------------------------------------------------------------- 
+| N7libMesh15GhostingFunctorE reference count information:
+|  Creations:    1
+|  Destructions: 1
+| N7libMesh4ElemE reference count information:
+|  Creations:    2
+|  Destructions: 2
+| N7libMesh4NodeE reference count information:
+|  Creations:    2
+|  Destructions: 2
+| N7libMesh5QBaseE reference count information:
+|  Creations:    1
+|  Destructions: 0
+| N7libMesh9DofObjectE reference count information:
+|  Creations:    4
+|  Destructions: 4
+ ---------------------------------------------------------------------------- 
+Memory leak detected!
+
+Starting manual binary refinement test
+The interval has refinement_flag = 1
+I directly call the Interval refine method
+I have started from a mesh with 1 elements; after refinement it has 3 elements, 2 of them are ACTIVE
+
+Manual binary refinement test ended
+
+ ---------------------------------------------------------------------------- 
+| Reference count information                                                |
+ ---------------------------------------------------------------------------- 
+| N7libMesh15GhostingFunctorE reference count information:
+|  Creations:    2
+|  Destructions: 2
+| N7libMesh4ElemE reference count information:
+|  Creations:    21
+|  Destructions: 21
+| N7libMesh4NodeE reference count information:
+|  Creations:    5
+|  Destructions: 5
+| N7libMesh5QBaseE reference count information:
+|  Creations:    1
+|  Destructions: 0
+| N7libMesh9DofObjectE reference count information:
+|  Creations:    26
+|  Destructions: 26
+ ---------------------------------------------------------------------------- 
+Memory leak detected!
+Tests completed

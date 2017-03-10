@@ -112,9 +112,12 @@ namespace GenericFactory
 				//! Register the given rule.
 				void add(Identifier const & name, Builder_type const & func)
 				{
-					auto f = _storage.insert(make_pair(name, func));
+					auto f = this->_storage.insert(make_pair(name, func));
 				 	if (f.second == false)
-						throw invalid_argument("Double registration in Factory");
+					{
+						(this->_storage)[name] = func;
+						cout << "Builder for key = " << identifierAsString(name) << "already present; previous one overwritten" << endl;
+					}
 				};
 
 				//! Returns a list of registered rules.

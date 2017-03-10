@@ -31,8 +31,12 @@ namespace Geometry
 #endif //SINGLETON_ENABLED
 				StdElement()
 				{
+					cout << "Sono nel costruttore di StdElement" << endl;
 					auto& quad_factory = QuadratureFactory<dim>::Instance();
+					cout << "Cerco nella factory QuadratureFactory<" << dim << "> la quadrature_rule con chiave " << Type << endl;
+					cout << "Indirizzo factory: " << &quad_factory << endl;
 					_quadrature_rule = move (quad_factory.create(Type));
+					cout << "Quadrature_rule creata correttamente" << endl;
 				};
 
 			public:

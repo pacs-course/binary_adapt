@@ -32,28 +32,30 @@ namespace FiniteElements
 				{
 					if(!(this->_initialized))
 					{
-	#ifdef MYDEBUG
+#ifdef MYDEBUG
 						cout << "Provo a inizializzare AbstractFElement" << endl;
-	#endif //MYDEBUG
+#endif //MYDEBUG
 					//TODO: create helper function to combine factory instantiation and call to the object creation
 						auto& felem_factory(GenericFactory::StdFElementFactory <dim, FeType> ::Instance());
-	#ifdef MYDEBUG
+#ifdef MYDEBUG
 						cout << "cerco in StdFElementFactory<" << dim << ", " << FeType <<"> con chiave " << GetType() << endl;
-	#endif //MYDEBUG
+						cout << "indirizzo factory: " << &felem_factory << endl;
+#endif //MYDEBUG
 						this->_ref_felement = felem_factory.create(GetType());
-	#ifdef MYDEBUG
+
+#ifdef MYDEBUG
 						cout << "refFElement creato" << endl;
-	#endif //MYDEBUG
+#endif //MYDEBUG
 						auto& map_factory(GenericFactory::AffineMapFactory<dim>::Instance());
 						this->_map = move(map_factory.create(GetType()));
-	#ifdef MYDEBUG
+#ifdef MYDEBUG
 						cout << "mappa creata" << endl;
-	#endif //MYDEBUG
+#endif //MYDEBUG
 						this->_map -> Init(GetNodes());
 						this->_initialized = true;
-	#ifdef MYDEBUG
+#ifdef MYDEBUG
 						cout << "AbstractFElement inizializzato" << endl;
-	#endif //MYDEBUG
+#endif //MYDEBUG
 					}
 				};
 

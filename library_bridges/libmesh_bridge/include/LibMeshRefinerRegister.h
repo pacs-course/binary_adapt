@@ -20,4 +20,9 @@ namespace LibmeshBinary
 	};
 } //namespace LibmeshBinary
 
+//namespace Banana
+//{
+//	void RefinerBananaFun();
+//} //namespace Banana
+
 #endif //__LIBMESH_REFINE_REGISTER_H

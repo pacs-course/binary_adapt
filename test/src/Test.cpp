@@ -514,10 +514,19 @@ void test7(int argc, char ** argv)
 
 	cout << "Costruisco FElement" << endl;
 	FElement<1, LegendreType, LibmeshIntervalClass> interval(move(int_ptr));
-	cout << "Inizializzo interval" << endl;
-	interval.Init();
-	cout << "interval inizializzato" << endl;
 	element = nullptr;
+	cout << "Inizializzo interval" << endl;
+	try
+	{
+		interval.Init();
+	}
+	catch(invalid_argument& ia)
+	{
+		cerr << "Inizializzazione dell'intervallo fallita" << endl;
+		cerr << ia.what() << endl;
+		return;
+	}
+	cout << "interval inizializzato" << endl;
 
 	cout << "Calcolo l'integrale tra 1 e 2 di x^2" << endl;	
 	double val5 = interval.Integrate([](const Point<1>& x){return x[0]*x[0];});
@@ -847,7 +856,7 @@ void test13(int argc, char** argv)
 {
 	cout << endl << "Starting BinaryRefinement test" << endl;
 
-	auto f_ptr = make_unique<MyFunctions::XSquared>();
+	auto f_ptr = HelperFunctions::MakeUnique<MyFunctions::XSquared>();
 
 	libMesh::LibMeshInit init (argc, argv);
 	auto mesh_ptr = make_shared<libMesh::Mesh> (init.comm());
@@ -899,7 +908,7 @@ void test15(int argc, char** argv)
 	libMesh::MeshTools::Generation::build_line(*mesh_ptr, n, 0, 1, LibmeshIntervalType);
 	LibmeshBinary::BinaryRefiner<1> binary_refiner;
 
-	auto f_ptr = make_unique<MyFunctions::XSquared>();
+	auto f_ptr = HelperFunctions::MakeUnique<MyFunctions::XSquared>();
 
 	binary_refiner.Init(move(f_ptr));
 	binary_refiner.SetMesh(mesh_ptr);

@@ -1,0 +1,7 @@
+[3;J[H[2JExample started
+Aggiunto plugin : libmy_functions_Debug.so
+Aggiunto plugin : libmesh_bridge_Debug.so
+Aggiunto plugin : libmesh_quadrature_Debug.so
+terminate called after throwing an instance of 'std::runtime_error'
+  what():  Cannot load "libmesh_bridge_Debug.so": ../library_bridges/libmesh_bridge/lib/libmesh_bridge_Debug.so: undefined symbol: _ZTIN10BinaryTree10BinaryNodeE
+Aborted (core dumped)
