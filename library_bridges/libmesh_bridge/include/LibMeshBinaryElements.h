@@ -48,7 +48,7 @@ namespace LibmeshBinary
 				virtual ~BinaryTreeElement()
 				{
 #ifdef DESTRUCTOR_ALERT
-					cout << "Distruggo BinaryTreeElement" << endl;
+					cerr << "Distruggo BinaryTreeElement" << endl;
 #endif //DESTRUCTOR_ALERT
 				};
 
@@ -71,10 +71,27 @@ namespace LibmeshBinary
 					return BinarityMap::AsBinary(this->parent());
 				};
 
+				virtual size_t NodeID() override
+				{
+//#ifdef MYDEBUG
+					cerr << "Nodi: " << endl;
+					auto nodes = this->get_nodes();
+					auto length = this->n_nodes();
+					for (size_t i(0); i < length; ++i)
+					{
+						auto current_ptr = nodes[i];
+						for (size_t j(0); j < dim; ++j)
+							cerr << (*current_ptr)(j) << "	";
+					}
+					cerr << endl;
+//#endif //MYDEBUG
+					return static_cast<size_t>(this->id());
+				};
+
 				virtual void Bisect() override
 				{
 #ifdef MYDEBUG
-					cout << "Sono in BinElement::refine" << endl;
+					cerr << "Sono in BinElement::refine" << endl;
 #endif //MYDEBUG
 					/* First I check that the derived class which implements the refine makes two children */
 					if (this->n_children() != 2)
@@ -84,25 +101,25 @@ namespace LibmeshBinary
 
 					libMesh::Elem::refine(this->_mesh_refinement);
 #ifdef MYDEBUG
-					cout << "Effettuata la Elem::refine" << endl;
-					cout << "L'indirizzo del primo figlio e' : " << this->child(0) << endl;
-					cout << "L'indirizzo del secondo figlio e' : " << this->child(1) << endl;
+					cerr << "Effettuata la Elem::refine" << endl;
+					cerr << "L'indirizzo del primo figlio e' : " << this->child(0) << endl;
+					cerr << "L'indirizzo del secondo figlio e' : " << this->child(1) << endl;
 #endif //MYDEBUG
 					//TODO: optimize this step, it recomputes all the mesh elements, not only the two new children
 					BinarityMap::MakeBinary<dim>(this->_mesh_refinement, this->_f);
 #ifdef MYDEBUG
-					cout << "Binarizzati i nuovi elementi" << endl;
-					cout << "L'indirizzo del primo figlio e' : " << this->child(0) << endl;
-					cout << "L'indirizzo del secondo figlio e' : " << this->child(1) << endl;
-					cout << "Visti come BinaryNode*" << endl;
-					cout << "L'indirizzo del primo figlio e' : " << Left() << endl;
-					cout << "L'indirizzo del secondo figlio e' : " << Right() << endl;
+					cerr << "Binarizzati i nuovi elementi" << endl;
+					cerr << "L'indirizzo del primo figlio e' : " << this->child(0) << endl;
+					cerr << "L'indirizzo del secondo figlio e' : " << this->child(1) << endl;
+					cerr << "Visti come BinaryNode*" << endl;
+					cerr << "L'indirizzo del primo figlio e' : " << Left() << endl;
+					cerr << "L'indirizzo del secondo figlio e' : " << Right() << endl;
 					auto& mesh(_mesh_refinement.get_mesh());
 					int cont = mesh.n_elem();
 					for (auto iter = mesh.elements_begin(); iter != mesh.elements_end(); ++iter)
 						if ((*iter)->refinement_flag() == libMesh::Elem::INACTIVE)
 							--cont;
-					std::cout << "After refinement mesh has " << mesh.n_elem() << " elements, " << cont << " of them are ACTIVE" << endl;
+					std::cerr << "After refinement mesh has " << mesh.n_elem() << " elements, " << cont << " of them are ACTIVE" << endl;
 #endif //MYDEBUG
 				};
 
@@ -110,7 +127,7 @@ namespace LibmeshBinary
 				{
 					/* when I activate my binary node, I also change the libMesh::Elem::_p_level,
 						so that the p-refinement can be see also in a libMesh framework */
-//					this->set_p_level(this->PLevel());
+					this->set_p_level(this->PLevel());
 
 					if (!(this->active()))
 						this->set_refinement_flag(libMesh::Elem::JUST_REFINED);

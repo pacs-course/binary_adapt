@@ -1,0 +1,17 @@
+#include "AbstractFactory.h"
+
+#include <map>
+
+
+namespace GenericFactory
+{
+	void* FactoryInstance(const string& factory_name, void* instance)
+	{
+//		WARNING!!! this causes memory leaks at exit! substitute the function with a class instance
+		static map<string, void*> instances;
+		if (instance)
+			instances[factory_name] = instance;
+
+		return instances[factory_name];
+	}
+} //namespace GenericFactory

@@ -12,17 +12,17 @@
 #########################
 LIBNAME		:= refine_binary
 Modes			:= Debug Release
-LibType		:= static
-#LibType		:= dynamic
+#LibType		:= static
+LibType		:= dynamic
 MajLibVers	:= 1
 MinLibVers	:= 0
 LibVers		:= $(MajLibVers).$(MinLibVers)
 
-
 #DIRECTORY TREE
-InstallDir	= $(THIS_DIR)/../lib
-CurrentDir	= $(PWD)
 THIS_DIR		= .
+BaseDir		= $(THIS_DIR)/..
+InstallDir	= $(BaseDir)/lib
+CurrentDir	= $(PWD)
 INCLUDE_DIR = $(THIS_DIR)/include
 SRC_DIR		= $(THIS_DIR)/src
 SO_DIR		= $(THIS_DIR)/lib
@@ -35,8 +35,12 @@ DIRS		= $(OBJ_DIRS) $(SO_DIRS)
 # Directory where target binary is created and object files
 ObjDir				:= $(OBJ_DIR)
 LibDir				:= $(SO_DIR)
+
+# I include the external libraries paths
+-include $(BaseDir)/Makefile.inc
+
 # Search Path For Include Files (InclPaths is included before mode specific InclPaths_MODE)
-InclPaths			:= $(INCLUDE_DIR)
+InclPaths			:= $(INCLUDE_DIR) $(EigenInclude) $(JacobiPolInclude)
 InclPaths_Debug	:=
 InclPaths_Release	:=
 # Defined values used by CPP preprocessor (Defines is included before mode specific Defines_MODE)
@@ -61,6 +65,7 @@ else
 CXXFlags		+= -fPIC -rdynamic
 LibSuffix	:= .so.$(LibVers)
 LD				:= g++
+
 # List of Library Names (Libs is included before mode specific Libs_MODE)
 Libs				:=
 Libs_Debug		:=
@@ -161,9 +166,9 @@ define CompileObject
 $(call ObjectFilename,$(1),$(2)): $(SRC_DIR)/$(2)
 	@echo compiling: '$$<'
 	$$(CXX_$(1)) -c -o '$$@' '$$<'
-	$$(CXX_$(1)) '$$<' -MM -MF temp.dep
-	sed -e"s#$(subst .cpp,.o,$(2))#$$@#" temp.dep > $(call DependFilename,$(1),$(file))
-	rm temp.dep
+	$$(CXX_$(1)) '$$<' -MM -MF '$$@'.temp.dep
+	sed -e"s#$(subst .cpp,.o,$(2))#$$@#" '$$@'.temp.dep > $(call DependFilename,$(1),$(file))
+	rm '$$@'.temp.dep
 endef
 
 define TargetTemplate
@@ -173,7 +178,7 @@ Objects_$(1)  := $(foreach file,$(SRC),$(call ObjectFilename,$(1),$(file)))
 
 $(1):	init_$(1) $(call TargetFilename,$(1))
 
-$(call TargetFilename,$(1)): $$(Objects_$(1))
+$(call TargetFilename,$(1)): $$(Objects_$(1)) $$(JacobiPolLibFile)
 	@echo $(LD): generating '$$(notdir $$@)'
 	$(LD) $(LFlags) $$(LFlags_$(1)) -o $(LibDir)/'$$(notdir $$@)' $$(^:%='%') $(LibPaths:%=$(LibPathFlag)%) $$(LibPaths_$(1):%=$(LibPathFlag)%) $(Libs:%=$(LibraryFlag)%) $$(Libs_$(1):%=$(LibraryFlag)%)
 ifeq ($(LibType), dynamic)

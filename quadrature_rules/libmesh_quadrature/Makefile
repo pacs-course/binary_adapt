@@ -33,6 +33,9 @@ OBJ_DIRS	= $(OBJ_DIR)
 SO_DIRS	= $(SO_DIR)
 DIRS		= $(OBJ_DIRS) $(SO_DIRS)
 
+# I include the external libraries paths
+-include $(BaseDir)/Makefile.inc
+
 RefineDir = $(BaseDir)/refine_binary
 RefineInclude = $(RefineDir)/include
 
@@ -41,17 +44,11 @@ RefineInclude = $(RefineDir)/include
 LibmeshBridgeDir = $(BaseDir)/library_bridges/libmesh_bridge
 LibmeshBridgeInclude = $(LibmeshBridgeDir)/include
 
-#libmesh headers directory
-LibMeshInclude = /usr/local/include/libmesh
-
-#Directory where libmesh libraries are stored
-LibMeshDir = /usr/local/lib
-
 # Directory where target binary is created and object files
 ObjDir				:= $(OBJ_DIR)
 LibDir				:= $(SO_DIR)
 # Search Path For Include Files (InclPaths is included before mode specific InclPaths_MODE)
-InclPaths			:= $(INCLUDE_DIR) $(RefineInclude) $(LibMeshInclude) $(LibmeshBridgeInclude)
+InclPaths			:= $(INCLUDE_DIR) $(RefineInclude) $(LibMeshInclude) $(LibmeshBridgeInclude) $(EigenInclude)
 InclPaths_Debug	:=
 InclPaths_Release	:=
 # Defined values used by CPP preprocessor (Defines is included before mode specific Defines_MODE)
@@ -81,7 +78,7 @@ Libs				:= pthread
 Libs_Debug		:= mesh_dbg
 Libs_Release	:= mesh_opt
 # Search Paths for Libraries (LibPaths is included before mode specific LibPaths_MODE)
-LibPaths				:= $(LibMeshDir)
+LibPaths				:= $(LibMeshLibPath)
 LibPaths_Debug		:=
 LibPaths_Release	:=
 # Linker specific flags (LFlags is included before mode specific LFlags_MODE)
@@ -176,9 +173,9 @@ define CompileObject
 $(call ObjectFilename,$(1),$(2)): $(SRC_DIR)/$(2)
 	@echo compiling: '$$<'
 	$$(CXX_$(1)) -c -o '$$@' '$$<'
-	$$(CXX_$(1)) '$$<' -MM -MF temp.dep
-	sed -e"s#$(subst .cpp,.o,$(2))#$$@#" temp.dep > $(call DependFilename,$(1),$(file))
-	rm temp.dep
+	$$(CXX_$(1)) '$$<' -MM -MF '$$@'.temp.dep
+	sed -e"s#$(subst .cpp,.o,$(2))#$$@#" '$$@'.temp.dep > $(call DependFilename,$(1),$(file))
+	rm '$$@'.temp.dep
 endef
 
 define TargetTemplate

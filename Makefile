@@ -6,29 +6,40 @@ WHOAMI = $(MATRICOLA)_$(NAME)_$(SURNAME)
 #####################################################
 
 
-lib_interpolating_functions	:= ./interpolating_functions
-lib_libmesh_bridge				:= ./library_bridges/libmesh_bridge
-lib_plugin_loading				:= ./plugin_loading
-lib_libmesh_quadrature			:= ./quadrature_rules/libmesh_quadrature
-lib_refine_binary					:= ./refine_binary
-example								:= ./example
-test									:= ./test
+bridges_libs_path		:= ./library_bridges
+quadrature_libs_path	:= ./quadrature_rules
 
-libraries	:= $(lib_interpolating_functions) $(lib_libmesh_bridge) $(lib_plugin_loading) $(lib_libmesh_quadrature) $(lib_refine_binary)
-binaries	:= $(example) $(test)
+lib_interpolating_functions	:= ./interpolating_functions
+lib_libmesh_bridge				:= $(bridges_libs_path)/libmesh_bridge
+lib_plugin_loading				:= ./plugin_loading
+lib_libmesh_quadrature			:= $(quadrature_libs_path)/libmesh_quadrature
+lib_sandia_quadrature			:= $(quadrature_libs_path)/sandia_quadrature
+lib_refine_binary					:= ./refine_binary
+example	:= ./example
+test		:= ./test
+
+lib_sub_dirs := $(bridges_libs_path) \
+					 $(quadrature_libs_path)
+
+libraries	:= $(lib_interpolating_functions) \
+					$(lib_libmesh_bridge) \
+					$(lib_plugin_loading) \
+					$(lib_libmesh_quadrature) \
+					$(lib_sandia_quadrature) \
+					$(lib_refine_binary)
+
+binaries	:= $(example) \
+				$(test)
 
 
 .PHONY: all $(binaries) $(libraries)
 all: $(libraries) $(binaries)
 
-#$(binaries) $(libraries):
-#	$(MAKE) --directory=$@ $(TARGET)
-
 $(binaries): $(libraries)
-	$(MAKE) --directory=$@ $(TARGET)
+	$(MAKE) -j --directory=$@ $(TARGET)
 
 $(libraries):
-	$(MAKE) --directory=$@ $(TARGET)
+	$(MAKE) -j --directory=$@ $(TARGET)
 
 #inserire qui eventuali dipendenze fra le librerie
 
@@ -44,6 +55,12 @@ uninstall:
 clean:
 	$(MAKE) TARGET=clean
 
+.PHONY: tree
+tree: $(subst .,$(WHOAMI),$(libraries))
+
+$(subst .,$(WHOAMI),$(libraries)):
+	mkdir -p $(dir $@)
+
 .PHONY:package
 package: clean
 	@if [ -e $(WHOAMI) ] ; then \
@@ -53,13 +70,18 @@ package: clean
 		echo $(WHOAMI) does not exist! creating... \
 		; mkdir $(WHOAMI) \
 	; fi
+	@$(MAKE) tree
 	@rm -f $(WHOAMI).zip
 	@echo ... preparing package inputs...
 	@cp Makefile $(WHOAMI)
+	@cp Makefile.inc $(WHOAMI)
+	@cp *.sh $(WHOAMI)
 	@for d in $(binaries) $(libraries) \
 	; do \
-		cp -r $$d $(WHOAMI) \
+		cp -r $$d $(WHOAMI)/`dirname $$d` \
 	; done
 	@echo ... creating zipfile...
 	@zip -q -r $(WHOAMI).zip $(WHOAMI)
+	@echo ... removing $(WHOAMI)...
+	@rm -rf $(WHOAMI)
 	@echo ... done!

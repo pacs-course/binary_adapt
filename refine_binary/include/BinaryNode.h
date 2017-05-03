@@ -49,6 +49,9 @@ namespace BinaryTree
 
 			virtual void Activate() = 0;
 			virtual void Deactivate() = 0;
+
+			virtual size_t NodeID() = 0;
+
 		protected:
 			virtual void UpdateProjectionError() = 0;
 
@@ -88,7 +91,8 @@ namespace BinaryTree
 		protected:
 			void SortElements();
 			void DeactivateSubTree(BinaryNode*);
-			void SelectActiveNodesRecursively(BinaryNode*);
+			bool FindQRecursively(BinaryNode*, const double);
+			void SelectActiveNodesRecursively(BinaryNode*, const double);
 
 		protected:
 /*

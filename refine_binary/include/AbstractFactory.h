@@ -8,6 +8,7 @@
 #include <functional>
 #include <stdexcept>
 #include <type_traits>
+#include <typeinfo>
 
 using namespace std;
 namespace GenericFactory
@@ -59,6 +60,7 @@ namespace GenericFactory
 //			M_identifierAsString<is_convertible<Identifier, string>::value, Identifier> (Identifier const &);
 
 
+
 	/*! @brief A generic factory.
 	 
 	 It is implemented as a Singleton. The compulsory way to 
@@ -70,11 +72,20 @@ namespace GenericFactory
 	 \endcode
 	*/
 
+	class FactoryBase
+	{
+	public:
+	    virtual ~FactoryBase() {}
+	};
+
+	FactoryBase* FactoryInstance(const string& factory_name, FactoryBase* instance = nullptr);
+
+
 	template	<	typename AbstractProduct,
 	 				typename Identifier,
 				   typename ReturnType
 				>
-		class Factory
+		class Factory : public FactoryBase
 		{
 			public:
 				//! The container for the rules.
@@ -86,11 +97,25 @@ namespace GenericFactory
 				//! The return type.
 				using Return_type				= ReturnType;
 
+				static const string Name()
+				{
+				    string s1 = typeid(AbstractProduct).name();
+				    string s2 = typeid(Identifier).name();
+				    string s3 = typeid(ReturnType).name();
+				    return s1 + "#" + s2 + "#" + s3;
+				}
+
 				static Factory& Instance()
 				{
-					static Factory f;
-					return f;
+					FactoryBase* instance = FactoryInstance(Name());
+					if (!instance)
+					{
+					    instance = FactoryInstance(Name(), new Factory);
+					}
+					Factory* f = static_cast<Factory*> (instance);
+					return *f;
 				};
+
 				//! Get the rule with given name
 				/*!
 				If ReturnType is a pointer, it is null if no rule is present.

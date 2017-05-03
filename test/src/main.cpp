@@ -1,8 +1,11 @@
 #include "Test.h"
 #include "PluginLoader.h"
 
-#include "LibMeshQuadratureRegister.h" //QuadratureBananaFun
-//#include "LibMeshRefinerRegister.h" //RefinerBananaFun
+#define DEPRECATED
+#ifdef DEPRECATED
+#include "LibMeshQuadratureRegister.h" //LibmeshBananaFun
+#include "SandiaQuadratureRegister.h" //SandiaBananaFun
+#endif //DEPRECATED
 
 #include <iostream>
 
@@ -11,24 +14,34 @@ using namespace std;
 int main(int argc, char** argv)
 {
 	cerr << "Sono nel main" << endl;
-//	PluginLoading::PluginLoader pl;
-//	cerr << "PluginLoader costruito" << endl;
-//#ifndef DEBUG
-//	pl.Add("libmy_functions.so");
-//	pl.Add("libmesh_bridge.so");
-//	pl.Add("libmesh_quadrature.so");
-//#else //DEBUG
-//	pl.Add("libmy_functions_Debug.so");
-//	pl.Add("libmesh_bridge_Debug.so");
-//	pl.Add("libmesh_quadrature_Debug.so");
-//#endif //DEBUG
-//	if (!pl.Load())
-//	{
-//		cerr << "Houston we have a problem: something went wrong loading plugins";
-//		return 1;
-//	}
 
-	Banana::QuadratureBananaFun();
+#ifndef DEPRECATED
+
+	PluginLoading::PluginLoader pl;
+	cerr << "PluginLoader costruito" << endl;
+#ifndef DEBUG
+	pl.Add("libmesh_quadrature.so");
+	pl.Add("libsandia_quadrature.so");
+#else //DEBUG
+	pl.Add("libmesh_quadrature_Debug.so");
+	pl.Add("libsandia_quadrature_Debug.so");
+#endif //DEBUG
+	if (!pl.Load())
+	{
+		cerr << "Houston we have a problem: something went wrong loading plugins";
+		return 1;
+	}
+
+#else //DEPRECATED
+
+#define LIBMESH_QUADRATURE
+#ifdef LIBMESH_QUADRATURE
+	Banana::LibmeshBananaFun();
+#else
+	Banana::SandiaBananaFun();
+#endif
+
+#endif //DEPRECATED
 
 //	test1	(argc, argv);
 
@@ -40,18 +53,19 @@ int main(int argc, char** argv)
 //	test4	(argc, argv);
 //	test5	(argc, argv);
 //	test6	(argc, argv);
-	test7	(argc, argv);
+//	test7	(argc, argv);
 //	test8	(argc, argv);
 //	test9	(argc, argv);
-//	test10(argc, argv);
+//	test10(argc, argv); //perche' il primo polinomio non integrato esattamente ha norma nulla?
 //	test11(argc, argv);
 //	test12(argc, argv);
 
-//	test13(argc, argv); //fallisce
+//	test13(argc, argv);
 
 //	test14(argc, argv);
 
-//	test15(argc, argv); //fallisce
+	test15(argc, argv);
+//	test16(argc, argv);
 
 	cout << "Tests completed" << endl;
 

@@ -58,7 +58,12 @@ namespace BinaryTree
 
 	void BinaryNode::ETilde (double val)
 	{
-		_E_tilde = val;
+#ifdef TRY_IT
+		if (val < 1E-15)
+			_E_tilde = 0;
+		else
+#endif //TRY_IT
+			_E_tilde = val;
 	};
 
 	double BinaryNode::Q() const
@@ -84,38 +89,93 @@ namespace BinaryTree
 	void BinaryGodfather::SelectActiveNodes()
 	{
 		for (auto& el : this->_elements)
-			SelectActiveNodesRecursively(el);
+		{
+			SelectActiveNodesRecursively(el, el->Q());
+		}
 	};
 
-	void BinaryGodfather::SelectActiveNodesRecursively(BinaryNode* node)
+	bool BinaryGodfather::FindQRecursively(BinaryNode* node, const double q_value)
 	{
 		if (node)
 		{
+			if (q_value == node->Q())
+				return true;
+			else
+			{
+				bool left_found = FindQRecursively(node->Left(), q_value);
+				bool right_found = FindQRecursively(node->Right(), q_value);
+				return left_found | right_found;
+			}
+		}
+		return false;
+	};
+
+
+	void BinaryGodfather::SelectActiveNodesRecursively(BinaryNode* node, const double q_value)
+	{
+		if (node)
+		{
+#ifdef MYDEBUG
+			cerr << "Elemento di id " << node->NodeID() << endl;
+			cerr << "Errore di interpolazione " << node->ProjectionError() << endl << endl;
+#endif //MYDEBUG
+
 			auto hansel = node->Left();
 			auto gretel = node->Right();
 
-			if (node->Q() == node->ETilde())
+			bool left_found = FindQRecursively(hansel, q_value);
+			bool right_found = FindQRecursively(gretel, q_value);
+
+			if (!left_found && !right_found)
 			{
-				node->Activate();
+				if (node->Q() != q_value)
+					cerr << "Houston we have a problem: q value not found in the tree!" << endl;
+
 #ifdef MYDEBUG
-				std::cout << "Ho un elemento attivo di p level : " << node->PLevel() << std::endl;
+				cerr << "Attivo l'elemento di id " << node->NodeID() << endl;
+				cerr << "p level : " << node->PLevel() << endl;
+				cerr << "Errore di interpolazione " << node->ProjectionError() << endl;
+				cerr << "e~ " << node->TildeError() << endl;
+				cerr << "q = " << node->Q() << endl;
+				cerr << "E~ = " << node->ETilde() << endl << endl;
 #endif //MYDEBUG
+
+				node->Activate();
 				DeactivateSubTree(hansel);
 				DeactivateSubTree(gretel);
 			}
 			else
 			{
-				SelectActiveNodesRecursively(hansel);
-				SelectActiveNodesRecursively(gretel);
+				SelectActiveNodesRecursively(hansel, hansel->Q());
+				SelectActiveNodesRecursively(gretel, gretel->Q());
+
+#ifdef MYDEBUG
+				cerr << "Disattivo l'elemento di id " << node->NodeID() << endl;
+				cerr << "p level : " << node->PLevel() << endl;
+				cerr << "Errore di interpolazione " << node->ProjectionError() << endl;
+				cerr << "e~ " << node->TildeError() << endl;
+				cerr << "q = " << node->Q() << endl;
+				cerr << "E~ = " << node->ETilde() << endl << endl;
+#endif //MYDEBUG
+
 				node->Deactivate();
 			}
 		}
 	};
 
+
 	void BinaryGodfather::DeactivateSubTree(BinaryNode* node)
 	{
 		if(node)
 		{
+#ifdef MYDEBUG
+			cerr << "Disattivo l'elemento di id " << node->NodeID() << endl;
+			cerr << "p level : " << node->PLevel() << endl;
+			cerr << "Errore di interpolazione " << node->ProjectionError() << endl;
+			cerr << "e~ " << node->TildeError() << endl;
+			cerr << "q = " << node->Q() << endl;
+			cerr << "E~ = " << node->ETilde() << endl << endl;
+#endif //MYDEBUG
 			node->Deactivate();
 			DeactivateSubTree(node->Left());
 			DeactivateSubTree(node->Right());

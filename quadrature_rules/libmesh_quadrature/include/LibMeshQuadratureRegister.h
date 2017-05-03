@@ -1,6 +1,8 @@
 #ifndef __LIBMESH_QUADRATURE_REGISTER_H
 #define __LIBMESH_QUADRATURE_REGISTER_H
 
+#define DEPRECATED
+#ifdef DEPRECATED
 namespace LibmeshBinary
 {
 	/*
@@ -22,6 +24,8 @@ namespace LibmeshBinary
 
 namespace Banana
 {
-	void QuadratureBananaFun();
+	void LibmeshBananaFun();
 }
+#endif //DEPRECATED
+
 #endif //__LIBMESH_QUADRATURE_REGISTER_H

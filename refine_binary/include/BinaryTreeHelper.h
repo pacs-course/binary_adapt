@@ -19,11 +19,27 @@ namespace HelperFunctions
 	std::unique_ptr<T> MakeUnique(Args&&... args)
 	{
 #ifdef __cpp_lib_make_unique
-		return HelperFunctions::MakeUnique<T>(args...);
+		return std::make_unique<T>(args...);
 #else
 		return std::unique_ptr<T>(new T(std::forward<Args>(args)...));
 #endif
 	};
+
+//	template <class T, size_t L>
+//		class SmartArray : public std::array<T*, L>
+//		{
+//			public:
+//				SmartArray()
+//				{
+//					this->fill(nullptr);
+//				};
+
+//				~SmartArray()
+//				{
+//					for (auto& iter : (*this))
+//						delete iter;
+//				};
+//		};
 
 	template <typename ConcreteProduct, typename AbstractProduct = ConcreteProduct>
 		struct Builders

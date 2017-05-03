@@ -13,17 +13,9 @@ void Example1(int argc, char** argv)
 {
 	cerr << "Example started" << endl;
 
-	auto& mrf(BinaryTree::MeshRefinerFactory<1>::Instance());
-//	cerr << "Indirizzo della factory 1D di refiner : " << &mrf << endl;
-
-	auto& mrf2(BinaryTree::MeshRefinerFactory<2>::Instance());
-//	cerr << "Indirizzo della factory 2D di refiner : " << &mrf2 << endl;
-
-	auto& funfac(BinaryTree::FunctionsFactory<1>::Instance());
-//	cerr << "Indirizzo della factory 1D di funzioni : " << &funfac << endl;
-
 	PluginLoading::PluginLoader pl;
-//	cerr << "Loader creato" << endl;
+	cerr << "Loader creato" << endl;
+
 #ifndef DEBUG
 	pl.Add("libmy_functions.so");
 	pl.Add("libmesh_bridge.so");
@@ -36,18 +28,31 @@ void Example1(int argc, char** argv)
 
 	if (!pl.Load())
 	{
-		cerr << "Houston we have a problem: something went wrong loading plugins";
+		cerr << "Houston we have a problem! Something went wrong loading plugins";
 		return;
 	}
-//	cerr << "Plugin caricati" << endl;
+	cerr << "Plugin caricati" << endl;
+
+	auto& mrf(BinaryTree::MeshRefinerFactory<1>::Instance());
+
+#ifdef MYDEBUG
+	cerr << "Indirizzo della factory 1D di refiner : " << &mrf << endl;
+#endif //MYDEBUG
+
+#ifdef MYDEBUG
+	auto& funfac(BinaryTree::FunctionsFactory<1>::Instance());
+	cerr << "Indirizzo della factory 1D di funzioni : " << &funfac << endl;
+#endif //MYDEBUG
+
 
 	unique_ptr<BinaryTree::MeshRefiner<1>> refiner = mrf.create("libmesh");
-//	cerr << "Refiner creato" << endl;
+	cerr << "Refiner creato" << endl;
 
 	refiner->Init("sqrt_x", argc, argv);
-//	cerr << "Refiner inizializzato con sqrt_x" << endl;
+	cerr << "Refiner inizializzato con sqrt_x" << endl;
 
 //	refiner->LoadMesh("mesh_files/example_1.TODO");
+//	refiner->Refine(1);
 	cerr << "Example ended" << endl;
 
 };

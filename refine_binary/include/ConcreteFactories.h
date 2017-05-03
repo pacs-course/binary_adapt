@@ -9,7 +9,7 @@
 
 /*
 	List of all the concrete instances of the factories useful in the library
-	Full specialization of the constructors make the necessary registrations
+	Full specializations of the constructors make the necessary registrations
 	The possibility to add other builders is left to an external user 
 */
 /* NB: It's not allowed to specialize aliases,

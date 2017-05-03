@@ -28,6 +28,13 @@ namespace Geometry
 				virtual ~QuadratureRuleInterface(){};
 				virtual QuadPointVec<dim> GetPoints() = 0;
 				virtual QuadWeightVec GetWeights() = 0;
+			protected:
+				QuadratureRuleInterface()
+				{
+#ifdef MYDEBUG
+					std::cout << "Sono nel costruttore di QuadratureRuleInterface" << std::endl;
+#endif //MYDEBUG
+				};
 		};
 
 /*
@@ -37,7 +44,6 @@ namespace Geometry
 */
 	template <size_t dim>
 		using QuadratureFactory = GenericFactory::ObjectFactory <QuadratureRuleInterface<dim>, ElementType>;
-
 } //namespace Geometry
 
 #endif //__QUADRATURE_H

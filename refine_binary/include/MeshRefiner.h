@@ -19,6 +19,16 @@ namespace BinaryTree
 			virtual void operator()(BinaryNode*) = 0;
 	};
 
+	class Counter : public NodeOperator
+	{
+		public:
+			Counter():_counter(0){};
+			virtual void operator()(BinaryNode*)override;
+			size_t GetCount()const;
+		protected:
+			size_t _counter;
+	};
+
 	class ErrorComputer : public NodeOperator
 	{
 		public:
@@ -87,6 +97,13 @@ namespace BinaryTree
 					return p_ex.GetPLevels();
 				};
 
+				size_t ActiveNodesNumber()
+				{
+					Counter cont;
+					this->IterateActiveNodes(cont);
+					return cont.GetCount();
+				};
+
 			protected:
 				virtual void DerivedInitialization(int argc, char** argv) = 0;
 
@@ -105,6 +122,7 @@ namespace BinaryTree
 					This pattern could be used also to implement other kinds of iterator
 				*/
 				virtual void IterateActiveNodes(NodeOperator&) = 0;
+
 				virtual void InitializeGodfather() = 0;
 
 			protected:
@@ -157,11 +175,27 @@ namespace BinaryTree
 				
 				while(daddy)
 				{
+#ifdef MYDEBUG
+					cerr << "Modifico i valori dell'elemento di id # " << daddy->NodeID() << endl;
+#endif //MYDEBUG
+
 					auto val = daddy->PLevel();
 					daddy->PLevel(val + 1);
 
 					auto hansel = daddy->Left ();
 					auto gretel = daddy->Right();
+
+#ifdef MYDEBUG
+					cerr << "Daddy ha q = " << daddy->Q() << endl;
+					cerr << "Daddy ha e tilde = " << daddy->TildeError() << endl;
+					cerr << "Daddy ha e = " << daddy->ProjectionError() << endl;
+					cerr << "Hansel ha q = " << hansel->Q() << endl;
+					cerr << "Hansel ha e tilde = " << hansel->TildeError() << endl;
+					cerr << "Hansel ha e = " << hansel->ProjectionError() << endl;
+					cerr << "Gretel ha q = " << gretel->Q() << endl;
+					cerr << "Gretel ha e tilde = " << gretel->TildeError() << endl;
+					cerr << "Gretel ha e = " << gretel->ProjectionError() << endl;
+#endif //MYDEBUG
 
 					auto new_E = std::min(	hansel->E() + gretel->E(),
 													daddy->ProjectionError()
@@ -171,14 +205,30 @@ namespace BinaryTree
 					auto new_E_tilde = new_E * old_E_tilde
 											 /
 											 (new_E + old_E_tilde);
-
+#ifdef MYDEBUG
+					cerr << "E" << endl;
+					cerr << "Old value: " << daddy->E() << endl;
+#endif //MYDEBUG
 					daddy->E(new_E);
+#ifdef MYDEBUG
+					cerr << "New value: " << new_E << endl;
+#endif //MYDEBUG
 					daddy->ETilde(new_E_tilde);
+#ifdef MYDEBUG
+					cerr << "E tilde" << endl;
+					cerr << "Old value: " << old_E_tilde << endl;
+					cerr << "New value: " << new_E_tilde << endl;
+#endif //MYDEBUG
 
 					BinaryNode* alfa_bro(nullptr);
+
 					hansel->Q() > gretel->Q() ? alfa_bro = hansel : alfa_bro = gretel;
 
 					auto new_q = std::min (alfa_bro->Q(), new_E_tilde);
+#ifdef MYDEBUG
+					cerr << "Il figlio alfa ha q = " << alfa_bro->Q() << endl;
+					cerr << "Il nuovo q vale: " << new_q << endl;
+#endif //MYDEBUG
 					daddy->Q(new_q);
 
 					daddy->S(alfa_bro->S());

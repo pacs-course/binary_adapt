@@ -6,7 +6,7 @@ using namespace std;
 
 namespace PluginLoading
 {
-	Plugin::Plugin(const std::string& so_file, int mode) : _so_file(so_file), _mode(mode)
+	Plugin::Plugin(const std::string& so_file, int mode) : _so_file(so_file), _handle(nullptr), _mode(mode)
 	{	};
 
 	Plugin::~Plugin()

@@ -2,6 +2,19 @@
 
 namespace BinaryTree
 {
+	void Counter::operator()(BinaryNode* node)
+	{
+		//this is to avoid warning by the compiler
+//		(void) node;
+		cerr << "Elemento attivo di id # " << node->NodeID() << endl;
+		++(this->_counter);
+	};
+
+	size_t Counter::GetCount()const
+	{
+		return this->_counter;
+	};
+
 	ErrorComputer::ErrorComputer(double& error_location) : _error_variable(error_location){};
 
 	void ErrorComputer::operator()(BinaryNode* node)

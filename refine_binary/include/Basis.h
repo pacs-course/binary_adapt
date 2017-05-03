@@ -8,9 +8,6 @@
 #include "TypeEnumerations.h"
 #include "Point.h"
 
-#define ENABLE_IF_VERSION
-//TODO: verify if it can be written an ENABLE_IF_VERSION-undefined compiling version of the class
-//#define SINGLETON_ENABLED
 using namespace std;
 
 namespace FiniteElements
@@ -178,8 +175,6 @@ namespace FiniteElements
 		};
 
 };//namespace FiniteElements
-
-//#undef SINGLETON_ENABLED
 
 #endif //__BASIS__HH
 

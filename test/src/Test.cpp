@@ -56,7 +56,7 @@ void test1(int argc, char ** argv)
 	Point<1> p1 = p_copy;
 	array<double, 2> init = {2,3};
 	Point<2> p2(init);
-	Point<3> p3 = p1.tensor(p2);
+	Point<3> p3 = p1.Tensor(p2);
 	double scalar(2);
 	Point<3> p4 = p3 * scalar;
 	cout << "p1:" << endl;
@@ -90,7 +90,7 @@ void test2(int argc, char ** argv)
 	Point<1> p1 = p_copy;
 	array<double, 2> init = {2,3};
 	Point<2> p2(init);
-	Point<3> p3 = p1.tensor(p2);
+	Point<3> p3 = p1.Tensor(p2);
 	double scalar(2);
 	Point<3> p4 = p3 * scalar;
 	Point<3> p5 = p4 - p3;
@@ -658,6 +658,7 @@ void test10(int argc, char ** argv)
 	cout << endl << "Starting Projection on element test" << endl;
 
 	BinaryTree::FunctionPtr<1> f_ptr = make_shared<MyFunctions::XSquared>();
+//	BinaryTree::FunctionPtr<1> f_ptr = make_shared<MyFunctions::AdvectionDiffusionSolution<100>>();
 
 	libMesh::LibMeshInit init (argc, argv);
 	libMesh::Mesh mesh(init.comm());
@@ -670,7 +671,7 @@ void test10(int argc, char ** argv)
 	const auto& f_el(el->GetFElement());
 
 	cout << "Let's check the basis orthogonality on the (0, 1) interval:" << endl;
-	for (size_t i(0); i < 8; ++i)
+	for (size_t i(0); i < 100; ++i)
 	{
 		double I = f_el.L2prod(
 										[&](const Point<1>& p){ return f_el.EvaluateBasisFunction(i+2, p);},
@@ -680,7 +681,7 @@ void test10(int argc, char ** argv)
 	}
 
 	cout << "Let's check the basis normality on the (0, 1) interval :" << endl;
-	for (size_t i(0); i < 8; ++i)
+	for (size_t i(0); i < 100; ++i)
 	{
 		double I = f_el.L2prod	(
 											[&](const Point<1>& p){ return f_el.EvaluateBasisFunction(i, p);},
@@ -698,26 +699,15 @@ void test10(int argc, char ** argv)
 	double error = el->ProjectionError();
 	cout << "Errore di interpolazione su P" << el->PLevel() << " : " << error << endl;
 
-	el->PLevel(1);
-	cout << "P level : " << el->PLevel() << endl;
-	cout << "coefficienti : ";
-	el->PrintCoefficients();
-	error = el->ProjectionError();
-	cout << "Errore di interpolazione su P" << el->PLevel() << " : " << error << endl;
-
-	el->PLevel(2);
-	cout << "P level : " << el->PLevel() << endl;
-	cout << "coefficienti : ";
-	el->PrintCoefficients();
-	error = el->ProjectionError();
-	cout << "Errore di interpolazione su P" << el->PLevel() << " : " << error << endl;
-
-	el->PLevel(3);
-	cout << "P level : " << el->PLevel() << endl;
-	cout << "coefficienti : ";
-	el->PrintCoefficients();
-	error = el->ProjectionError();
-	cout << "Errore di interpolazione su P" << el->PLevel() << " : " << error << endl;
+	for (size_t p = 1; p < 25; ++p)
+	{
+		el->PLevel(p);
+		cout << "P level : " << el->PLevel() << endl;
+//		cout << "coefficienti : ";
+//		el->PrintCoefficients();
+		error = el->ProjectionError();
+		cout << "Errore di interpolazione su P" << el->PLevel() << " : " << error << endl;
+	}
 
 	cout << "Projection on element test ended" << endl;
 };
@@ -851,11 +841,10 @@ void test12(int argc, char ** argv)
 
 	cout << endl << "Manual binary refinement test ended" << endl;
 };
-
+#include <quadrature.h>
 void test13(int argc, char** argv)
 {
 	cout << endl << "Starting BinaryRefinement test" << endl;
-
 	auto f_ptr = HelperFunctions::MakeUnique<MyFunctions::XSquared>();
 
 	libMesh::LibMeshInit init (argc, argv);
@@ -880,6 +869,15 @@ void test13(int argc, char** argv)
 			cout << "Active Element of polinomial degree : " << (*iter)->p_level() << endl;
 	cout << "I have started from a mesh with " << n << " elements; after refinement it has " << mesh_ptr->n_elem() << " elements, " << cont << " of them are ACTIVE" << endl;
 
+	cout << endl << "Now I check the same thing with the active elements iteration" << endl;
+	cout << "The mesh has " << binary_refiner.ActiveNodesNumber() << " ACTIVE elements" << endl;
+
+	vector<size_t> p_levels = binary_refiner.ExtractPLevels();
+	cout << "Livelli di p refinement : " << endl;
+	for (auto l : p_levels)
+		cout << l << " ";
+	cout << endl;
+
 	cout << "BinaryRefinement test ended" << endl;
 };
 
@@ -902,32 +900,80 @@ void test15(int argc, char** argv)
 	cout << endl << "Starting 1D refining complete test" << endl;
 
 	libMesh::LibMeshInit init (argc, argv);
-	auto mesh_ptr = make_shared<libMesh::Mesh> (init.comm());
-
-	int n = 1;
-	libMesh::MeshTools::Generation::build_line(*mesh_ptr, n, 0, 1, LibmeshIntervalType);
-	LibmeshBinary::BinaryRefiner<1> binary_refiner;
-
-	auto f_ptr = HelperFunctions::MakeUnique<MyFunctions::XSquared>();
-
-	binary_refiner.Init(move(f_ptr));
-	binary_refiner.SetMesh(mesh_ptr);
-
 	vector<double> error;
-	error.push_back(binary_refiner.GlobalError());
-	cout << endl << "Interpolation error before refinement >>>>>> " << error[0] << endl << endl;;
-	size_t n_iter = 100;
-	size_t i = 1;
-	binary_refiner.Refine(n_iter*i);
-	
-	vector<size_t> p_levels = binary_refiner.ExtractPLevels();
-	error.push_back(binary_refiner.GlobalError());
-	cout << endl << "Interpolation error after refinement >>>>>> " << error[1] << endl << endl;;
-//	auto interpolated_f = binary_refiner.ExtractInterpolatedFunction();
 
-	cout << "Livelli di p refinement : " << endl;
-	for (auto l : p_levels)
-		cout << l << " ";
-	cout << endl;
+	for (size_t n_iter = 0; n_iter < 51; ++n_iter)
+	{
+		cerr << endl << "#DOF = " << n_iter << endl;
+		auto mesh_ptr = make_shared<libMesh::Mesh> (init.comm());
+
+		int n = 1;
+		libMesh::MeshTools::Generation::build_line(*mesh_ptr, n, 0, 1, LibmeshIntervalType);
+		LibmeshBinary::BinaryRefiner<1> binary_refiner;
+
+//		auto f_ptr = HelperFunctions::MakeUnique<MyFunctions::XSquared>();
+//		auto f_ptr = HelperFunctions::MakeUnique<MyFunctions::XExpBeta<40>>();
+//		auto f_ptr = HelperFunctions::MakeUnique<MyFunctions::SqrtX>();
+//		auto f_ptr = HelperFunctions::MakeUnique<MyFunctions::HalfStep>();
+//		auto f_ptr = HelperFunctions::MakeUnique<MyFunctions::HalfSqrt>();
+//		auto f_ptr = HelperFunctions::MakeUnique<MyFunctions::HalfX>();
+//		auto f_ptr = HelperFunctions::MakeUnique<MyFunctions::HalfSquare>();
+//		auto f_ptr = HelperFunctions::MakeUnique<MyFunctions::HalfTwenty>();
+		auto f_ptr = HelperFunctions::MakeUnique<MyFunctions::AdvectionDiffusionSolution<100>>();
+		cout << "Function: " << f_ptr->Name() << endl;
+
+		binary_refiner.Init(move(f_ptr));
+		binary_refiner.SetMesh(mesh_ptr);
+
+		binary_refiner.Refine(n_iter);
+	
+		auto current_error = binary_refiner.GlobalError();
+		error.push_back(current_error);
+		cout << endl << "Interpolation error after refinement >>>>>> " << current_error << endl << endl;;
+//		auto interpolated_f = binary_refiner.ExtractInterpolatedFunction();
+
+		vector<size_t> p_levels = binary_refiner.ExtractPLevels();
+		cout << "Livelli di p refinement : " << endl;
+		for (auto l : p_levels)
+			cout << l << " ";
+		cout << endl;
+		cout << "The mesh has " << binary_refiner.ActiveNodesNumber() << " ACTIVE elements" << endl;
+	}
+	
+	cout << endl << "N vs Projection Error:" << endl;
+	size_t cont = 0;
+	for (auto e : error)
+		cout << cont++ << "	:	" << e << endl;
+	
 	cout << "1D refining complete test ended" << endl;
 };
+
+void test16(int argc, char ** argv)
+{
+	cout << endl << "Starting bug isolated test" << endl;
+
+	BinaryTree::FunctionPtr<1> f_ptr = make_shared<MyFunctions::XSquared>();
+
+	libMesh::LibMeshInit init (argc, argv);
+	libMesh::Mesh mesh(init.comm());
+	libMesh::MeshRefinement mesh_refiner(mesh);
+	libMesh::MeshTools::Generation::build_line(mesh, 1, 0, 1, LibmeshIntervalType);
+
+	BinarityMap::MakeBinary<1> (mesh_refiner, f_ptr);
+
+	auto el = dynamic_cast<BinaryTreeElement<1, LegendreType, LibmeshIntervalClass>*> (mesh.elem_ptr(0));
+	const auto& f_el(el->GetFElement());
+
+	size_t i(52);
+	cout << "Let's check the normality of the element #" << i << " of the basis :" << endl;
+
+	double I = f_el.L2prod	(
+										[&](const Point<1>& p){ return f_el.EvaluateBasisFunction(i, p);},
+										[&](const Point<1>& p){ return f_el.EvaluateBasisFunction(i, p);}
+									);
+	I *= i + 0.5;
+	cout << "Integral: " << I << endl;
+
+	cout << "Bug isolated test ended" << endl;
+};
+

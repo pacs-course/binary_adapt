@@ -30,7 +30,7 @@ namespace PluginLoading
 		_plugins.push_back(HelperFunctions::MakeUnique<Plugin>(full_path_so_file, mode));
 #else
 		_plugins.push_back(make_unique<Plugin>(full_path_so_file, mode));
-#endif
+#endif //DEBUG
 		cerr << "Aggiunto plugin : " << full_path_so_file << endl;
 	};
 
@@ -66,7 +66,7 @@ namespace PluginLoading
 				string name = string(dir_content->d_name);
 #ifdef DEBUG
 				cerr << name << endl;
-#endif DEBUG
+#endif //DEBUG
 				//it navigates recursively subdirectories
 				if (dir_content->d_type == DT_DIR)
 					LoadPath(name, mode);

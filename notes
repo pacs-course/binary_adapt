@@ -1,4 +1,10 @@
-rimuovere jacobi_polinomials dalla mia libreria, metterlo come libreria esterna
+rimuovere i template da coefficientcomputer, sostituirli con il polimorfismo. Verificare se FeType e' necessario come parametro del template
+
+rendere il codice indipendente dalla libreria che calcola jacobi
+
+nel plugin loading la navigazione ricorsiva delle subdirectories puo' essere deleteria
+
+voglio caricare le quadrature con la dlopen, no con la funzione banana
 
 example linka direttamente i file (non dipende quindi da install), ma poi il codice del main ha bisogno dell'installazione
 

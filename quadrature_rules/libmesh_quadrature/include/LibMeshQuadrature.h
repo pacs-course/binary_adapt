@@ -16,10 +16,11 @@ namespace LibmeshBinary
 				LibmeshQuadratureRule()
 				{
 					//TODO: use GetPot to configure quadrature options
-					auto ptr = libMesh::QBase::build(libMesh::QGAUSS, dim, libMesh::FORTYTHIRD);
-					_quadrature_rule = unique_ptr<libMesh::QBase>(ptr.release());
+					_quadrature_rule = libMesh::QBase::build(libMesh::QGAUSS, dim, libMesh::FORTYTHIRD);
 					_quadrature_rule->init(ConvertType<Type>());
 				};
+
+				virtual ~LibmeshQuadratureRule(){};
 
 				virtual Geometry::QuadPointVec<dim> GetPoints() override
 				{
@@ -44,7 +45,7 @@ namespace LibmeshBinary
 				};
 
 			private:
-				unique_ptr<libMesh::QBase> _quadrature_rule;
+				libMesh::UniquePtr<libMesh::QBase> _quadrature_rule;
 		};
 
 } //namespace LibmeshBinary

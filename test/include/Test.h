@@ -76,4 +76,9 @@ void test14(int argc, char ** argv);
 */
 void test15(int argc, char ** argv);
 
+/*
+Bug isolated
+*/
+void test16(int argc, char ** argv);
+
 #endif //__TEST_H

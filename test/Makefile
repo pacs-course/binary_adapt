@@ -23,12 +23,15 @@ OBJ_DIRS	= $(OBJ_DIR)
 BIN_DIRS	= $(BIN_DIR)
 DIRS		= $(OBJ_DIRS) $(BIN_DIRS)
 
+# I include the external libraries paths
+-include $(BaseDir)/Makefile.inc
+
 RefineName		= refine_binary
 RefineDir		= $(BaseDir)/refine_binary
 RefineInclude	= $(RefineDir)/include
 RefineLib		= $(RefineDir)/lib
-RefineFile		= $(RefineLib)/lib$(RefineName).a
-RefineDebug		= $(RefineLib)/lib$(RefineName)_Debug.a
+RefineFile		= $(RefineLib)/lib$(RefineName).so
+RefineDebug		= $(RefineLib)/lib$(RefineName)_Debug.so
 
 BridgesDir			= $(BaseDir)/library_bridges
 MeshBridgeName		= mesh_bridge
@@ -46,6 +49,13 @@ MeshQuadratureLib			= $(MeshQuadratureDir)/lib
 MeshQuadratureFile		= $(wildcard $(MeshQuadratureLib)/lib$(MeshQuadratureName).so*)
 MeshQuadratureDebug		= $(wildcard $(MeshQuadratureLib)/lib$(MeshQuadratureName)_Debug.so*)
 
+SandiaQuadratureName		= sandia_quadrature
+SandiaQuadratureDir		= $(QuadraturesDir)/sandia_quadrature
+SandiaQuadratureInclude	= $(SandiaQuadratureDir)/include
+SandiaQuadratureLib		= $(SandiaQuadratureDir)/lib
+SandiaQuadratureFile		= $(wildcard $(SandiaQuadratureLib)/lib$(SandiaQuadratureName).so*)
+SandiaQuadratureDebug	= $(wildcard $(SandiaQuadratureLib)/lib$(SandiaQuadratureName)_Debug.so*)
+
 FunctionsName		= my_functions
 FunctionsDir 		= $(BaseDir)/interpolating_functions
 FunctionsInclude	= $(FunctionsDir)/include
@@ -60,15 +70,27 @@ PluginLoaderLib		= $(PluginLoaderDir)/lib
 PluginLoaderFile		= $(wildcard $(PluginLoaderLib)/lib$(PluginLoaderName).so*)
 PluginLoaderDebug		= $(wildcard $(PluginLoaderLib)/lib$(PluginLoaderName)_Debug.so*)
 
-StaticLibsFiles_Opt	 := $(RefineFile)
-StaticLibsFiles_Debug := $(RefineDebug)
+StaticLibsFiles_Opt	 := 
+StaticLibsFiles_Debug := 
 
-DynamicLibsFiles_Opt 	:= $(MeshBridgeFile) $(MeshQuadratureFile) $(FunctionsFile) $(PluginLoaderFile)
-DynamicLibsFiles_Debug	:= $(MeshBridgeDebug) $(MeshQuadratureDebug) $(FunctionsDebug) $(PluginLoaderDebug)
+#TODO: Quadratures are loaded at runtime, so I don't need to link them
+DynamicLibsFiles_Opt 	:= $(MeshBridgeFile) \
+									$(FunctionsFile) \
+									$(PluginLoaderFile) \
+									$(RefineFile) \
+									$(MeshQuadratureFile) \
+									$(SandiaQuadratureFile)
+
+DynamicLibsFiles_Debug	:= $(MeshBridgeDebug) \
+									$(FunctionsDebug) \
+									$(PluginLoaderDebug) \
+									$(RefineDebug) \
+									$(MeshQuadratureDebug) \
+									$(SandiaQuadratureDebug)
+
+
 #TODO : find a cleaner way to do this job
 
-
-LibMeshInclude = /usr/local/include/libmesh
 
 # Directory where target binary is created and object files
 ObjDir := $(OBJ_DIR)
@@ -78,12 +100,13 @@ Includes := $(INCLUDE_DIR) \
 				$(RefineInclude) \
 				$(MeshBridgeInclude) \
 				$(MeshQuadratureInclude) \
+				$(SandiaQuadratureInclude) \
 				$(LibMeshInclude) \
 				$(FunctionsInclude) \
 				$(PluginLoaderInclude)
 
 # Search Path For Include Files (InclPaths is included before mode specific InclPaths_MODE)
-InclPaths			:=	$(Includes)
+InclPaths			:=	$(Includes) $(EigenInclude)
 InclPaths_Debug	:=
 InclPaths_Opt		:=
 # Defined values used by CPP preprocessor (Defines is included before mode specific Defines_MODE)
@@ -96,7 +119,7 @@ CXXFlags_Debug	:= -g -std=gnu++11 -O2 -felide-constructors -funroll-loops -fstri
 CXXFlags_Opt	:= -std=c++14 -O3
 
 # Linker specific flags (LFlags is included before mode specific LFlags_MODE)
-LFlags			:= #-Wl,-export-dynamic
+LFlags			:= #-Wl,--export-dynamic
 LFlags_Debug	:=
 LFlags_Opt		:= 
 
@@ -109,7 +132,6 @@ Libs			:= pthread
 Libs_Debug	:= $(LibMeshLibDebug)
 Libs_Opt		:= $(LibMeshLib)
 
-LibMeshLibPath := /usr/local/lib
 # Search Paths for Libraries (LibPaths is included before mode specific LibPaths_MODE)
 LibPaths			:= $(LibMeshLibPath)
 LibPaths_Debug	:=
@@ -181,9 +203,9 @@ define CompileObject
 $(call ObjectFilename,$(1),$(2)): $(SRC_DIR)/$(2)
 	@echo compiling: '$$<'
 	$$(CXX_$(1)) -c -o '$$@' '$$<'
-	$$(CXX_$(1)) '$$<' -MM -MF temp.dep
-	sed -e"s#$(subst .cpp,.o,$(2))#$$@#" temp.dep > $(call DependFilename,$(1),$(file))
-	rm temp.dep
+	$$(CXX_$(1)) '$$<' -MM -MF '$$@'.temp.dep
+	sed -e"s#$(subst .cpp,.o,$(2))#$$@#" '$$@'.temp.dep > $(call DependFilename,$(1),$(file))
+	rm '$$@'.temp.dep
 endef
 
 define TargetTemplate

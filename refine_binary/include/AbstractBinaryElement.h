@@ -27,6 +27,9 @@ namespace BinaryTree
 
 				virtual void Init()
 				{
+#ifdef MYDEBUG
+					cerr << "Inizializzo AbstractBinaryElement" << endl;
+#endif //MYDEBUG
 					_f_element->Init();
 
 					UpdateProjectionError();
@@ -61,12 +64,12 @@ namespace BinaryTree
 
 				virtual void PLevel(size_t val)
 				{
-					_f_element->PLevel(val);
+					this->_f_element->PLevel(val);
 					this->_error_updated = false;
 				};
 				virtual size_t PLevel() const
 				{
-					return _f_element->PLevel();
+					return this->_f_element->PLevel();
 				};
 
 				AbstractFElement<dim, FeType>& GetFElement()const

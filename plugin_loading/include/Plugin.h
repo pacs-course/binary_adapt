@@ -37,7 +37,7 @@ namespace PluginLoading
 	
 		private:
 			std::string _so_file;
-			void * _handle;
+			void* _handle;
 			int _mode;
 	};
 

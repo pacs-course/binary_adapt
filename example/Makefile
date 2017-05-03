@@ -27,31 +27,31 @@ RefineName		= refine_binary
 RefineDir		= $(BaseDir)/refine_binary
 RefineInclude	= $(RefineDir)/include
 RefineLib		= $(RefineDir)/lib
-RefineFile		= $(RefineLib)/lib$(RefineName).a
-RefineDebug		= $(RefineLib)/lib$(RefineName)_Debug.a
+RefineFile		= $(RefineLib)/lib$(RefineName).so
+RefineDebug		= $(RefineLib)/lib$(RefineName)_Debug.so
 
 BridgesDir			= $(BaseDir)/library_bridges
 MeshBridgeName		= mesh_bridge
 MeshBridgeDir		= $(BridgesDir)/libmesh_bridge
 #MeshBridgeInclude	= $(MeshBridgeDir)/include
 MeshBridgeLib		= $(MeshBridgeDir)/lib
-MeshBridgeFile		= $(wildcard $(MeshBridgeLib)/lib$(MeshBridgeName).so*)
-MeshBridgeDebug	= $(wildcard $(MeshBridgeLib)/lib$(MeshBridgeName)_Debug.so*)
+#MeshBridgeFile		= $(wildcard $(MeshBridgeLib)/lib$(MeshBridgeName).so*)
+#MeshBridgeDebug	= $(wildcard $(MeshBridgeLib)/lib$(MeshBridgeName)_Debug.so*)
 
 QuadraturesDir				= $(BaseDir)/quadrature_rules
 MeshQuadratureName		= mesh_quadrature
 MeshQuadratureDir			= $(QuadraturesDir)/libmesh_quadrature
 #MeshQuadratureInclude	= $(MeshQuadratureDir)/include
 MeshQuadratureLib			= $(MeshQuadratureDir)/lib
-MeshQuadratureFile		= $(wildcard $(MeshQuadratureLib)/lib$(MeshQuadratureName).so*)
-MeshQuadratureDebug		= $(wildcard $(MeshQuadratureLib)/lib$(MeshQuadratureName)_Debug.so*)
+#MeshQuadratureFile		= $(wildcard $(MeshQuadratureLib)/lib$(MeshQuadratureName).so*)
+#MeshQuadratureDebug		= $(wildcard $(MeshQuadratureLib)/lib$(MeshQuadratureName)_Debug.so*)
 
 FunctionsName		= my_functions
 FunctionsDir 		= $(BaseDir)/interpolating_functions
 #FunctionsInclude	= $(FunctionsDir)/include
 FunctionsLib		= $(FunctionsDir)/lib
-FunctionsFile		= $(wildcard $(FunctionsLib)/lib$(FunctionsName).so*)
-FunctionsDebug		= $(wildcard $(FunctionsLib)/lib$(FunctionsName)_Debug.so*)
+#FunctionsFile		= $(wildcard $(FunctionsLib)/lib$(FunctionsName).so*)
+#FunctionsDebug		= $(wildcard $(FunctionsLib)/lib$(FunctionsName)_Debug.so*)
 
 PluginLoaderName		= plugin_loader
 PluginLoaderDir		= $(BaseDir)/plugin_loading
@@ -60,13 +60,14 @@ PluginLoaderLib		= $(PluginLoaderDir)/lib
 PluginLoaderFile		= $(wildcard $(PluginLoaderLib)/lib$(PluginLoaderName).so*)
 PluginLoaderDebug		= $(wildcard $(PluginLoaderLib)/lib$(PluginLoaderName)_Debug.so*)
 
-#files to be linked to generate the executable
-StaticLibsFiles_Opt	 := $(RefineFile)
-StaticLibsFiles_Debug := $(RefineDebug)
+#StaticLibsFiles are linked and the executable depends on them
+#DynamicLibsFiles are linked, but they are not in the dependencies
+#Other plugins are not linked, since they are run at runtime
+StaticLibsFiles_Opt	 := 
+StaticLibsFiles_Debug := 
 
-DynamicLibsFiles_Opt 	:= $(PluginLoaderFile)
-DynamicLibsFiles_Debug	:= $(PluginLoaderDebug)
-#the other dynamic files are loaded dynamically, so they will not be linked
+DynamicLibsFiles_Opt 	:= $(PluginLoaderFile) $(RefineFile)
+DynamicLibsFiles_Debug	:= $(PluginLoaderDebug) $(RefineDebug)
 
 #TODO : find a cleaner way to do this job
 
@@ -102,7 +103,7 @@ Libs_Debug	:=
 Libs_Opt		:=
 
 # Search Paths for Libraries (LibPaths is included before mode specific LibPaths_MODE)
-LibPaths			:= $(PluginLoaderLib) $(FunctionsLib) $(MeshQuadratureLib) $(MeshBridgeLib)
+LibPaths			:= #$(FunctionsLib) $(MeshQuadratureLib) $(MeshBridgeLib)
 LibPaths_Debug	:=
 LibPaths_Opt	:=
 
@@ -173,9 +174,9 @@ define CompileObject
 $(call ObjectFilename,$(1),$(2)): $(SRC_DIR)/$(2)
 	@echo compiling: '$$<'
 	$$(CXX_$(1)) -c -o '$$@' '$$<'
-	$$(CXX_$(1)) '$$<' -MM -MF temp.dep
-	sed -e"s#$(subst .cpp,.o,$(2))#$$@#" temp.dep > $(call DependFilename,$(1),$(file))
-	rm temp.dep
+	$$(CXX_$(1)) '$$<' -MM -MF '$$@'.temp.dep
+	sed -e"s#$(subst .cpp,.o,$(2))#$$@#" '$$@'.temp.dep > $(call DependFilename,$(1),$(file))
+	rm '$$@'.temp.dep
 endef
 
 define TargetTemplate

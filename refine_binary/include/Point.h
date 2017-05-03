@@ -90,7 +90,7 @@ namespace Geometry
 
 				//tensor product
 				template <size_t N>
-					Point<dim + N> tensor (const Point<N>& p2) const
+					Point<dim + N> Tensor (const Point<N>& p2) const
 					{
 						array<double, dim + N> coor;
 						size_t i(0);
