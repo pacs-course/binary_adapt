@@ -9,6 +9,7 @@
 #include <algorithm> //std::min
 #include <string> //std::string
 #include <stdexcept> //std::runtime_error
+#include <fstream> //std::ofstream
 
 namespace BinaryTree
 {
@@ -78,6 +79,13 @@ namespace BinaryTree
 				virtual void LoadMesh(std::string input) = 0;
 				virtual void ExportMesh(std::string output) = 0;
 
+/*
+				It produces a gnuplot script which plots the mesh with the plevel associated to each element
+				It is available only for 1D meshes, other dim values has to be implemented
+*/
+				template <std::size_t dummy = dim, typename std::enable_if< (dummy == 1), size_t>::type = 0>
+				void ExportGnuPlot(const std::string&);
+
 				/*	n_iter is the number of degrees of freedom,
 					which corresponds to the number of iterations of the algorithm */
 				virtual void Refine(std::size_t n_iter);
@@ -105,6 +113,7 @@ namespace BinaryTree
 				};
 
 			protected:
+				virtual void DerivedGnuPlotExport(std::ofstream&) = 0;
 				virtual void DerivedInitialization(int argc, char** argv) = 0;
 
 				/*
@@ -243,6 +252,20 @@ namespace BinaryTree
 			(this->_godfather).SelectActiveNodes();
 			this->_error_updated = false;
 		}; //Refine()
+
+	template <std::size_t dim>
+	template <std::size_t dummy, typename std::enable_if< (dummy == 1), size_t>::type>
+	void MeshRefiner<dim>::ExportGnuPlot(const std::string& script_name)
+	{
+		std::ofstream output_file(script_name);
+		output_file	<< "#It produces the plot of the plevels of the binary refined mesh" << endl
+				<< "#call it by typing in gnuplot the instruction:" << endl
+				<< "#	call \""
+				<< script_name
+				<< "\"" << endl;
+
+		this->DerivedGnuPlotExport(output_file);
+	};
 
 } //namespace BinaryTree
 #endif //__MESH_REFINER_H

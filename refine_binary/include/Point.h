@@ -104,7 +104,7 @@ namespace Geometry
 					}
 
 				// Modulus of the vector
-				double abs() const
+				double Abs() const
 				{
 					double result(0);
 					for (const auto& iter : (*this))
@@ -115,7 +115,7 @@ namespace Geometry
 				// Euclidean Distance from input vector
 				double distance (Point<dim> const& x) const
 				{
-					return (*(this) - x).abs();
+					return (*(this) - x).Abs();
 				};
 
 				void Print(bool newline = true) const

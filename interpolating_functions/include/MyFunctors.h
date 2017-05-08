@@ -37,7 +37,7 @@ namespace MyFunctions
 
 				virtual std::string Name()const override
 				{
-					return "(exp(" + std::to_string(b_mu) + "x) - 1 ) / (exp(" + std::to_string(b_mu) + ") - 1)";
+					return "(exp(" + std::to_string(b_mu) + "*x) - 1 ) / (exp(" + std::to_string(b_mu) + ") - 1)";
 				};
 		};
 

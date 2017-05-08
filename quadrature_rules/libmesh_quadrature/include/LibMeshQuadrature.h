@@ -15,8 +15,9 @@ namespace LibmeshBinary
 			public:
 				LibmeshQuadratureRule()
 				{
+					_order = libMesh::FORTYTHIRD;
 					//TODO: use GetPot to configure quadrature options
-					_quadrature_rule = libMesh::QBase::build(libMesh::QGAUSS, dim, libMesh::FORTYTHIRD);
+					_quadrature_rule = libMesh::QBase::build(libMesh::QGAUSS, dim, _order);
 					_quadrature_rule->init(ConvertType<Type>());
 				};
 
@@ -44,8 +45,14 @@ namespace LibmeshBinary
 					return result;
 				};
 
+				virtual size_t Order() override
+				{
+					return static_cast<size_t>(this->_order);
+				}; 
+
 			private:
 				libMesh::UniquePtr<libMesh::QBase> _quadrature_rule;
+				libMesh::Order _order;
 		};
 
 } //namespace LibmeshBinary

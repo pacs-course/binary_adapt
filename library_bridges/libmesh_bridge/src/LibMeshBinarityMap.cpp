@@ -44,23 +44,23 @@ namespace LibmeshBinary
 			return result;
 		};
 
-	template <>
-		libMesh::Elem* BinarityMap::BinarizeNode<2> (libMesh::Elem* el_ptr,
-																	BinaryTree::FunctionPtr<2> f_ptr,
-																	libMesh::MeshRefinement& mesh_refinement)
-		{
-			libMesh::Elem* result (nullptr);
-			switch (el_ptr->type())
-			{
-				case libMesh::TRI3 :
-					//TODO
-					break;
+//	template <>
+//		libMesh::Elem* BinarityMap::BinarizeNode<2> (libMesh::Elem* el_ptr,
+//																	BinaryTree::FunctionPtr<2> f_ptr,
+//																	libMesh::MeshRefinement& mesh_refinement)
+//		{
+//			libMesh::Elem* result (nullptr);
+//			switch (el_ptr->type())
+//			{
+//				case libMesh::TRI3 :
+//					//TODO
+//					break;
 
-				default :
-					throw logic_error("I don't know how to binarize " + to_string(el_ptr->type()) + " type node");
-			}
-			return result;
-		};
+//				default :
+//					throw logic_error("I don't know how to binarize " + to_string(el_ptr->type()) + " type node");
+//			}
+//			return result;
+//		};
 
 } //namespace LibmeshBinary
 

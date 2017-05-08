@@ -47,7 +47,7 @@ InclPaths			:= $(INCLUDE_DIR) $(RefineInclude) $(SandiaRuleInclude) $(EigenInclu
 InclPaths_Debug	:=
 InclPaths_Release	:=
 # Defined values used by CPP preprocessor (Defines is included before mode specific Defines_MODE)
-Defines				:= 
+Defines				:= $(GlobalDefines)
 Defines_Debug		:= DEBUG _GLIBCXX_DEBUG
 Defines_Release	:= RELEASE
 # Compiler specific flags (CXXFlags is included before mode specific CXXFlags_MODE)
@@ -101,6 +101,9 @@ CXX         := g++
 # Generic Template Part #
 #########################
 all: $(Modes)
+
+.PHONY:init
+init:$(Modes:%=init_%)
 
 .PHONY:install
 install:all $(Modes:%=install_%)

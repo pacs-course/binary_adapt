@@ -1,13 +1,14 @@
 ####### ANAGRAPHIC SECTION ######
-MATRICOLA = 774857
-NAME = SIMONE
-SURNAME = CARRIERO
-WHOAMI = $(MATRICOLA)_$(NAME)_$(SURNAME)
+ID = 864234
+Name = SIMONE
+Surname = CARRIERO
+Whoami = $(ID)_$(Name)_$(Surname)
 #####################################################
 
 
 bridges_libs_path		:= ./library_bridges
 quadrature_libs_path	:= ./quadrature_rules
+examples_path			:= ./example
 
 lib_interpolating_functions	:= ./interpolating_functions
 lib_libmesh_bridge				:= $(bridges_libs_path)/libmesh_bridge
@@ -15,7 +16,7 @@ lib_plugin_loading				:= ./plugin_loading
 lib_libmesh_quadrature			:= $(quadrature_libs_path)/libmesh_quadrature
 lib_sandia_quadrature			:= $(quadrature_libs_path)/sandia_quadrature
 lib_refine_binary					:= ./refine_binary
-example	:= ./example
+example	:= $(examples_path)/example1 $(examples_path)/example2
 test		:= ./test
 
 lib_sub_dirs := $(bridges_libs_path) \
@@ -36,12 +37,18 @@ binaries	:= $(example) \
 all: $(libraries) $(binaries)
 
 $(binaries): $(libraries)
-	$(MAKE) -j --directory=$@ $(TARGET)
+	$(MAKE) --directory=$@ init
+	$(MAKE) -j4 --directory=$@ $(TARGET)
 
 $(libraries):
-	$(MAKE) -j --directory=$@ $(TARGET)
+	$(MAKE) --directory=$@ init
+	$(MAKE) -j4 --directory=$@ $(TARGET)
 
 #inserire qui eventuali dipendenze fra le librerie
+
+.PHONY: check
+check:
+	./Test_check.sh
 
 .PHONY: install
 install:
@@ -56,32 +63,33 @@ clean:
 	$(MAKE) TARGET=clean
 
 .PHONY: tree
-tree: $(subst .,$(WHOAMI),$(libraries))
+tree: $(subst .,$(Whoami),$(libraries))
 
-$(subst .,$(WHOAMI),$(libraries)):
-	mkdir -p $(dir $@)
+$(subst .,$(Whoami),$(libraries)):
+	@mkdir -p $@
 
 .PHONY:package
-package: clean
-	@if [ -e $(WHOAMI) ] ; then \
-		echo $(WHOAMI) exists! cleaning... \
-		; rm -rf $(WHOAMI)/* \
+package:
+	@if [ -e $(Whoami) ] ; then \
+		echo $(Whoami) exists! cleaning... \
+		; rm -rf $(Whoami)/* \
 	; else \
-		echo $(WHOAMI) does not exist! creating... \
-		; mkdir $(WHOAMI) \
+		echo $(Whoami) does not exist! creating... \
+		; mkdir $(Whoami) \
 	; fi
+	@echo ... creating directory tree ...
 	@$(MAKE) tree
-	@rm -f $(WHOAMI).zip
+	@rm -f $(Whoami).zip
 	@echo ... preparing package inputs...
-	@cp Makefile $(WHOAMI)
-	@cp Makefile.inc $(WHOAMI)
-	@cp *.sh $(WHOAMI)
+	@echo adding . to package in $(Whoami)
+	@./make_package.sh . $(Whoami)
 	@for d in $(binaries) $(libraries) \
 	; do \
-		cp -r $$d $(WHOAMI)/`dirname $$d` \
+		echo adding $$d to package in $(Whoami) \
+		; ./make_package.sh $$d $(Whoami) \
 	; done
 	@echo ... creating zipfile...
-	@zip -q -r $(WHOAMI).zip $(WHOAMI)
-	@echo ... removing $(WHOAMI)...
-	@rm -rf $(WHOAMI)
+	@zip -q -r $(Whoami).zip $(Whoami)
+	@echo ... removing $(Whoami)...
+	@rm -rf $(Whoami)
 	@echo ... done!

@@ -1,6 +1,5 @@
 #include "LibMeshQuadrature.h"
 
-#define DEPRECATED
 #ifdef DEPRECATED
 #include "LibMeshQuadratureRegister.h"
 #endif //DEPRECATED
@@ -16,6 +15,12 @@ namespace Banana
 #else //DEPRECATED
 namespace LibmeshBinary
 {
+	__attribute__((destructor))
+	static void ExitFunction()
+	{
+		clog << "I'm closing the libmesh quadrature library" << endl;
+	};
+
 	__attribute__((constructor))
 	static void RegisterFunction()
 #endif //DEPRECATED
@@ -44,18 +49,26 @@ namespace LibmeshBinary
 	QuadratureRegister::QuadratureRegister()
 	{
 #endif //DEPRECATED
-		cerr << "BANANA" << endl;
+
+		clog << "Registering in Quadrature factory" << endl;
+
 		auto& q_one_d_factory (Geometry::QuadratureFactory<1>::Instance());
 		auto& q_two_d_factory (Geometry::QuadratureFactory<2>::Instance());
+
+#ifdef MYDEBUG
+		cerr << "Indirizzo della factory 1D di quadrature : " << &q_one_d_factory << endl;
+		cerr << "Indirizzo della factory 2D di quadrature : " << &q_two_d_factory << endl;
+#endif //MYDEBUG
 
 		q_one_d_factory.add (Geometry::IntervalType,
 									&HelperFunctions::Builders <LibmeshQuadratureRule<1, Geometry::IntervalType>,
 																		 Geometry::QuadratureRuleInterface<1>
 																		>::BuildObject);
 #ifdef MYDEBUG
-		cout << "Registrata in QuadratureFactory<1> LibmeshQuadratureRule<1, " << Geometry::IntervalType << "> con chiave: " << Geometry::IntervalType << endl;
-		cout << "Indirizzo factory: " << &q_one_d_factory << endl;
+		cerr << "Registrata in QuadratureFactory<1> LibmeshQuadratureRule<1, " << Geometry::IntervalType << "> con chiave: " << Geometry::IntervalType << endl;
+		cerr << "Indirizzo factory: " << &q_one_d_factory << endl;
 #endif //MYDEBUG
+
 		q_two_d_factory.add (Geometry::SquareType,
 									&HelperFunctions::Builders <LibmeshQuadratureRule<2, Geometry::SquareType>,
 																		 Geometry::QuadratureRuleInterface<2>

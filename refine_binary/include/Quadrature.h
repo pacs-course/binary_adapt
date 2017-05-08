@@ -28,6 +28,7 @@ namespace Geometry
 				virtual ~QuadratureRuleInterface(){};
 				virtual QuadPointVec<dim> GetPoints() = 0;
 				virtual QuadWeightVec GetWeights() = 0;
+				virtual size_t Order() = 0;
 			protected:
 				QuadratureRuleInterface()
 				{

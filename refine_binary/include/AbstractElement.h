@@ -33,6 +33,7 @@ namespace Geometry
 
 				virtual QuadPointVec<dim>	GetQuadPoints() const = 0;
 				virtual QuadWeightVec		GetQuadWeights()const = 0;
+				virtual size_t QuadratureOrder()const = 0;
 
 				double Integrate(const BinaryTree::Functor<dim>& f)
 				{

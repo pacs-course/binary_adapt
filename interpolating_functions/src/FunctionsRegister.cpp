@@ -7,17 +7,23 @@
 */
 namespace MyFunctions
 {
+	__attribute__((destructor))
+	static void ExitFunction()
+	{
+		clog << "I'm closing the functions library" << endl;
+	};
+
 	__attribute__((constructor))
 		static void RegisterFunction()
 		{
-			cerr << "Registro nella factory di Functor" << endl;
+			clog << "Registering in Functor factory" << endl;
 
 			auto& f_one_d_factory(BinaryTree::FunctionsFactory<1>::Instance());
 //			auto& f_two_d_factory(BinaryTree::FunctionsFactory<2>::Instance());
 
 #ifdef MYDEBUG
 			cerr << "Indirizzo della factory 1D di funzioni : " << &f_one_d_factory << endl;
-			cerr << "Indirizzo della factory 2D di funzioni : " << &f_two_d_factory << endl;
+//			cerr << "Indirizzo della factory 2D di funzioni : " << &f_two_d_factory << endl;
 #endif //MYDEBUG
 
 			f_one_d_factory.add ("x_squared",
@@ -27,7 +33,6 @@ namespace MyFunctions
 			f_one_d_factory.add ("sqrt_x",
 										&HelperFunctions::Builders <SqrtX,
 																			 BinaryTree::Functor<1>
-
 																			>::BuildObject);
 		};
 }

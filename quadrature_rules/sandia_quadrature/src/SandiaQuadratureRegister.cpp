@@ -1,7 +1,5 @@
 #include "SandiaQuadrature.h"
 
-#define DEPRECATED
-
 #ifdef DEPRECATED
 #include "SandiaQuadratureRegister.h"
 #endif //DEPRECATED
@@ -17,6 +15,12 @@ namespace Banana
 #else //DEPRECATED
 namespace SandiaQuadrature
 {
+	__attribute__((destructor))
+	static void ExitFunction()
+	{
+		clog << "I'm closing the sandia quadrature library" << endl;
+	};
+
 	__attribute__((constructor))
 	static void RegisterFunction()
 #endif //DEPRECATED
@@ -45,17 +49,23 @@ namespace SandiaQuadrature
 	QuadratureRegister::QuadratureRegister()
 	{
 #endif //DEPRECATED
+		clog << "Registering in Quadrature factory" << endl;
+
 		auto& q_one_d_factory (Geometry::QuadratureFactory<1>::Instance());
-		auto& q_two_d_factory (Geometry::QuadratureFactory<2>::Instance());
+//		auto& q_two_d_factory (Geometry::QuadratureFactory<2>::Instance());
+
+#ifdef MYDEBUG
+			cerr << "Indirizzo della factory 1D di quadrature : " << &q_one_d_factory << endl;
+#endif //MYDEBUG
 
 		q_one_d_factory.add (Geometry::IntervalType,
 									&HelperFunctions::Builders <SandiaQuadratureRule<1>,
 																		 Geometry::QuadratureRuleInterface<1>
 																		>::BuildObject);
-		q_two_d_factory.add (Geometry::SquareType,
-									&HelperFunctions::Builders <SandiaQuadratureRule<2>,
-																		 Geometry::QuadratureRuleInterface<2>
-																		>::BuildObject);
+//		q_two_d_factory.add (Geometry::SquareType,
+//									&HelperFunctions::Builders <SandiaQuadratureRule<2>,
+//																		 Geometry::QuadratureRuleInterface<2>
+//																		>::BuildObject);
 	};
 } //namespace LibmeshBinary
 

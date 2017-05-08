@@ -1,6 +1,7 @@
 #!/bin/sh
 clear ;make
 cd ./test;
+rm test.log;
 export LD_LIBRARY_PATH=$LD_LIBRARY_PATH:../plugin_loading/lib;
 export LD_LIBRARY_PATH=$LD_LIBRARY_PATH:../refine_binary/lib;
 export LD_LIBRARY_PATH=$LD_LIBRARY_PATH:../interpolating_functions/lib;

@@ -202,10 +202,10 @@ namespace LibmeshBinary
 																	BinaryTree::FunctionPtr<1> f_ptr,
 																	libMesh::MeshRefinement& mesh_refinement);
 
-	template <>
-		libMesh::Elem* BinarityMap::BinarizeNode<2> (libMesh::Elem* el_ptr,
-																	BinaryTree::FunctionPtr<2> f_ptr,
-																	libMesh::MeshRefinement& mesh_refinement);
+//	template <>
+//		libMesh::Elem* BinarityMap::BinarizeNode<2> (libMesh::Elem* el_ptr,
+//																	BinaryTree::FunctionPtr<2> f_ptr,
+//																	libMesh::MeshRefinement& mesh_refinement);
 
 } //namespace LibmeshBinary
 

@@ -31,7 +31,8 @@ namespace PluginLoading
 #else
 		_plugins.push_back(make_unique<Plugin>(full_path_so_file, mode));
 #endif //DEBUG
-		cerr << "Aggiunto plugin : " << full_path_so_file << endl;
+
+		clog << "Aggiunto plugin : " << full_path_so_file << endl;
 	};
 
 	bool PluginLoader::Load()

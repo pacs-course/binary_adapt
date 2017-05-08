@@ -55,7 +55,7 @@ namespace SandiaQuadrature
 					//I convert x and w to my type
 					Geometry::QuadPointVec<1> one_d_points;
 					Geometry::QuadWeightVec one_d_weights(_n);
-					for (auto i = 0; i < _n; ++i)
+					for (size_t i = 0; i < _n; ++i)
 					{
 						one_d_points.push_back(Geometry::Point<1>(x[i]));
 						one_d_weights(i) = w[i];
@@ -78,8 +78,13 @@ namespace SandiaQuadrature
 					return this->_weights;
 				};
 
+				virtual size_t Order() override
+				{
+					return 2 * this->_n - 1;
+				};
+
 			private:
-				int _n;
+				size_t _n;
 				Geometry::QuadPointVec<dim> _points;
 				Geometry::QuadWeightVec _weights;
 		};

@@ -99,6 +99,12 @@ namespace FiniteElements
 					return weights;
 				};
 
+				virtual size_t QuadratureOrder()const
+				{
+					CheckInitialization();
+					return _ref_felement->QuadratureOrder();
+				};
+
 				//TODO: optimize storing already evaluated points
 				virtual double EvaluateBasisFunction (size_t ind, const Point<dim>& point)const
 				{

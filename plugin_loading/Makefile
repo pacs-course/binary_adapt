@@ -18,7 +18,6 @@ MajLibVers	:= 1
 MinLibVers	:= 0
 LibVers		:= $(MajLibVers).$(MinLibVers)
 
-
 #DIRECTORY TREE
 BaseDir 		= $(THIS_DIR)/../
 InstallDir	= $(BaseDir)/lib
@@ -33,6 +32,8 @@ OBJ_DIRS	= $(OBJ_DIR)
 SO_DIRS	= $(SO_DIR)
 DIRS		= $(OBJ_DIRS) $(SO_DIRS)
 
+-include $(BaseDir)/Makefile.inc
+
 RefineInclude = $(BaseDir)/refine_binary/include
 
 # Directory where target binary is created and object files
@@ -43,7 +44,7 @@ InclPaths			:= $(INCLUDE_DIR) $(RefineInclude)
 InclPaths_Debug	:=
 InclPaths_Release	:=
 # Defined values used by CPP preprocessor (Defines is included before mode specific Defines_MODE)
-Defines				:= 
+Defines				:= $(GlobalDefines)
 Defines_Debug		:= DEBUG _GLIBCXX_DEBUG
 Defines_Release	:= RELEASE
 # Compiler specific flags (CXXFlags is included before mode specific CXXFlags_MODE)
@@ -97,6 +98,9 @@ CXX         := g++
 # Generic Template Part #
 #########################
 all: $(Modes)
+
+.PHONY:init
+init:$(Modes:%=init_%)
 
 .PHONY:install
 install:all $(Modes:%=install_%)

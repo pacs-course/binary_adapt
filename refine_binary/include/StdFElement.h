@@ -94,6 +94,10 @@ namespace FiniteElements
 				{
 					return this->_std_geometry->GetQuadWeights();
 				};
+				virtual size_t QuadratureOrder()const
+				{
+					return this->_std_geometry->QuadratureOrder();
+				};
 
 			protected:
 				unique_ptr<AbstractBasis<dim>> _basis;
@@ -173,6 +177,11 @@ namespace FiniteElements
 				virtual QuadWeightVec GetQuadWeights()const
 				{
 					return this->_std_geometry->GetQuadWeights();
+				};
+
+				virtual size_t QuadratureOrder()const
+				{
+					return this->_std_geometry->QuadratureOrder();
 				};
 
 /*

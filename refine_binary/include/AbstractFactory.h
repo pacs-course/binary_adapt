@@ -75,7 +75,12 @@ namespace GenericFactory
 	class FactoryBase
 	{
 	public:
-	    virtual ~FactoryBase() {}
+	    virtual ~FactoryBase()
+		{
+#ifdef DESTRUCTOR_ALERT
+			cerr << "Destroying FactoryBase" << endl;
+#endif //DESTRUCTOR_ALERT
+		};
 	};
 
 	FactoryBase* FactoryInstance(const string& factory_name, FactoryBase* instance = nullptr);
@@ -141,7 +146,7 @@ namespace GenericFactory
 				 	if (f.second == false)
 					{
 						(this->_storage)[name] = func;
-						cout << "Builder for key = " << identifierAsString(name) << "already present; previous one overwritten" << endl;
+						clog << "Builder for key = " << identifierAsString(name) << " already present; previous one overwritten" << endl;
 					}
 				};
 
@@ -167,7 +172,7 @@ namespace GenericFactory
 				virtual ~Factory()
 				{
 #ifdef DESTRUCTOR_ALERT
-					cerr << "Distruggo Factory" << endl;
+					cerr << "Destroying Factory" << endl;
 #endif //DESTRUCTOR_ALERT	
 				};
 

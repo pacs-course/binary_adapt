@@ -1,0 +1,17 @@
+package.desc
+Makefile
+Makefile.inc
+src/*.cpp
+include/*.h
+Example_debug.sh
+Example_gdb.sh
+Example_run.sh
+Example_valgrind.sh
+make_package.sh
+Test_debug.sh
+Test_gdb_run.sh
+Test_run.sh
+Test_valgrind.sh
+mesh_files/*.x[dt]a
+*.m
+*.msh

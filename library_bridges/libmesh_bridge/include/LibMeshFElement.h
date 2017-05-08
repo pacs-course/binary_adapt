@@ -5,6 +5,7 @@
 #include "LibMeshHelper.h"
 
 #include <elem.h> //libMesh::Node
+#include <mesh_base.h> //libMesh::element_iterator
 
 namespace LibmeshBinary
 {
@@ -50,6 +51,18 @@ namespace LibmeshBinary
 				FElement()
 				{
 					cout << "WARNING: I'm calling the LibmeshGeometry constructor without parameters" << endl;
+				};
+
+				FElement(libMesh::MeshBase::element_iterator iter) : _geom(nullptr)
+				{
+					auto& element = *iter;
+					LibmeshGeometry* libmesh_interval = dynamic_cast<LibmeshGeometry*> (element);
+					if (!libmesh_interval)
+						throw logic_error("libMesh iterator type not congruent with FElement one");
+
+					unique_ptr<LibmeshGeometry> int_ptr (libmesh_interval);
+					_geom = move(int_ptr);
+					element = nullptr;
 				};
 
 				//TODO:	maybe it's convenient to have in the input the mesh iterator, so I can ensure that the mesh element is substituted

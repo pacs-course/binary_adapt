@@ -1,7 +1,6 @@
 #ifndef __LIBMESH_QUADRATURE_REGISTER_H
 #define __LIBMESH_QUADRATURE_REGISTER_H
 
-#define DEPRECATED
 #ifdef DEPRECATED
 namespace LibmeshBinary
 {

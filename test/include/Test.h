@@ -1,84 +1,66 @@
 #ifndef __TEST_H
 #define __TEST_H
 
-/*
-Point test
-*/
-void test1(int argc, char ** argv);
+#include "gtest/gtest.h"
 
-/*
-Polinomial test
-*/
-void test2(int argc, char ** argv);
+#include "PluginLoader.h"
 
-/*
-Basis test
-*/
-void test3(int argc, char ** argv);
+#include <fstream>
+#include <iostream>
+#include <string>
+#include <vector>
 
-/*
-BinaryElements construction test
-*/
-void test4(int argc, char ** argv);
+class Logfile
+{
+	public:
+		Logfile(const std::string& filename) : _ofs(filename, std::ios_base::app)
+															,_out_buf(std::cout.rdbuf(_ofs.rdbuf()))
+															,_log_buf(std::clog.rdbuf(_ofs.rdbuf()))
+															,_err_buf(std::cerr.rdbuf(_ofs.rdbuf()))
+		{};
 
-/*
-Integration on standard elements test
-*/
-void test5(int argc, char ** argv);
+		~Logfile()
+		{
+			std::clog.rdbuf(_log_buf);
+			std::cout.rdbuf(_out_buf);
+			std::cerr.rdbuf(_err_buf);
+		};
 
-/*
-Maps test
-*/
-void test6(int argc, char ** argv);
+	private:
+		std::ofstream _ofs;
+		std::basic_streambuf<char>* _out_buf;
+		std::basic_streambuf<char>* _log_buf;
+		std::basic_streambuf<char>* _err_buf;
+};
 
-/*
-Integration on generic elements test
-*/
-void test7(int argc, char ** argv);
 
-/*
-libMesh version compatibility test
-*/
-void test8(int argc, char ** argv);
+class Initializer
+{
+	public:
+		Initializer(){};
+		void Load (const std::vector<std::string>&);
 
-/*
-Basis orthonormality test
-*/
-void test9(int argc, char ** argv);
+	protected:
+		PluginLoading::PluginLoader _pl;
+};
 
-/*
-Projection on element test
-*/
-void test10(int argc, char ** argv);
+class LoadTest : public ::testing::Test
+{
+	protected:
+		LoadTest() : _out("test.log"), _argc(1)
+		{
+#ifndef DEBUG
+			_argv[0] = "test";
+#else
+			_argv[0] = "test_Debug";
+#endif //DEBUG
+		};
+		virtual void SetUp();
 
-/*
-Manual libMesh refinement test
-*/
-void test11(int argc, char ** argv);
-
-/*
-Manual binary refinement test
-*/
-void test12(int argc, char ** argv);
-
-/*
-BinaryRefinement test
-*/
-void test13(int argc, char ** argv);
-
-/*
-libMesh file IO test
-*/
-void test14(int argc, char ** argv);
-
-/*
-1D refining complete test
-*/
-void test15(int argc, char ** argv);
-
-/*
-Bug isolated
-*/
-void test16(int argc, char ** argv);
+		Logfile _out;
+		Initializer _initializer;
+		int _argc;
+		char* _argv[1];
+};
 
 #endif //__TEST_H

@@ -67,6 +67,11 @@ namespace Geometry
 					return _quadrature_rule->GetWeights();
 				};
 
+				virtual size_t QuadratureOrder()const
+				{
+					return _quadrature_rule->Order();
+				};
+
 			protected:
 				unique_ptr<QuadratureRuleInterface<dim> > _quadrature_rule;
 		};

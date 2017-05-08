@@ -106,11 +106,11 @@ Includes := $(INCLUDE_DIR) \
 				$(PluginLoaderInclude)
 
 # Search Path For Include Files (InclPaths is included before mode specific InclPaths_MODE)
-InclPaths			:=	$(Includes) $(EigenInclude)
+InclPaths			:=	$(Includes) $(EigenInclude) $(GTestInclude)
 InclPaths_Debug	:=
 InclPaths_Opt		:=
 # Defined values used by CPP preprocessor (Defines is included before mode specific Defines_MODE)
-Defines			:= 
+Defines			:= $(GlobalDefines)
 Defines_Debug	:= DEBUG _GLIBCXX_DEBUG
 Defines_Opt		:= OPT
 # Compiler specific flags (CXXFlags is included before mode specific CXXFlags_MODE)
@@ -127,13 +127,15 @@ LFlags_Opt		:=
 LibMeshLib			:= mesh_opt
 LibMeshLibDebug	:= mesh_dbg
 
+GTestLib				:= gtest
+
 # List of Library Names (Libs is included before mode specific Libs_MODE)
-Libs			:= pthread
+Libs			:= pthread $(GTestLib)
 Libs_Debug	:= $(LibMeshLibDebug)
 Libs_Opt		:= $(LibMeshLib)
 
 # Search Paths for Libraries (LibPaths is included before mode specific LibPaths_MODE)
-LibPaths			:= $(LibMeshLibPath)
+LibPaths			:= $(LibMeshDir) $(GTestDir)
 LibPaths_Debug	:=
 LibPaths_Opt	:=
 
@@ -160,6 +162,9 @@ EXECUTABLES = $(BIN_DIR)/$(EXENAME)
 # Generic Template Part #
 #########################
 all: $(Modes)
+
+.PHONY:init
+init:$(Modes:%=init_%)
 
 .PHONY:dir_tree
 dir_tree: $(DIRS)

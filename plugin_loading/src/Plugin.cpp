@@ -16,7 +16,7 @@ namespace PluginLoading
 #endif
 		Close();
 #ifdef DESTRUCTOR_ALERT
-		std::cerr << "Plugin chiuso" << std::endl;
+		std::cerr << "Plugin distrutto" << std::endl;
 #endif
 	};
 
@@ -35,6 +35,9 @@ namespace PluginLoading
 
 	void Plugin::Close()
 	{
+#ifdef MYDEBUG
+		cerr << "Closing plugin" << endl;
+#endif //MYDEBUG
 		if ( this->_handle )
 		{
 			int err = dlclose(this->_handle);
