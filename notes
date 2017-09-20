@@ -4,10 +4,11 @@ rendere il codice indipendente dalla libreria che calcola jacobi
 
 nel plugin loading la navigazione ricorsiva delle subdirectories puo' essere deleteria
 
-voglio caricare le quadrature con la dlopen, no con la funzione banana
-
 example linka direttamente i file (non dipende quindi da install), ma poi il codice del main ha bisogno dell'installazione
 
 per la visualizzazione tradurre: https://sourceforge.net/p/octave/fpl/ci/default/tree/inst/fpl_vtk_raw_write_field.m
 
 verificare se conviene scrivere i polinomi sfruttando il fatto di conoscerne gli zeri dalle regole di quadratura
+
+in documentazione specificare: - l'ordine in cui linkare le librerie
+										 - di compilare sandia_rules e jacobi_polynomials con il flag -fPIC

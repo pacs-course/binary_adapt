@@ -1,8 +1,31 @@
-Registering in Quadrature factory
-Registering in Quadrature factory
-Builder for key = CANNOT RESOLVE NAME already present; previous one overwritten
+Added plugin : libmesh_quadrature.so
+Added plugin : libsandia_quadrature.so
+Added plugin : libinterpolating_functions.so
+
+Starting PointTest
+PointTest ended
+
+Added plugin : libmesh_quadrature.so
+Added plugin : libsandia_quadrature.so
+Added plugin : libinterpolating_functions.so
+
+Starting BinaryElementsConstruction
+BinaryElementsConstruction ended
+
+Added plugin : libmesh_quadrature.so
+Added plugin : libsandia_quadrature.so
+Added plugin : libinterpolating_functions.so
+
+Starting StdIntegration
 I check the simmetry of the quadrature nodes
 I check the simmetry of the quadrature weights
+StdIntegration ended
+
+Added plugin : libmesh_quadrature.so
+Added plugin : libsandia_quadrature.so
+Added plugin : libinterpolating_functions.so
+
+Starting MapsTest
 Creo la mappa da (-1, 1) a (1, 2)
 Mappa creata
 Provo l'inversa
@@ -10,33 +33,58 @@ Provo l'inversa
 
 Creo la mappa per il primo triangolo
 Mappa creata
-Maps test ended
-Memory leak detected!
-Compile in DEBUG mode with --enable-reference-counting
-for more information
+MapsTest ended
+
+Added plugin : libmesh_quadrature.so
+Added plugin : libsandia_quadrature.so
+Added plugin : libinterpolating_functions.so
+
+Starting GeneralIntegration
 Costruisco FElement
 Inizializzo interval
-Memory leak detected!
-Compile in DEBUG mode with --enable-reference-counting
-for more information
+GeneralIntegration ended
+
+Added plugin : libmesh_quadrature.so
+Added plugin : libsandia_quadrature.so
+Added plugin : libinterpolating_functions.so
+
+Starting LegendreOrthonormality
 Checking the orthogonality on the standard interval
 
 
 Let's check the normality on the standard interval :
+LegendreOrthonormality ended
+
+Added plugin : libmesh_quadrature.so
+Added plugin : libsandia_quadrature.so
+Added plugin : libinterpolating_functions.so
+
+Starting ProjectionTest
 Checking the basis orthogonality on the (0, 1) interval:
 Checking the basis normality on the (0, 1) interval :
-Memory leak detected!
-Compile in DEBUG mode with --enable-reference-counting
-for more information
-*** Warning, This code is deprecated, and likely to be removed in future library versions! /usr/local/include/libmesh/type_vector.h, line 879, compiled May  7 2017 at 21:51:34 ***
+ProjectionTest ended
+
+Added plugin : libmesh_quadrature.so
+Added plugin : libsandia_quadrature.so
+Added plugin : libinterpolating_functions.so
+
+Starting LibmeshRefinement
 I start one refinement iteration on the first mesh element
-Memory leak detected!
-Compile in DEBUG mode with --enable-reference-counting
-for more information
+LibmeshRefinement ended
+
+Added plugin : libmesh_quadrature.so
+Added plugin : libsandia_quadrature.so
+Added plugin : libinterpolating_functions.so
+
+Starting ManualBinaryRefinement
 I directly call the Interval refine method
-Memory leak detected!
-Compile in DEBUG mode with --enable-reference-counting
-for more information
+ManualBinaryRefinement ended
+
+Added plugin : libmesh_quadrature.so
+Added plugin : libsandia_quadrature.so
+Added plugin : libinterpolating_functions.so
+
+Starting BinaryRefinement
 Starting Binary Tree hp Refinement with 10 degrees of freedom
 Active Element of polinomial degree : 4
 Active Element of polinomial degree : 6
@@ -52,348 +100,28 @@ Elemento attivo di id # 1
 The mesh has 2 ACTIVE elements
 Livelli di p refinement : 
 4 6 
-BinaryRefinement test ended
-Memory leak detected!
-Compile in DEBUG mode with --enable-reference-counting
-for more information
+BinaryRefinement ended
+
+Added plugin : libmesh_quadrature.so
+Added plugin : libsandia_quadrature.so
+Added plugin : libinterpolating_functions.so
+
+Starting libMesh file IO test
+libMesh file IO test ended
+
+Added plugin : libmesh_quadrature.so
+Added plugin : libsandia_quadrature.so
+Added plugin : libinterpolating_functions.so
+
+Starting FirstNotExactElement
 Let's check the normality of the element #52 of the basis :
 Integral: 2.27169e-26
-Memory leak detected!
-Compile in DEBUG mode with --enable-reference-counting
-for more information
-Registering in Quadrature factory
-Registering in Quadrature factory
-Builder for key = CANNOT RESOLVE NAME already present; previous one overwritten
-I check the simmetry of the quadrature nodes
-I check the simmetry of the quadrature weights
-Creo la mappa da (-1, 1) a (1, 2)
-Mappa creata
-Provo l'inversa
-2D test
+FirstNotExactElement ended
 
-Creo la mappa per il primo triangolo
-Mappa creata
-Maps test ended
+Added plugin : libmesh_quadrature.so
+Added plugin : libsandia_quadrature.so
+Added plugin : libinterpolating_functions.so
 
- ---------------------------------------------------------------------------- 
-| Reference count information                                                |
- ---------------------------------------------------------------------------- 
-| N7libMesh15GhostingFunctorE reference count information:
-|  Creations:    3
-|  Destructions: 3
-| N7libMesh4ElemE reference count information:
-|  Creations:    17
-|  Destructions: 17
-| N7libMesh4NodeE reference count information:
-|  Creations:    9
-|  Destructions: 9
-| N7libMesh9DofObjectE reference count information:
-|  Creations:    26
-|  Destructions: 26
- ---------------------------------------------------------------------------- 
-Memory leak detected!
-Costruisco FElement
-Inizializzo interval
+Starting MuParser
+MuParser ended
 
- ---------------------------------------------------------------------------- 
-| Reference count information                                                |
- ---------------------------------------------------------------------------- 
-| N7libMesh15GhostingFunctorE reference count information:
-|  Creations:    4
-|  Destructions: 4
-| N7libMesh4ElemE reference count information:
-|  Creations:    19
-|  Destructions: 19
-| N7libMesh4NodeE reference count information:
-|  Creations:    11
-|  Destructions: 11
-| N7libMesh9DofObjectE reference count information:
-|  Creations:    30
-|  Destructions: 30
- ---------------------------------------------------------------------------- 
-Memory leak detected!
-Checking the orthogonality on the standard interval
-
-
-Let's check the normality on the standard interval :
-Checking the basis orthogonality on the (0, 1) interval:
-Checking the basis normality on the (0, 1) interval :
-
- ---------------------------------------------------------------------------- 
-| Reference count information                                                |
- ---------------------------------------------------------------------------- 
-| N7libMesh15GhostingFunctorE reference count information:
-|  Creations:    5
-|  Destructions: 5
-| N7libMesh4ElemE reference count information:
-|  Creations:    22
-|  Destructions: 22
-| N7libMesh4NodeE reference count information:
-|  Creations:    13
-|  Destructions: 13
-| N7libMesh9DofObjectE reference count information:
-|  Creations:    35
-|  Destructions: 35
- ---------------------------------------------------------------------------- 
-Memory leak detected!
-*** Warning, This code is deprecated, and likely to be removed in future library versions! /usr/local/include/libmesh/type_vector.h, line 879, compiled May  7 2017 at 21:51:34 ***
-I start one refinement iteration on the first mesh element
-
- ---------------------------------------------------------------------------- 
-| Reference count information                                                |
- ---------------------------------------------------------------------------- 
-| N7libMesh15GhostingFunctorE reference count information:
-|  Creations:    6
-|  Destructions: 6
-| N7libMesh4ElemE reference count information:
-|  Creations:    27
-|  Destructions: 27
-| N7libMesh4NodeE reference count information:
-|  Creations:    16
-|  Destructions: 16
-| N7libMesh9DofObjectE reference count information:
-|  Creations:    43
-|  Destructions: 43
- ---------------------------------------------------------------------------- 
-Memory leak detected!
-I directly call the Interval refine method
-
- ---------------------------------------------------------------------------- 
-| Reference count information                                                |
- ---------------------------------------------------------------------------- 
-| N7libMesh15GhostingFunctorE reference count information:
-|  Creations:    7
-|  Destructions: 7
-| N7libMesh4ElemE reference count information:
-|  Creations:    46
-|  Destructions: 46
-| N7libMesh4NodeE reference count information:
-|  Creations:    19
-|  Destructions: 19
-| N7libMesh9DofObjectE reference count information:
-|  Creations:    65
-|  Destructions: 65
- ---------------------------------------------------------------------------- 
-Memory leak detected!
-Starting Binary Tree hp Refinement with 10 degrees of freedom
-Active Element of polinomial degree : 4
-Active Element of polinomial degree : 6
-I have started from a mesh with 2 elements; after refinement it has 22 elements, 2 of them are ACTIVE
-
-Now I check the same thing with the active elements iteration
-Nodi: 
-0	0.5	
-Elemento attivo di id # 0
-Nodi: 
-0.5	1	
-Elemento attivo di id # 1
-The mesh has 2 ACTIVE elements
-Livelli di p refinement : 
-4 6 
-BinaryRefinement test ended
-
- ---------------------------------------------------------------------------- 
-| Reference count information                                                |
- ---------------------------------------------------------------------------- 
-| N7libMesh15GhostingFunctorE reference count information:
-|  Creations:    8
-|  Destructions: 8
-| N7libMesh4ElemE reference count information:
-|  Creations:    373
-|  Destructions: 373
-| N7libMesh4NodeE reference count information:
-|  Creations:    32
-|  Destructions: 32
-| N7libMesh9DofObjectE reference count information:
-|  Creations:    405
-|  Destructions: 405
- ---------------------------------------------------------------------------- 
-Memory leak detected!
-Let's check the normality of the element #52 of the basis :
-Integral: 2.27169e-26
-
- ---------------------------------------------------------------------------- 
-| Reference count information                                                |
- ---------------------------------------------------------------------------- 
-| N7libMesh15GhostingFunctorE reference count information:
-|  Creations:    9
-|  Destructions: 9
-| N7libMesh4ElemE reference count information:
-|  Creations:    375
-|  Destructions: 375
-| N7libMesh4NodeE reference count information:
-|  Creations:    34
-|  Destructions: 34
-| N7libMesh9DofObjectE reference count information:
-|  Creations:    409
-|  Destructions: 409
- ---------------------------------------------------------------------------- 
-Memory leak detected!
-Registering in Quadrature factory
-Registering in Quadrature factory
-Builder for key = CANNOT RESOLVE NAME already present; previous one overwritten
-I check the simmetry of the quadrature nodes
-I check the simmetry of the quadrature weights
-Creo la mappa da (-1, 1) a (1, 2)
-Mappa creata
-Provo l'inversa
-2D test
-
-Creo la mappa per il primo triangolo
-Mappa creata
-Maps test ended
-
- ---------------------------------------------------------------------------- 
-| Reference count information                                                |
- ---------------------------------------------------------------------------- 
-| N7libMesh15GhostingFunctorE reference count information:
-|  Creations:    3
-|  Destructions: 3
-| N7libMesh4ElemE reference count information:
-|  Creations:    17
-|  Destructions: 17
-| N7libMesh4NodeE reference count information:
-|  Creations:    9
-|  Destructions: 9
-| N7libMesh9DofObjectE reference count information:
-|  Creations:    26
-|  Destructions: 26
- ---------------------------------------------------------------------------- 
-Memory leak detected!
-Costruisco FElement
-Inizializzo interval
-
- ---------------------------------------------------------------------------- 
-| Reference count information                                                |
- ---------------------------------------------------------------------------- 
-| N7libMesh15GhostingFunctorE reference count information:
-|  Creations:    4
-|  Destructions: 4
-| N7libMesh4ElemE reference count information:
-|  Creations:    19
-|  Destructions: 19
-| N7libMesh4NodeE reference count information:
-|  Creations:    11
-|  Destructions: 11
-| N7libMesh9DofObjectE reference count information:
-|  Creations:    30
-|  Destructions: 30
- ---------------------------------------------------------------------------- 
-Memory leak detected!
-Checking the orthogonality on the standard interval
-
-
-Let's check the normality on the standard interval :
-Checking the basis orthogonality on the (0, 1) interval:
-Checking the basis normality on the (0, 1) interval :
-
- ---------------------------------------------------------------------------- 
-| Reference count information                                                |
- ---------------------------------------------------------------------------- 
-| N7libMesh15GhostingFunctorE reference count information:
-|  Creations:    5
-|  Destructions: 5
-| N7libMesh4ElemE reference count information:
-|  Creations:    22
-|  Destructions: 22
-| N7libMesh4NodeE reference count information:
-|  Creations:    13
-|  Destructions: 13
-| N7libMesh9DofObjectE reference count information:
-|  Creations:    35
-|  Destructions: 35
- ---------------------------------------------------------------------------- 
-Memory leak detected!
-*** Warning, This code is deprecated, and likely to be removed in future library versions! /usr/local/include/libmesh/type_vector.h, line 879, compiled May  7 2017 at 22:58:33 ***
-I start one refinement iteration on the first mesh element
-
- ---------------------------------------------------------------------------- 
-| Reference count information                                                |
- ---------------------------------------------------------------------------- 
-| N7libMesh15GhostingFunctorE reference count information:
-|  Creations:    6
-|  Destructions: 6
-| N7libMesh4ElemE reference count information:
-|  Creations:    27
-|  Destructions: 27
-| N7libMesh4NodeE reference count information:
-|  Creations:    16
-|  Destructions: 16
-| N7libMesh9DofObjectE reference count information:
-|  Creations:    43
-|  Destructions: 43
- ---------------------------------------------------------------------------- 
-Memory leak detected!
-I directly call the Interval refine method
-
- ---------------------------------------------------------------------------- 
-| Reference count information                                                |
- ---------------------------------------------------------------------------- 
-| N7libMesh15GhostingFunctorE reference count information:
-|  Creations:    7
-|  Destructions: 7
-| N7libMesh4ElemE reference count information:
-|  Creations:    46
-|  Destructions: 46
-| N7libMesh4NodeE reference count information:
-|  Creations:    19
-|  Destructions: 19
-| N7libMesh9DofObjectE reference count information:
-|  Creations:    65
-|  Destructions: 65
- ---------------------------------------------------------------------------- 
-Memory leak detected!
-Starting Binary Tree hp Refinement with 10 degrees of freedom
-Active Element of polinomial degree : 4
-Active Element of polinomial degree : 6
-I have started from a mesh with 2 elements; after refinement it has 22 elements, 2 of them are ACTIVE
-
-Now I check the same thing with the active elements iteration
-Nodi: 
-0	0.5	
-Elemento attivo di id # 0
-Nodi: 
-0.5	1	
-Elemento attivo di id # 1
-The mesh has 2 ACTIVE elements
-Livelli di p refinement : 
-4 6 
-BinaryRefinement test ended
-
- ---------------------------------------------------------------------------- 
-| Reference count information                                                |
- ---------------------------------------------------------------------------- 
-| N7libMesh15GhostingFunctorE reference count information:
-|  Creations:    8
-|  Destructions: 8
-| N7libMesh4ElemE reference count information:
-|  Creations:    373
-|  Destructions: 373
-| N7libMesh4NodeE reference count information:
-|  Creations:    32
-|  Destructions: 32
-| N7libMesh9DofObjectE reference count information:
-|  Creations:    405
-|  Destructions: 405
- ---------------------------------------------------------------------------- 
-Memory leak detected!
-Let's check the normality of the element #52 of the basis :
-Integral: 2.27169e-26
-
- ---------------------------------------------------------------------------- 
-| Reference count information                                                |
- ---------------------------------------------------------------------------- 
-| N7libMesh15GhostingFunctorE reference count information:
-|  Creations:    9
-|  Destructions: 9
-| N7libMesh4ElemE reference count information:
-|  Creations:    375
-|  Destructions: 375
-| N7libMesh4NodeE reference count information:
-|  Creations:    34
-|  Destructions: 34
-| N7libMesh9DofObjectE reference count information:
-|  Creations:    409
-|  Destructions: 409
- ---------------------------------------------------------------------------- 
-Memory leak detected!

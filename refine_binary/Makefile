@@ -18,29 +18,27 @@ MajLibVers	:= 1
 MinLibVers	:= 0
 LibVers		:= $(MajLibVers).$(MinLibVers)
 
-#DIRECTORY TREE
-THIS_DIR		= .
-BaseDir		= $(THIS_DIR)/..
-InstallDir	= $(BaseDir)/lib
-CurrentDir	= $(PWD)
-INCLUDE_DIR = $(THIS_DIR)/include
-SRC_DIR		= $(THIS_DIR)/src
-SO_DIR		= $(THIS_DIR)/lib
-OBJ_DIR		= $(THIS_DIR)/obj
-
-OBJ_DIRS	= $(OBJ_DIR)
-SO_DIRS	= $(SO_DIR)
-DIRS		= $(OBJ_DIRS) $(SO_DIRS)
-
-# Directory where target binary is created and object files
-ObjDir				:= $(OBJ_DIR)
-LibDir				:= $(SO_DIR)
-
+BaseDir		= ./..
 # I include the external libraries paths
 -include $(BaseDir)/Makefile.inc
 
+#DIRECTORY TREE
+CurrentDir	= $(CURDIR)
+RootDir		= $(CurrentDir)/$(BaseDir)
+InstallDir	= $(BaseDir)/lib
+IncludeDir	= $(CurrentDir)/include
+SrcDir		= $(CurrentDir)/src
+# Directory where target binary is created and object files
+LibDir		= $(CurrentDir)/lib
+ObjDir		= $(CurrentDir)/obj
+
+ObjDirs	= $(ObjDir)
+LibDirs	= $(LibDir)
+Dirs		= $(ObjDirs) $(LibDirs)
+
+
 # Search Path For Include Files (InclPaths is included before mode specific InclPaths_MODE)
-InclPaths			:= $(INCLUDE_DIR) $(EigenInclude) $(JacobiPolInclude)
+InclPaths			:= $(IncludeDir) $(EigenInclude) $(JacobiPolInclude)
 InclPaths_Debug	:=
 InclPaths_Release	:=
 # Defined values used by CPP preprocessor (Defines is included before mode specific Defines_MODE)
@@ -48,7 +46,7 @@ Defines				:= $(GlobalDefines)
 Defines_Debug		:= DEBUG _GLIBCXX_DEBUG
 Defines_Release	:= RELEASE
 # Compiler specific flags (CXXFlags is included before mode specific CXXFlags_MODE)
-CXXFlags				:= -march=native $(INCLUDE_FLAGS) -Wall -Wextra
+CXXFlags				:= -march=native -Wall -Wextra
 CXXFlags_Debug		:= -g -std=gnu++11 -O2 -felide-constructors -funroll-loops -fstrict-aliasing -Wdisabled-optimization -Wno-variadic-macros -fopenmp -DNDEBUG
 CXXFlags_Release	:= -O3 -std=c++14
 
@@ -75,14 +73,14 @@ LibPaths				:=
 LibPaths_Debug		:=
 LibPaths_Release	:=
 # Linker specific flags (LFlags is included before mode specific LFlags_MODE)
-LFlags			:= -shared -Wl,-rpath,$(LibDir)
+LFlags			:= -shared
 LFlags_Debug	:= -g -Wl,-soname,lib$(LIBNAME)_Debug.so.$(MajLibVers)
 LFlags_Release	:= -O3 -Wl,-soname,lib$(LIBNAME).so.$(MajLibVers)
 endif
 
 
 # Source files
-SRC := $(notdir $(wildcard $(SRC_DIR)/*.cpp))
+SRC := $(notdir $(wildcard $(SrcDir)/*.cpp))
 
 
 ##########################
@@ -136,9 +134,9 @@ endif
 	rm -f $(InstallDir)/lib$(LIBNAME)$(subst _uninstall,,$(subst _Release,,_$@))$(LibSuffix)
 
 .PHONY:dir_tree
-dir_tree: $(DIRS)
+dir_tree: $(Dirs)
 
-$(DIRS):
+$(Dirs):
 	@test -d $@ || (echo creating $@ ; mkdir -p $@)
 
 
@@ -169,7 +167,7 @@ $(ObjDir)/$(1)/$(subst .cpp,.d,$(2))
 endef
 
 define CompileObject
-$(call ObjectFilename,$(1),$(2)): $(SRC_DIR)/$(2)
+$(call ObjectFilename,$(1),$(2)): $(SrcDir)/$(2)
 	@echo compiling: '$$<'
 	$$(CXX_$(1)) -c -o '$$@' '$$<'
 	$$(CXX_$(1)) '$$<' -MM -MF '$$@'.temp.dep

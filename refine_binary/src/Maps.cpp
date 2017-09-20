@@ -7,10 +7,12 @@ namespace Geometry
 	{
 		double a = vert[0][0];
 		double b = vert[1][0];
+
 //#ifdef MYDEBUG
-//				cout << "Primo estremo: " << a << endl;
-//				cout << "Secondo estremo: " << b << endl;
+//		cout << "Primo estremo: " << a << endl;
+//		cout << "Secondo estremo: " << b << endl;
 //#endif //MYDEBUG
+
 		this->_mat(0) = (b - a) / 2;
 		this->_trasl(0) = (a + b) / 2;
 		this->_jacobian = this->_mat(0);

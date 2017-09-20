@@ -28,14 +28,22 @@ namespace Geometry
 				virtual ~QuadratureRuleInterface(){};
 				virtual QuadPointVec<dim> GetPoints() = 0;
 				virtual QuadWeightVec GetWeights() = 0;
-				virtual size_t Order() = 0;
+				size_t Order()
+				{
+					return this->_order;
+				};
+
 			protected:
-				QuadratureRuleInterface()
+				QuadratureRuleInterface() : _order(0)
 				{
 #ifdef MYDEBUG
 					std::cout << "Sono nel costruttore di QuadratureRuleInterface" << std::endl;
 #endif //MYDEBUG
 				};
+
+			protected:
+				//The order of exactness of the quadrature rule
+				size_t _order;
 		};
 
 /*

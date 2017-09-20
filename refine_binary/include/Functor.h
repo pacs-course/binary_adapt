@@ -4,6 +4,11 @@
 #include "Point.h"
 #include "AbstractFactory.h"
 
+namespace Banana
+{
+	void TestFun();
+}
+
 namespace BinaryTree
 {
 /*
@@ -16,8 +21,9 @@ namespace BinaryTree
 		{
 			public:
 				Functor(){};
-				virtual double operator() (const Geometry::Point<dim>& p)const = 0;
-				virtual std::string Name()const = 0;
+				virtual double operator() (const Geometry::Point<dim>& p) const = 0;
+				virtual std::string Formula()const = 0;
+				virtual std::string ID()const = 0;
 		};
 
 /*
@@ -27,6 +33,9 @@ namespace BinaryTree
 */
 	template <std::size_t dim>
 		using FunctionsFactory = GenericFactory::ObjectFactory <Functor<dim>, std::string>;
+
+	template <std::size_t dim>
+		using FunctionPtr = std::shared_ptr<Functor<dim>>;
 
 } //namespace BinaryTree
 #endif //__FUNCTOR_H

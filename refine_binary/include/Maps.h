@@ -176,8 +176,8 @@ namespace Geometry
 
 			virtual ~QuadMap(){};
 
-			QuadMap					(const QuadMap&) = delete;
-			QuadMap& operator = 	(const QuadMap&) = delete;	
+			QuadMap					(const QuadMap&) = default;
+			QuadMap& operator = 	(const QuadMap&) = default;	
 	};
 
 /*

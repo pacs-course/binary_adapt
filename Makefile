@@ -11,9 +11,9 @@ quadrature_libs_path	:= ./quadrature_rules
 examples_path			:= ./example
 
 lib_interpolating_functions	:= ./interpolating_functions
-lib_libmesh_bridge				:= $(bridges_libs_path)/libmesh_bridge
-lib_plugin_loading				:= ./plugin_loading
-lib_libmesh_quadrature			:= $(quadrature_libs_path)/libmesh_quadrature
+lib_mesh_bridge					:= $(bridges_libs_path)/mesh_bridge
+lib_plugin_loader					:= ./plugin_loader
+lib_mesh_quadrature				:= $(quadrature_libs_path)/mesh_quadrature
 lib_sandia_quadrature			:= $(quadrature_libs_path)/sandia_quadrature
 lib_refine_binary					:= ./refine_binary
 example	:= $(examples_path)/example1 $(examples_path)/example2
@@ -23,9 +23,9 @@ lib_sub_dirs := $(bridges_libs_path) \
 					 $(quadrature_libs_path)
 
 libraries	:= $(lib_interpolating_functions) \
-					$(lib_libmesh_bridge) \
-					$(lib_plugin_loading) \
-					$(lib_libmesh_quadrature) \
+					$(lib_mesh_bridge) \
+					$(lib_plugin_loader) \
+					$(lib_mesh_quadrature) \
 					$(lib_sandia_quadrature) \
 					$(lib_refine_binary)
 

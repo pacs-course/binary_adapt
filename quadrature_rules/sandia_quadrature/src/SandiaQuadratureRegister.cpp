@@ -18,7 +18,9 @@ namespace SandiaQuadrature
 	__attribute__((destructor))
 	static void ExitFunction()
 	{
+#ifdef MYDEBUG
 		clog << "I'm closing the sandia quadrature library" << endl;
+#endif //MYDEBUG
 	};
 
 	__attribute__((constructor))
@@ -49,7 +51,9 @@ namespace SandiaQuadrature
 	QuadratureRegister::QuadratureRegister()
 	{
 #endif //DEPRECATED
+#ifdef MYDEBUG
 		clog << "Registering in Quadrature factory" << endl;
+#endif //MYDEBUG
 
 		auto& q_one_d_factory (Geometry::QuadratureFactory<1>::Instance());
 //		auto& q_two_d_factory (Geometry::QuadratureFactory<2>::Instance());

@@ -2,9 +2,77 @@
 #define __INTERPOLATING_FUNCTIONS_H
 
 #include "Functor.h"
+#include "MuParserInterface.h"
+
+#include <GetPot>
 
 namespace MyFunctions
 {
+	template <size_t dim>
+		class ParserFunctor : public BinaryTree::Functor<dim>
+		{
+			public:
+				ParserFunctor()
+				{
+					string thisfile = __FILE__;
+					string conf_file = thisfile.substr(0, thisfile.find_last_of('/')) + "/interpolating_functions.conf";
+#ifdef DEBUG
+					cerr << "ParserFunctor: opening configuration file " << conf_file << endl;
+#endif //DEBUG
+					GetPot cl(conf_file.c_str());
+					string expr = std::to_string(dim) + "D/mu_parser_expr";
+
+					this->_parser.Expression(cl(expr.c_str(), ""));
+
+					if (this->_parser.Expression() == "")
+						throw runtime_error("Error reading the configuration file in ParserFunctor: empty string expression");
+
+					//I try to call the _parser operator() to check the correctness of the expression
+					//I don't want to make this check every time I call ParserFunctor::operator()
+					//I do it once here
+					try
+					{
+						std::array<double, dim> test;
+						test.fill(0.0);
+						//to avoid warning by the compiler
+						(void) this->_parser(test);
+					}
+					catch(mu::Parser::exception_type& e)
+					{
+						std::string error 	=	"Content of muParser exception"					+ std::string("\n")
+													+	"Message:  "	+ std::string(e.GetMsg())		+ std::string("\n")
+													+	"Formula:  "	+ std::string(e.GetExpr())		+ std::string("\n")
+													+	"Token:    "	+ std::string(e.GetToken())	+ std::string("\n")
+													+	"Position: "	+ std::to_string(e.GetPos())	+ std::string("\n")
+													+	"Errc:     "	+ std::to_string(e.GetCode())	+ std::string("\n");
+
+						//I prefer to throw a runtime_error, since outside this plugin I don't see the mu:: namespace
+						throw std::runtime_error(error);
+					}
+				};
+
+				//needed for testing purpose
+//				ParserFunctor(const std::string& s) : _parser(s){};
+
+				virtual double operator() (const Geometry::Point<dim>& p) const override
+				{
+					return (this->_parser)(p.get());
+				};
+
+				virtual std::string Formula() const override
+				{
+					return this->_parser.Expression();
+				};
+
+				virtual std::string ID() const override
+				{
+					return "parsed_functor_RENAME_ME";
+				};
+
+			protected:
+				MuParserInterface<dim> _parser;
+		};
+
 	template <int exp>
 		class XExpBeta : public BinaryTree::Functor<1>
 		{
@@ -19,9 +87,13 @@ namespace MyFunctions
 					return result;
 				};
 
-				virtual std::string Name()const override
+				virtual std::string Formula()const override
 				{
 					return "x^" + std::to_string(exp);
+				};
+				virtual std::string ID()const override	
+				{
+					return "x_exp_beta<" + std::to_string(exp) + ">";
 				};
 		};
 
@@ -35,9 +107,13 @@ namespace MyFunctions
 					return (exp(b_mu * p[0]) - 1) / (exp(b_mu) - 1);
 				};
 
-				virtual std::string Name()const override
+				virtual std::string Formula()const override
 				{
 					return "(exp(" + std::to_string(b_mu) + "*x) - 1 ) / (exp(" + std::to_string(b_mu) + ") - 1)";
+				};
+				virtual std::string ID()const override
+				{
+					return "advection_diffusion_solution<" + std::to_string(b_mu) + ">";
 				};
 		};
 
@@ -48,7 +124,8 @@ namespace MyFunctions
 		public:
 			HalfStep(){};
 			virtual double operator() (const Geometry::Point<1>&)const override;
-			virtual std::string Name()const override;
+			virtual std::string Formula()const override;
+			virtual std::string ID()const override;
 	};
 
 	class HalfSqrt : public BinaryTree::Functor<1>
@@ -56,7 +133,8 @@ namespace MyFunctions
 		public:
 			HalfSqrt(){};
 			virtual double operator() (const Geometry::Point<1>&)const override;			
-			virtual std::string Name()const override;
+			virtual std::string Formula()const override;
+			virtual std::string ID()const override;
 	};
 
 	class HalfX : public BinaryTree::Functor<1>
@@ -64,7 +142,8 @@ namespace MyFunctions
 		public:
 			HalfX(){};
 			virtual double operator() (const Geometry::Point<1>&)const override;			
-			virtual std::string Name()const override;
+			virtual std::string Formula()const override;
+			virtual std::string ID()const override;
 	};
 
 	class HalfSquare : public BinaryTree::Functor<1>
@@ -72,7 +151,8 @@ namespace MyFunctions
 		public:
 			HalfSquare(){};
 			virtual double operator() (const Geometry::Point<1>&)const override;			
-			virtual std::string Name()const override;
+			virtual std::string Formula()const override;
+			virtual std::string ID()const override;
 	};
 
 	class HalfTwenty : public BinaryTree::Functor<1>
@@ -80,7 +160,8 @@ namespace MyFunctions
 		public:
 			HalfTwenty(){};
 			virtual double operator() (const Geometry::Point<1>&)const override;			
-			virtual std::string Name()const override;
+			virtual std::string Formula()const override;
+			virtual std::string ID()const override;
 	};
 
 	class SqrtX : public BinaryTree::Functor<1>
@@ -88,7 +169,8 @@ namespace MyFunctions
 		public:
 			SqrtX(){};
 			virtual double operator() (const Geometry::Point<1>&)const override;
-			virtual std::string Name()const override;
+			virtual std::string Formula()const override;
+			virtual std::string ID()const override;
 	};
 
 } //namespace MyFunctions

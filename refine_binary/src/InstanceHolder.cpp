@@ -2,51 +2,32 @@
 
 #include <map>
 
-#include "Functor.h"
+using namespace std;
 
 namespace GenericFactory
 {
-	class InstanceHolder : public map<string, std::unique_ptr<FactoryBase>>
+	//default initialization of the static attribute _holder; after the construction the map is empty
+#ifndef BANANA
+	map<string, unique_ptr<FactoryBase>> InstanceHolder::_holder;
+#else //BANANA
+	BananaMap InstanceHolder::_holder;
+#endif //BANANA
+
+	FactoryBase& InstanceHolder::FactoryInstance(const string& factory_name)
 	{
-		public:
-			~InstanceHolder()
-			{
-//#ifdef MYDEBUG
-//				cerr << "Destroying InstanceHolder" << endl;
-//				for (auto& pair : (*this))
-//				{
-//					cerr << "I have a pointer with address: " << pair.second.get() << endl;
-//				 	cerr << "With key: " << pair.first << endl;
-
-//					cerr << "Il tipo e' " << typeid(pair.second.get()).name() << endl;
-//					auto ptr = dynamic_cast<BinaryTree::FunctionsFactory<1>*>(pair.second.get());
-//					if(ptr)
-//					{
-//						cerr << "I try to manually destroy it" << endl;
-//						ptr->~FactoryBase();
-//					}
-//					else
-//						cerr <<"il cast non ha funzionato" << endl;
-
-					//SU QUESTA ISTRUZIONE HO UN SEGMENTATION FAULT!!!
-//					pair.second->~FactoryBase();
-					//questa e' una possibile soluzione, ma causo memory leak
-//					pair.second.release();
-//				}
-//#endif //MYDEBUG
-	    	};
-    };
-
-	FactoryBase* FactoryInstance(const string& factory_name, FactoryBase* instance)
-	{
-		static InstanceHolder instances;
-		if (instance)
-		{
-			instances[factory_name] = std::move(std::unique_ptr<FactoryBase>(instance));
 #ifdef MYDEBUG
-			cerr << "Aggiunta istanza con nome: " << factory_name << endl;
+		cerr << "querying Factory " << factory_name << endl;
 #endif //MYDEBUG
-		}
-		return instances[factory_name].get();
-	}
+		return *(_holder.at(factory_name));
+	};
+
+	FactoryBase& InstanceHolder::AddInstance(const string& factory_name, unique_ptr<FactoryBase> instance)
+	{
+#ifdef MYDEBUG
+		cerr << "registering Factory " << factory_name << " [" << instance.get() << "]" << endl;
+#endif //MYDEBUG
+		auto& ptr = _holder[factory_name];
+		ptr = move(instance);
+		return *(ptr);
+	};
 } //namespace GenericFactory

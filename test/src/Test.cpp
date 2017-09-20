@@ -1,97 +1,124 @@
-#include <array>
-#include <utility> //std::move
-
 #include "Test.h"
+
+#include <array>
+#include <utility> //move
+
 #include "Point.h"
-#include "Quadrature.h"
 #include "Polinomial.h"
 #include "StdFElement.h"
-
-#ifdef DEPRECATED
-#include "LibMeshQuadratureRegister.h" //LibmeshBananaFun
-#include "SandiaQuadratureRegister.h" //SandiaBananaFun
-#endif //DEPRECATED
+#include "BinaryTreeHelper.h"
 
 #include "LibMeshRefiner.h"
 #include "LibMeshBinaryElements.h"
 
-#include "MyFunctors.h"
-
-#include "libmesh/libmesh.h"
 #include "libmesh/mesh_generation.h" //MeshTools
-#include "libmesh/getpot.h" //Getpot
-#include <quadrature.h>
-
+	
 using namespace std;
 using namespace Geometry;
 using namespace BinaryTree;
 using namespace FiniteElements;
 using namespace LibmeshBinary;
 
-void Initializer::Load(const vector<string>& handles)
+Logfile::Logfile(const string& filename) : _ofs(filename, ios_base::app)
+														,_out_buf(cout.rdbuf(_ofs.rdbuf()))
+														,_log_buf(clog.rdbuf(_ofs.rdbuf()))
+														,_err_buf(cerr.rdbuf(_ofs.rdbuf()))
+														,_libmesh_err_buf(libMesh::err.rdbuf(_ofs.rdbuf()))
+														,_libmesh_out_buf(libMesh::out.rdbuf(_ofs.rdbuf()))
+{
+#ifdef MYDEBUG
+	clog << "I buffer sono su file" << endl;
+#endif //MYDEBUG
+};
+
+Logfile::~Logfile()
+{
+#ifdef MYDEBUG
+	clog << "Redirigo i buffer sullo standard" << endl;
+#endif //MYDEBUG
+	clog.rdbuf(_log_buf);
+	cout.rdbuf(_out_buf);
+	cerr.rdbuf(_err_buf);
+	libMesh::err.rdbuf(_libmesh_err_buf);
+	libMesh::out.rdbuf(_libmesh_out_buf);
+#ifdef MYDEBUG
+	cerr << "Buffer rediretti" << endl;
+#endif //MYDEBUG
+};
+
+bool Initializer::Load(const vector<string>& handles)
 {
 	for (auto& handle : handles)
 		_pl.Add(handle);
-	if (!_pl.Load())
-	{
-		cerr << "Houston we have a problem: something went wrong loading plugins";
-		return;
-	}
+	return _pl.Load();
+};
+
+LoadTest::LoadTest() : _mesh_init_ptr(nullptr), _out("test.log")
+{
+#ifdef MYDEBUG
+	clog << "Sono nel costruttore di LoadTest" << endl;
+#endif //MYDEBUG
+
+	string exe_name = "test";
+	const char* trivialargv[] = {exe_name.c_str()};
+	_mesh_init_ptr = HelperFunctions::MakeUnique<libMesh::LibMeshInit>(1, trivialargv);
+};
+
+LoadTest::~LoadTest()
+{
+#ifdef DESTRUCTOR_ALERT
+	clog << "Sono nel distruttore di LoadTest" << endl;
+#endif //DESTRUCTOR_ALERT
+};
+
+void LoadTest::TearDown()
+{
+#ifdef MYDEBUG
+	clog << "Sono nella TearDown di LoadTest" << endl;
+#endif //MYDEBUG
 };
 
 void LoadTest::SetUp()
 {
-#ifndef DEPRECATED
+#ifdef MYDEBUG
+	clog << "Sono nella SetUp di LoadTest" << endl;
+#endif //MYDEBUG
 
 	vector<string> handles;
 #ifndef DEBUG
 	handles.push_back("libmesh_quadrature.so");
 	handles.push_back("libsandia_quadrature.so");
+	handles.push_back("libinterpolating_functions.so");
 #else //DEBUG
 	handles.push_back("libmesh_quadrature_Debug.so");
 	handles.push_back("libsandia_quadrature_Debug.so");
+	handles.push_back("libinterpolating_functions_Debug.so");
 #endif //DEBUG
-	_initializer.Load(handles);
+	if (!_initializer.Load(handles))
+		throw runtime_error ("Houston we have a problem: something went wrong loading plugins");
 
-#else //DEPRECATED
-
-	Banana::LibmeshBananaFun();
-	Banana::SandiaBananaFun();
-
-#endif //DEPRECATED
 };
-
-//namespace myhelpers
-//{
-//	void dim_helper (libMesh::Elem* el)
-//	{
-//		cout << "Che dimensione ha l'elemento di input?" << endl;
-//		cout << el->dim() << endl;
-//	};
-
-//	libMesh::Mesh build_line_helper (int _argc, char ** _argv, int n, double a, double b)
-//	{
-//		libMesh::LibMeshInit init (_argc, _argv);
-//		libMesh::Mesh mesh(init.comm());
-
-//		libMesh::MeshTools::Generation::build_line(mesh, n, a, b, libMesh::EDGE2);
-//		return mesh;
-//	};
-
-//} //namespace myhelpers
-
 
 TEST_F(LoadTest, IsRegistered)
 {
+//	clog << endl << "Starting IsRegistered" << endl;
+
 	auto& quad_fac(Geometry::QuadratureFactory<1>::Instance());
 	auto quad_ptr = quad_fac.create(Geometry::IntervalType);
-	EXPECT_NE(quad_ptr, nullptr);
+	EXPECT_NE(quad_ptr.get(), nullptr);
+
+//	clog << "IsRegisterd ended" << endl << endl;
 };
 
-TEST(ClassTest, PointTest)
+
+TEST_F(LoadTest, PointTest)
 {
+	clog << endl << "Starting PointTest" << endl;
+
 	Point<1> p_test({1});
 	EXPECT_EQ(p_test[0], 1) << "1d construction by initializer list failed";
+	double p = p_test;
+	EXPECT_EQ(p, 1) << "1d cast to double failed";	
 
 	Point<1> p_copy(p_test);
 	Point<1> p1 = p_copy;
@@ -123,35 +150,45 @@ TEST(ClassTest, PointTest)
 	auto dist_diff = abs(p5.distance(p4) - sqrt(14));
 	EXPECT_LT(dist_diff, 1E-4) << "Vector distance failed";
 	//TODO: test other member functions
+
+	clog << "PointTest ended" << endl << endl;
 };
 
 
 TEST_F(LoadTest, BinaryElementsConstruction)
 {
-	libMesh::LibMeshInit init (_argc, _argv);
-	int n = 2;
+	clog << endl << "Starting BinaryElementsConstruction" << endl;
 
-	libMesh::Mesh mesh(init.comm());
+	int n = 2;
+	libMesh::Mesh mesh(_mesh_init_ptr->comm());
+
 	libMesh::MeshRefinement mesh_refiner(mesh);
 
-	// Build a 1D mesh with n elements from x=0 to x=1, using
+////Build a 1D mesh with n elements from x=0 to x=1, using
 	libMesh::MeshTools::Generation::build_line(mesh, n, 0., 1., LibmeshIntervalType);
 
-	BinaryTree::FunctionPtr<1> f_ptr = make_shared<MyFunctions::XSquared>();
+	auto& f_factory(FunctionsFactory<1>::Instance());
+	std::unique_ptr<Functor<1>> smart_ptr = f_factory.create("x_squared");
+	BinaryTree::FunctionPtr<1> f_ptr (smart_ptr.release());
+
 	BinarityMap::MakeBinary<1> (mesh_refiner, f_ptr);
 
 	ASSERT_TRUE(BinarityMap::CheckBinarity(mesh)) << "After MakeBinary mesh is not binary!";
 
 	mesh.prepare_for_use(/*skip_renumber =*/ false);
 
-	//TODO: add other assertion
+////TODO: add other assertion
 
-	//TODO: construct other possible binary objects
+////TODO: construct other possible binary objects
+
+	clog << "BinaryElementsConstruction ended" << endl << endl;
 };
 
 
 TEST_F(LoadTest, StdIntegration)
 {
+	clog << endl << "Starting StdIntegration" << endl;
+
 	//interval (-1, 1)
 #ifndef SINGLETON_ENABLED
 	StdIperCube<1> std_interval;
@@ -260,15 +297,17 @@ TEST_F(LoadTest, StdIntegration)
 	
 	//TODO : make other integrals
 	//TODO : check other standard elements
+
+	clog << "StdIntegration ended" << endl << endl;
 };
 
 TEST_F(LoadTest, MapsTest)
 {
-	libMesh::LibMeshInit init (_argc, _argv);
+	clog << endl << "Starting MapsTest" << endl;
 
 	int n = 1;
 
-	libMesh::Mesh mesh1(init.comm());
+	libMesh::Mesh mesh1(_mesh_init_ptr->comm());
 
 	// Build a 1D mesh with n elements from x=1 to x=2
 	libMesh::MeshTools::Generation::build_line(mesh1, n, 1., 2., LibmeshIntervalType);
@@ -331,7 +370,7 @@ TEST_F(LoadTest, MapsTest)
 	int nx = 1;
 	int ny = 1;
 
-	libMesh::Mesh mesh2(init.comm());
+	libMesh::Mesh mesh2(_mesh_init_ptr->comm());
 
 	// Build a 2D square (1,2)x(1,2) mesh with nx subdivisions along x axis and ny subdivisions along y axis
 	libMesh::MeshTools::Generation::build_square(mesh2, nx, ny, 1., 2., 1., 2., libMesh::TRI3);
@@ -439,16 +478,15 @@ TEST_F(LoadTest, MapsTest)
 	//TODO: check the inverse
 	//TODO: check singular maps between reference elements
 
-	cout << "Maps test ended" << endl;
+	clog << "MapsTest ended" << endl << endl;
 };
 
 TEST_F(LoadTest, GeneralIntegration)
-{	
-	libMesh::LibMeshInit init (_argc, _argv);
+{
+	clog << endl << "Starting GeneralIntegration" << endl;
 
 	int n = 1;
-
-	libMesh::Mesh mesh1(init.comm());
+	libMesh::Mesh mesh1(_mesh_init_ptr->comm());
 
 	// Build a 1D mesh with n elements from x=1 to x=2
 	libMesh::MeshTools::Generation::build_line(mesh1, n, 1., 2., LibmeshIntervalType);
@@ -471,17 +509,21 @@ TEST_F(LoadTest, GeneralIntegration)
 	double solex = 7; solex /= 3; 
 	auto err = abs(val - solex);	
 	EXPECT_LT(err, 1E-4) << "Wrong integral, the error wrt the exact solution is" + to_string(err);
+
+	clog << "GeneralIntegration ended" << endl << endl;
 };
 
 
-TEST(ClassTest, LibmeshVersionCompatibility)
-{
-	//TODO
-};
+//TEST(LoadTest, LibmeshVersionCompatibility)
+//{
+//	//TODO
+//};
 
 
 TEST_F(LoadTest, LegendreOrthonormality)
 {
+	clog << endl << "Starting LegendreOrthonormality" << endl;
+
 #ifndef SINGLETON_ENABLED
 	StdFIperCube<1, LegendreType> sfic;
 #else //SINGLETON_ENABLED
@@ -558,15 +600,20 @@ TEST_F(LoadTest, LegendreOrthonormality)
 //		clog << "Legendre function #" + to_string(i) + " has I = " + to_string(I) << endl;
 //	}
 
+
+	clog << "LegendreOrthonormality ended" << endl << endl;
 };
 
 TEST_F(LoadTest, ProjectionTest)
 {
-	//Do not change this function! It's needed to be x^2 for the last part of the test
-	BinaryTree::FunctionPtr<1> f_ptr = make_shared<MyFunctions::XSquared>();
+	clog << endl << "Starting ProjectionTest" << endl;
 
-	libMesh::LibMeshInit init (_argc, _argv);
-	libMesh::Mesh mesh(init.comm());
+	//Do not change this function! It's needed to be x^2 for the last part of the test
+	auto& f_factory(FunctionsFactory<1>::Instance());
+	std::unique_ptr<Functor<1>> smart_ptr = f_factory.create("x_squared");
+	BinaryTree::FunctionPtr<1> f_ptr (smart_ptr.release());
+
+	libMesh::Mesh mesh(_mesh_init_ptr->comm());
 	libMesh::MeshRefinement mesh_refiner(mesh);
 	libMesh::MeshTools::Generation::build_line(mesh, 1, 0, 1, LibmeshIntervalType);
 
@@ -644,14 +691,17 @@ TEST_F(LoadTest, ProjectionTest)
 //		error = el->ProjectionError();
 //		clog << "Errore di interpolazione su P" << el->PLevel() << " : " << error << endl;
 //	}
+
+	clog << "ProjectionTest ended" << endl << endl;
 };
 
 TEST_F(LoadTest, LibmeshRefinement)
 {
-	libMesh::LibMeshInit init (_argc, _argv);
+	clog << endl << "Starting LibmeshRefinement" << endl;
 
+	size_t cont = 0;
 	int n = 1;
-	libMesh::Mesh mesh(init.comm());
+	libMesh::Mesh mesh(_mesh_init_ptr->comm());
 
 	// Build a 1D mesh with n elements from x=1 to x=2
 	libMesh::MeshTools::Generation::build_line(mesh, n, 1., 2., libMesh::EDGE2);
@@ -667,7 +717,7 @@ TEST_F(LoadTest, LibmeshRefinement)
 
 	auto el_nodes = element_ptr->get_nodes();
 	auto copy_el_nodes = copy_element_ptr->get_nodes();
-	EXPECT_EQ ( (*el_nodes)->size(), (*copy_el_nodes)->size() );
+	EXPECT_EQ ( (*el_nodes)->norm(), (*copy_el_nodes)->norm() );
 	
 	EXPECT_EQ ( (*(el_nodes[0]))(0), (*(copy_el_nodes[0]))(0) );
 	EXPECT_EQ ( (*(el_nodes[1]))(0), (*(copy_el_nodes[1]))(0) );
@@ -693,6 +743,7 @@ TEST_F(LoadTest, LibmeshRefinement)
 	mesh.prepare_for_use(/*skip_renumber =*/ false);
 
 	element_ptr->set_refinement_flag(libMesh::Elem::REFINE);
+
 	EXPECT_EQ (mesh.n_elem(), 1);
 	EXPECT_EQ ((*mesh.elements_begin())->refinement_flag(), libMesh::Elem::REFINE);
 	EXPECT_EQ (element_ptr, *(mesh.elements_begin()));
@@ -701,11 +752,11 @@ TEST_F(LoadTest, LibmeshRefinement)
 	libMesh::MeshRefinement refiner(mesh);
 	element_ptr->refine(refiner);
 
-	int cont = mesh.n_elem();
+	int count = mesh.n_elem();
 
 	for (auto iter = mesh.elements_begin(); iter != mesh.elements_end(); ++iter)
 		if (!(*iter)->active())
-			--cont;
+			--count;
 
 	EXPECT_EQ(mesh.n_elem(), 3) << "Started from a mesh with "
 											+ to_string(n)
@@ -713,23 +764,28 @@ TEST_F(LoadTest, LibmeshRefinement)
 											+ to_string(mesh.n_elem())
 											+ " elements";
 
-	EXPECT_EQ(cont, 2) << "Started from a mesh with "
+	EXPECT_EQ(count, 2) << "Started from a mesh with "
 								+ to_string(n)
 								+ " elements; after refining one element there are"
 								+ to_string(cont) + " ACTIVE elements";
+
+	clog << "LibmeshRefinement ended" << endl << endl;
 };
 
 TEST_F(LoadTest, ManualBinaryRefinement)
 {
-	libMesh::LibMeshInit init (_argc, _argv);
+	clog << endl << "Starting ManualBinaryRefinement" << endl;
+
 	int n = 1;
-	libMesh::Mesh mesh(init.comm());
+	libMesh::Mesh mesh(_mesh_init_ptr->comm());
 
 	// Build a 1D mesh with n elements from x=1 to x=2
 	libMesh::MeshTools::Generation::build_line(mesh, n, 1., 2., libMesh::EDGE2);
 	libMesh::MeshRefinement refiner(mesh);
 
-	BinaryTree::FunctionPtr<1> f_ptr = make_shared<MyFunctions::XSquared>();
+	auto& f_factory(FunctionsFactory<1>::Instance());
+	std::unique_ptr<Functor<1>> smart_ptr = f_factory.create("x_squared");
+	BinaryTree::FunctionPtr<1> f_ptr (smart_ptr.release());
 
 #define MAKE_OPTION
 #ifdef MAKE_OPTION
@@ -784,20 +840,21 @@ TEST_F(LoadTest, ManualBinaryRefinement)
 								+ to_string(n)
 								+ " elements; after one refining one time one element there are "
 								+ to_string(cont) + " ACTIVE elements";
+
+	clog << "ManualBinaryRefinement ended" << endl << endl;
 };
 
 //TODO, TOP PRIORITY
 TEST_F(LoadTest, BinaryRefinement)
 {
-	auto f_ptr = HelperFunctions::MakeUnique<MyFunctions::XSquared>();
+	clog << endl << "Starting BinaryRefinement" << endl;
 
-	libMesh::LibMeshInit init (_argc, _argv);
-	auto mesh_ptr = make_shared<libMesh::Mesh> (init.comm());
+	auto mesh_ptr = make_shared<libMesh::Mesh> (_mesh_init_ptr->comm());
 
 	int n = 2;
 	libMesh::MeshTools::Generation::build_line(*mesh_ptr, n, 0, 1, LibmeshIntervalType);
 	LibmeshBinary::BinaryRefiner<1> binary_refiner;
-	binary_refiner.Init(move(f_ptr));
+	binary_refiner.Init("x_squared");
 	binary_refiner.SetMesh(mesh_ptr);
 	EXPECT_EQ(mesh_ptr, binary_refiner.GetMesh());
 
@@ -823,31 +880,32 @@ TEST_F(LoadTest, BinaryRefinement)
 		cout << l << " ";
 	cout << endl;
 
-	cout << "BinaryRefinement test ended" << endl;
+	clog << "BinaryRefinement ended" << endl << endl;
 };
 
 //TODO
-void test14(int _argc, char** _argv)
+TEST_F(LoadTest, IOTest)
 {
-	cout << endl << "Starting libMesh file IO test" << endl;
-	libMesh::LibMeshInit init (_argc, _argv);
-	libMesh::Mesh mesh(init.comm());
+	clog << endl << "Starting libMesh file IO test" << endl;
+
+	libMesh::Mesh mesh(_mesh_init_ptr->comm());
 
 	// Build a 2D square (1,2)x(1,2) mesh with nx subdivisions along x axis and ny subdivisions along y axis
 	int nx = 1, ny = 1;
 	libMesh::MeshTools::Generation::build_square(mesh, nx, ny, 1., 2., 1., 2., libMesh::TRI3);
 	mesh.write("./mesh2d.msh");
 
-	cout << "libMesh file IO test ended" << endl;
+	clog << "libMesh file IO test ended" << endl << endl;
 };
 
+//TODO: perche' il primo polinomio non integrato esattamente ha norma nulla?
 TEST_F(LoadTest, FirstNotExactElement)
 {
-	libMesh::LibMeshInit init (_argc, _argv);
+	clog << endl << "Starting FirstNotExactElement" << endl;
 
 	int n = 1;
 
-	libMesh::Mesh mesh1(init.comm());
+	libMesh::Mesh mesh1(_mesh_init_ptr->comm());
 	libMesh::MeshTools::Generation::build_line(mesh1, n, 0., 1., LibmeshIntervalType);
 
 	auto iter = mesh1.elements_begin();
@@ -868,13 +926,49 @@ TEST_F(LoadTest, FirstNotExactElement)
 	I *= i + 0.5;
 	//TODO: do something on this value
 	clog << "Integral: " << I << endl;
+
+	clog << "FirstNotExactElement ended" << endl << endl;
 };
 
-//void test2(int _argc, char ** _argv)
+TEST_F(LoadTest, MuParser)
+{
+	clog << endl << "Starting MuParser" << endl;
+
+	//testing the getpot initialization
+	auto& one_f_factory(FunctionsFactory<1>::Instance());
+	//HERE I HAVE A SEGFAULT!!!
+//	std::unique_ptr<Functor<1>> par_fun_one_d_ptr = std::move(one_f_factory.create("mu_parser_expr"));
+
+//	std::array<double, 1> val;
+//	val[0] = 2;
+//	double result = (*par_fun_one_d_ptr)(val);
+//	//i'm supposing the expression is x^2, the default one
+//	double error = abs(result - 4);
+//	EXPECT_LT(error, 1E-4)	<< "MuParser functor 1D evaluation failed:" << endl
+//									<< "expected: 4" << endl
+//									<< "result:" << result << endl;
+
+//	auto& two_f_factory(FunctionsFactory<2>::Instance());
+//	std::unique_ptr<Functor<2>> par_fun_two_d_ptr = std::move(two_f_factory.create("mu_parser_expr"));
+
+//	std::array<double, 2> vals;
+//	vals[0] = 2;
+//	vals[1] = 3;
+//	result = (*par_fun_two_d_ptr)(vals);
+//	//I'm supposing the expression is x*y, the default one
+//	error = abs(result - 6);
+//	EXPECT_LT(error, 1E-4)	<< "MuParser functor 2D evaluation failed:" << endl
+//									<< "expected: 6" << endl
+//									<< "result:" << result << endl;
+
+	clog << "MuParser ended" << endl << endl;
+};
+
+//void test2(int argc, char ** argv)
 //{
 //	//to silence warning by the compiler 
-//	(void)_argc;
-//	(void)_argv;
+//	(void)argc;
+//	(void)argv;
 
 //	cout << endl << "Starting Polinomial test" << endl;
 

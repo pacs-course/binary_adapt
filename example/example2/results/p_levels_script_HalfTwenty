@@ -1,0 +1,16 @@
+#It produces the plot of the plevels of the binary refined mesh
+#call it by typing in gnuplot the instruction:
+#	call "results/p_levels_script_HalfTwenty"
+p_0(x) = x > 0.000000 && x <= 0.500000? 0 : 1/0
+p_1(x) = x > 0.500000 && x <= 1.000000? 39 : 1/0
+set xrange [0:1]
+set yrange [-1:40]
+set xlabel "#iter"
+set samples 1000
+set xtics nomirror
+set x2tics ("" 0, \
+"" 0.5, \
+"" 1)
+set grid noxtics noytics x2tics
+plot p_0(x), \
+p_1(x)

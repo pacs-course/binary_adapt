@@ -46,6 +46,13 @@ namespace Geometry
 					(*this) = x;
 				};
 
+				//for a 1D point I implement the implicit cast to double
+				template <size_t dummy = dim, typename enable_if< (dummy == 1), int>::type = 0>
+				operator double() const
+				{
+					return (*this)[0];
+				};
+
 				//assignment operator
 				Point& operator = (Point const& x)
 				{

@@ -5,6 +5,8 @@
 
 #include "Quadrature.h" //ElementType
 
+#include <GetPot>
+
 namespace SandiaQuadrature
 {
 	template <size_t dim>
@@ -39,14 +41,27 @@ namespace SandiaQuadrature
 		Geometry::QuadWeightVec TensorizeWeights<1> (const Geometry::QuadWeightVec& one_d_w);
 
 	//quadrature rule for an ipercube of dimension dim
+	//nodes are gaussian
+	//TODO: implement other possible nodes
 	template <size_t dim>
 		class SandiaQuadratureRule : public Geometry::QuadratureRuleInterface<dim>
 		{
 			public:
-				//TODO: use GetPot to configure quadrature options
 				SandiaQuadratureRule()
 				{
-					_n = 52;
+					string thisfile = __FILE__;
+					string conf_file = thisfile.substr(0, thisfile.find_last_of('/')) + "/sandia_quadrature.conf";
+#ifdef DEBUG
+					cerr << "SandiaQuadratureRule: opening configuration file " << conf_file << endl;
+#endif //DEBUG
+					GetPot cl(conf_file.c_str());
+					string order = "order";
+
+					this->_order = cl(order.c_str(), 0);
+					if (!this->_order)
+						throw runtime_error("Unable to read the configuration file in SandiaQuadratureRule");
+
+					_n = NodesNumber(this->_order);
 
 					double x[_n];
 					double w[_n];
@@ -78,12 +93,14 @@ namespace SandiaQuadrature
 					return this->_weights;
 				};
 
-				virtual size_t Order() override
+			protected:
+				virtual size_t NodesNumber(size_t order)
 				{
-					return 2 * this->_n - 1;
+					return ceil((static_cast<double>(order) + 1)/2);
 				};
 
 			private:
+				//the number of nodes
 				size_t _n;
 				Geometry::QuadPointVec<dim> _points;
 				Geometry::QuadWeightVec _weights;

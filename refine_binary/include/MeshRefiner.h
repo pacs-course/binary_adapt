@@ -112,6 +112,11 @@ namespace BinaryTree
 					return cont.GetCount();
 				};
 
+				const Functor<dim>& GetFunctor() const
+				{
+					return *(this->_objective_function);
+				};
+
 			protected:
 				virtual void DerivedGnuPlotExport(std::ofstream&) = 0;
 				virtual void DerivedInitialization(int argc, char** argv) = 0;

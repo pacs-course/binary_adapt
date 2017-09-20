@@ -10,27 +10,23 @@
 #include <string>
 #include <vector>
 
+#include "libmesh/libmesh.h" //libMesh::LibMeshInit
+#include "ostream_proxy.h" //libMesh::err
+
 class Logfile
 {
 	public:
-		Logfile(const std::string& filename) : _ofs(filename, std::ios_base::app)
-															,_out_buf(std::cout.rdbuf(_ofs.rdbuf()))
-															,_log_buf(std::clog.rdbuf(_ofs.rdbuf()))
-															,_err_buf(std::cerr.rdbuf(_ofs.rdbuf()))
-		{};
+		Logfile(const std::string&);
 
-		~Logfile()
-		{
-			std::clog.rdbuf(_log_buf);
-			std::cout.rdbuf(_out_buf);
-			std::cerr.rdbuf(_err_buf);
-		};
+		~Logfile();
 
 	private:
 		std::ofstream _ofs;
 		std::basic_streambuf<char>* _out_buf;
 		std::basic_streambuf<char>* _log_buf;
 		std::basic_streambuf<char>* _err_buf;
+		std::basic_streambuf<char>* _libmesh_err_buf;
+		std::basic_streambuf<char>* _libmesh_out_buf;
 };
 
 
@@ -38,7 +34,7 @@ class Initializer
 {
 	public:
 		Initializer(){};
-		void Load (const std::vector<std::string>&);
+		bool Load (const std::vector<std::string>&);
 
 	protected:
 		PluginLoading::PluginLoader _pl;
@@ -47,20 +43,15 @@ class Initializer
 class LoadTest : public ::testing::Test
 {
 	protected:
-		LoadTest() : _out("test.log"), _argc(1)
-		{
-#ifndef DEBUG
-			_argv[0] = "test";
-#else
-			_argv[0] = "test_Debug";
-#endif //DEBUG
-		};
+		LoadTest();
 		virtual void SetUp();
+		virtual ~LoadTest();
+		virtual void TearDown()override;
 
+		std::unique_ptr<libMesh::LibMeshInit> _mesh_init_ptr;
 		Logfile _out;
 		Initializer _initializer;
-		int _argc;
-		char* _argv[1];
 };
+
 
 #endif //__TEST_H

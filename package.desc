@@ -12,6 +12,9 @@ Test_debug.sh
 Test_gdb_run.sh
 Test_run.sh
 Test_valgrind.sh
+Test_check.sh
+README
+*.conf
 mesh_files/*.x[dt]a
 *.m
 *.msh

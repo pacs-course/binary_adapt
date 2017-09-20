@@ -1,17 +1,11 @@
 #ifndef __BINARY_TREE_HELPER_H
 #define __BINARY_TREE_HELPER_H
 
-#include "Functor.h"
+#include "TypeEnumerations.h"
 
 #include <memory> //std::shared_ptr, std::make_shared, std::make_unique
 #include <functional> //std::function
 
-
-namespace BinaryTree
-{
-	template <std::size_t dim>
-		using FunctionPtr = std::shared_ptr<Functor<dim>>;
-} //namespace BinaryTree
 
 namespace HelperFunctions
 {
@@ -25,29 +19,13 @@ namespace HelperFunctions
 #endif
 	};
 
-//	template <class T, size_t L>
-//		class SmartArray : public std::array<T*, L>
-//		{
-//			public:
-//				SmartArray()
-//				{
-//					this->fill(nullptr);
-//				};
-
-//				~SmartArray()
-//				{
-//					for (auto& iter : (*this))
-//						delete iter;
-//				};
-//		};
-
 	template <typename ConcreteProduct, typename AbstractProduct = ConcreteProduct>
 		struct Builders
 		{
 			static std::shared_ptr<AbstractProduct> BuildSingleton()
 			{
 #ifndef SINGLETON_ENABLED
-				static std::shared_ptr<AbstractProduct> ptr = std::make_shared<ConcreteProduct>();			
+				static std::shared_ptr<AbstractProduct> ptr = std::make_shared<ConcreteProduct>();
 #else
 				std::shared_ptr<AbstractProduct> ptr = ConcreteProduct::Instance();
 #endif //SINGLETON_ENABLED
@@ -59,6 +37,11 @@ namespace HelperFunctions
 				return HelperFunctions::MakeUnique<ConcreteProduct>();
 			};
 		};
+
+	//Functions to convert my enums into strings
+	std::string BasisTypeConverter(FiniteElements::BasisType const & id);
+	std::string ElementTypeConverter(Geometry::ElementType const & id);
+
 } //namespace HelperFunctions
 
 #endif //__BINARY_TREE_HELPER_H

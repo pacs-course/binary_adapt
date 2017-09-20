@@ -10,6 +10,8 @@
 #include <type_traits>
 #include <typeinfo>
 
+#include "BinaryTreeHelper.h"
+
 using namespace std;
 namespace GenericFactory
 {
@@ -29,10 +31,8 @@ namespace GenericFactory
 		struct
 		M_identifierAsString<false,Identifier>
 		{
-			static string value (Identifier const & id)
+			static string value (Identifier const &)
 			{
-				//to silence warning by the compiler 
-				(void)id;
 				return string("CANNOT RESOLVE NAME");
 			}
 		};
@@ -54,12 +54,12 @@ namespace GenericFactory
 		{
 			return M_identifierAsString<is_convertible<Identifier, string>::value,Identifier>::value(id);
 		};
-// this does not work!
-//	template<typename Identifier>
-//		using identifierAsString(Identifier const &) =
-//			M_identifierAsString<is_convertible<Identifier, string>::value, Identifier> (Identifier const &);
 
-
+	//! Full specialization for my enums
+	template<>
+		string identifierAsString<Geometry::ElementType>(Geometry::ElementType const &);
+	template<>
+		string identifierAsString<FiniteElements::BasisType>(FiniteElements::BasisType const &);
 
 	/*! @brief A generic factory.
 	 
@@ -74,17 +74,47 @@ namespace GenericFactory
 
 	class FactoryBase
 	{
-	public:
-	    virtual ~FactoryBase()
+		public:
+		virtual ~FactoryBase()
 		{
 #ifdef DESTRUCTOR_ALERT
-			cerr << "Destroying FactoryBase" << endl;
+			cerr << "Destroying FactoryBase [" << this << "]" << endl;
 #endif //DESTRUCTOR_ALERT
 		};
+#ifdef BANANA
+		virtual void BananaCall() const
+		{
+			cerr << "qualcosa non va! chiamata la BananaCall() della classe FactoryBase" << endl;
+		}
 	};
 
-	FactoryBase* FactoryInstance(const string& factory_name, FactoryBase* instance = nullptr);
+	class BananaMap : public map<string, unique_ptr<FactoryBase>>
+	{
+		public:
+		~BananaMap()
+		{
+			cerr << "BananaMap: destroying " << size() << " registered factories" << endl;
+			for (auto f = begin(); f != end(); ++f)
+			{
+				 cerr << "BananaMap: accessing [" << f->second.get() << "]" << endl;
+				 f->second->BananaCall();
+			}
+		}
+#endif //BANANA
+	};
 
+	class InstanceHolder
+	{
+		public:
+			static FactoryBase& FactoryInstance(const string&);
+			static FactoryBase& AddInstance(const string&, unique_ptr<FactoryBase>);
+		private:
+#ifndef BANANA
+			static map<string, unique_ptr<FactoryBase>> _holder;
+#else //BANANA
+			static BananaMap _holder;
+#endif //BANANA
+	};
 
 	template	<	typename AbstractProduct,
 	 				typename Identifier,
@@ -112,13 +142,15 @@ namespace GenericFactory
 
 				static Factory& Instance()
 				{
-					FactoryBase* instance = FactoryInstance(Name());
-					if (!instance)
+					string factory_name = Name();
+					try
 					{
-					    instance = FactoryInstance(Name(), new Factory);
+						return dynamic_cast<Factory&>(InstanceHolder::FactoryInstance(factory_name));
 					}
-					Factory* f = static_cast<Factory*> (instance);
-					return *f;
+					catch(out_of_range&)
+					{
+						return dynamic_cast<Factory&>(InstanceHolder::AddInstance(factory_name, move(unique_ptr<FactoryBase>(new Factory))));
+					}
 				};
 
 				//! Get the rule with given name
@@ -146,10 +178,17 @@ namespace GenericFactory
 				 	if (f.second == false)
 					{
 						(this->_storage)[name] = func;
+#ifdef VERBOSE
 						clog << "Builder for key = " << identifierAsString(name) << " already present; previous one overwritten" << endl;
+#endif //VERBOSE
 					}
 				};
-
+#ifdef BANANA
+				virtual void BananaCall() const override
+				{
+				    cerr << "chiamata la BananaCall() della classe derivata [" << this << "]" << endl;
+				}
+#endif //BANANA
 				//! Returns a list of registered rules.
 				vector<Identifier> registered() const
 				{
@@ -172,8 +211,8 @@ namespace GenericFactory
 				virtual ~Factory()
 				{
 #ifdef DESTRUCTOR_ALERT
-					cerr << "Destroying Factory" << endl;
-#endif //DESTRUCTOR_ALERT	
+					cerr << "Destroying Factory [" << this << "]" << endl;
+#endif //DESTRUCTOR_ALERT
 				};
 
 			protected:

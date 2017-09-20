@@ -10,92 +10,88 @@
 EXENAME	:= example
 Modes		:= Opt Debug
 
-#DIRECTORY TREE
-BaseDir 		= $(THIS_DIR)/../..
-CurrentDir	= $(PWD)
-THIS_DIR		= .
-INCLUDE_DIR = $(THIS_DIR)/include
-SRC_DIR		= $(THIS_DIR)/src
-BIN_DIR		= $(THIS_DIR)/bin
-OBJ_DIR		= $(THIS_DIR)/obj
-
-OBJ_DIRS	= $(OBJ_DIR)
-BIN_DIRS	= $(BIN_DIR)
-DIRS		= $(OBJ_DIRS) $(BIN_DIRS)
-
+BaseDir = ../..
+# I include the external libraries paths
 -include $(BaseDir)/Makefile.inc
 
-RefineName		= refine_binary
-RefineDir		= $(BaseDir)/refine_binary
-RefineInclude	= $(RefineDir)/include
-RefineLib		= $(RefineDir)/lib
-RefineFile		= $(RefineLib)/lib$(RefineName).so
-RefineDebug		= $(RefineLib)/lib$(RefineName)_Debug.so
+#DIRECTORY TREE
+CurrentDir	= $(CURDIR)
+RootDir		= $(CurrentDir)/$(BaseDir)
+IncludeDir	= $(CurrentDir)/include
+SrcDir		= $(CurrentDir)/src
 
-BridgesDir			= $(BaseDir)/library_bridges
-MeshBridgeName		= mesh_bridge
-MeshBridgeDir		= $(BridgesDir)/libmesh_bridge
-#MeshBridgeInclude	= $(MeshBridgeDir)/include
-MeshBridgeLib		= $(MeshBridgeDir)/lib
-#MeshBridgeFile		= $(wildcard $(MeshBridgeLib)/lib$(MeshBridgeName).so*)
-#MeshBridgeDebug	= $(wildcard $(MeshBridgeLib)/lib$(MeshBridgeName)_Debug.so*)
+# Directory where target binary is created and object files
+ObjDir	= $(CurrentDir)/obj
+BinDir	= $(CurrentDir)/bin
 
-QuadraturesDir				= $(BaseDir)/quadrature_rules
-MeshQuadratureName		= mesh_quadrature
-MeshQuadratureDir			= $(QuadraturesDir)/libmesh_quadrature
-#MeshQuadratureInclude	= $(MeshQuadratureDir)/include
-MeshQuadratureLib			= $(MeshQuadratureDir)/lib
-#MeshQuadratureFile		= $(wildcard $(MeshQuadratureLib)/lib$(MeshQuadratureName).so*)
-#MeshQuadratureDebug		= $(wildcard $(MeshQuadratureLib)/lib$(MeshQuadratureName)_Debug.so*)
+# Directory where results are stored
+ResultsDir	= $(CurrentDir)/results
 
-FunctionsName		= my_functions
-FunctionsDir 		= $(BaseDir)/interpolating_functions
-#FunctionsInclude	= $(FunctionsDir)/include
-FunctionsLib		= $(FunctionsDir)/lib
-#FunctionsFile		= $(wildcard $(FunctionsLib)/lib$(FunctionsName).so*)
-#FunctionsDebug		= $(wildcard $(FunctionsLib)/lib$(FunctionsName)_Debug.so*)
+ObjDirs		= $(ObjDir)
+BinDirs		= $(BinDir)
+ResultsDirs	= $(ResultsDir)
+Dirs			= $(ObjDirs) $(BinDirs) $(ResultsDirs)
 
-PluginLoaderName		= plugin_loader
-PluginLoaderDir		= $(BaseDir)/plugin_loading
-PluginLoaderInclude	= $(PluginLoaderDir)/include
-PluginLoaderLib		= $(PluginLoaderDir)/lib
-PluginLoaderFile		= $(wildcard $(PluginLoaderLib)/lib$(PluginLoaderName).so*)
-PluginLoaderDebug		= $(wildcard $(PluginLoaderLib)/lib$(PluginLoaderName)_Debug.so*)
+
+DynamicLibraries =	\
+							$(RootDir)/refine_binary \
+							$(RootDir)/plugin_loader \
+
+RunTimeLibraries =	\
+							$(RootDir)/library_bridges/mesh_bridge \
+							$(RootDir)/interpolating_functions \
+							$(RootDir)/quadrature_rules/mesh_quadrature \
+							$(RootDir)/quadrature_rules/sandia_quadrature \
+
+StaticLibraries =	\
+
+
+LinkedLibraries =	$(DynamicLibraries) $(StaticLibraries)
+
 
 #StaticLibsFiles are linked and the executable depends on them
 #DynamicLibsFiles are linked, but they are not in the dependencies
 #Other plugins are not linked, since they are run at runtime
-StaticLibsFiles_Opt	 := 
-StaticLibsFiles_Debug := 
 
-DynamicLibsFiles_Opt 	:= $(PluginLoaderFile) $(RefineFile)
-DynamicLibsFiles_Debug	:= $(PluginLoaderDebug) $(RefineDebug)
 
-#TODO : find a cleaner way to do this job
+define LibFileName
+$(2)/lib/lib$(notdir $(2))$(subst _Opt,,_$(1))$($(3)LibsExt)
+endef
 
-# Directory where target binary is created and object files
-ObjDir := $(OBJ_DIR)
-BinDir := $(BIN_DIR)
+define AddLib
+$(3)LibsFiles_$(1) += $(call LibFileName,$1,$2,$3)
+endef
 
-Includes := $(INCLUDE_DIR) \
-				$(RefineInclude) \
-				$(PluginLoaderInclude)
+define DefineLibsFiles
+$(foreach lib,$($(1)Libraries),$(eval $(call AddLib,$(2),$(lib),$(1))))
+endef
+
+
+#The paths where the loader can find dynamically linked libraries
+DynamicLibsPath := $(patsubst %,%/lib,$(DynamicLibraries))
+
+#The paths where the loader can find my plugins upon dlopen call
+RunTimeLibsPath := $(patsubst %,%/lib,$(RunTimeLibraries))
+
+
+Includes := $(IncludeDir) \
+				$(patsubst %,%/include,$(LinkedLibraries))
 
 # Search Path For Include Files (InclPaths is included before mode specific InclPaths_MODE)
-InclPaths			:=	$(Includes)
-InclPaths_Debug	:=
-InclPaths_Opt		:=
+InclPaths		:=	$(Includes) $(GetPotInclude)
+InclPaths_Debug:=
+InclPaths_Opt	:=
 # Defined values used by CPP preprocessor (Defines is included before mode specific Defines_MODE)
 Defines			:= $(GlobalDefines)
 Defines_Debug	:= DEBUG _GLIBCXX_DEBUG
 Defines_Opt		:= OPT
 # Compiler specific flags (CXXFlags is included before mode specific CXXFlags_MODE)
-CXXFlags			:= -march=native $(INCLUDE_FLAGS) -Wall -Wextra
+CXXFlags			:= -march=native -Wall -Wextra
 CXXFlags_Debug	:= -g -std=gnu++11 -O2 -felide-constructors -funroll-loops -fstrict-aliasing -Wdisabled-optimization -Wno-variadic-macros -fopenmp -DNDEBUG
 CXXFlags_Opt	:= -std=c++14 -O3
 
 # Linker specific flags (LFlags is included before mode specific LFlags_MODE)
-LFlags			:= 
+LFlags			:= $(DynamicLibsPath:%=-Wl,-rpath,%) $(RunTimeLibsPath:%=-Wl,-rpath,%) 
 LFlags_Debug	:=
 LFlags_Opt		:= 
 
@@ -105,7 +101,7 @@ Libs_Debug	:=
 Libs_Opt		:=
 
 # Search Paths for Libraries (LibPaths is included before mode specific LibPaths_MODE)
-LibPaths			:= #$(FunctionsLib) $(MeshQuadratureLib) $(MeshBridgeLib)
+LibPaths			:=
 LibPaths_Debug	:=
 LibPaths_Opt	:=
 
@@ -113,7 +109,7 @@ LD := g++
 
 
 # Source files
-SRC := $(notdir $(wildcard $(SRC_DIR)/*.cpp))
+SRC := $(notdir $(wildcard $(SrcDir)/*.cpp))
 
 
 ##########################
@@ -126,7 +122,12 @@ LibPathFlag := -L
 CXX         := g++
 
 # Executables
-EXECUTABLES = $(BIN_DIR)/$(EXENAME)
+EXECUTABLES = $(BinDir)/$(EXENAME)
+
+# Libraries
+DynamicLibsExt	:= .so
+StaticLibsExt	:= .a
+
 
 #########################
 # Generic Template Part #
@@ -137,18 +138,17 @@ all: $(Modes)
 init:$(Modes:%=init_%)
 
 .PHONY:dir_tree
-dir_tree: $(DIRS)
+dir_tree: $(Dirs)
 
 .PHONY:install
-#it does nothing, needed only by the Makefile in the BaseDir directory
+#it does nothing, needed only by the Makefile in the RootDir directory
 
 .PHONY:uninstall
-#it does nothing, needed only by the Makefile in the BaseDir directory
+#it does nothing, needed only by the Makefile in the RootDir directory
 
-$(DIRS) :
+$(Dirs) :
 	@test -d $@ || (echo creating $@ ; mkdir -p $@)
 
-#TODO: fix it, it does not clean anything
 clean: $(EXENAME)_clean $(Modes:%=clean_%)
 	@echo Done!
 
@@ -176,7 +176,7 @@ $(ObjDir)/$(1)/$(subst .cpp,.d,$(2))
 endef
 
 define CompileObject
-$(call ObjectFilename,$(1),$(2)): $(SRC_DIR)/$(2)
+$(call ObjectFilename,$(1),$(2)): $(SrcDir)/$(2)
 	@echo compiling: '$$<'
 	$$(CXX_$(1)) -c -o '$$@' '$$<'
 	$$(CXX_$(1)) '$$<' -MM -MF '$$@'.temp.dep
@@ -185,6 +185,9 @@ $(call ObjectFilename,$(1),$(2)): $(SRC_DIR)/$(2)
 endef
 
 define TargetTemplate
+$(eval $(call DefineLibsFiles,Dynamic,$(1)))
+$(eval $(call DefineLibsFiles,Static,$(1)))
+
 CXX_$(1) := $(CXX) $(Defines:%=$(DefineFlag)%) $$(Defines_$(1):%=$(DefineFlag)%) $(InclPaths:%=$(IncPathFlag)%) $$(InclPaths_$(1):%=$(IncPathFlag)%) $(CXXFlags) $$(CXXFlags_$(1))
 
 Objects_$(1) := $(foreach file,$(SRC),$(call ObjectFilename,$(1),$(file)))
