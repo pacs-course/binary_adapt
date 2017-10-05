@@ -79,6 +79,11 @@ namespace GenericFactory
 					Geometry::ElementType,
 					std::shared_ptr<FiniteElements::StdBananaFElement<2, FiniteElements::LegendreType>> >::Factory();
 
+	template <>
+		Factory <FiniteElements::StdBananaFElement<2, FiniteElements::WarpedType>,
+					Geometry::ElementType,
+					std::shared_ptr<FiniteElements::StdBananaFElement<2, FiniteElements::WarpedType>> >::Factory();
+
 }
 
 #endif //__CONCRETE_FACTORIES_H

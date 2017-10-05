@@ -78,7 +78,7 @@ Includes := $(IncludeDir) \
 				$(patsubst %,%/include,$(LinkedLibraries))
 
 # Search Path For Include Files (InclPaths is included before mode specific InclPaths_MODE)
-InclPaths		:=	$(Includes) $(LibMeshInclude) $(EigenInclude) $(GTestInclude)
+InclPaths		:=	$(Includes) $(LibMeshInclude) $(EigenInclude) $(GTestInclude) $(GetPotInclude) $(MuParserInclude) $(SandiaRuleInclude)
 InclPaths_Debug:=
 InclPaths_Opt	:=
 # Defined values used by CPP preprocessor (Defines is included before mode specific Defines_MODE)

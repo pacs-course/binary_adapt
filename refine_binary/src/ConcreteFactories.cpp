@@ -1,6 +1,7 @@
 #include "ConcreteFactories.h"
 #include "BinaryTreeHelper.h"
 #include "LegendreBasis.h"
+#include "WarpedBasis.h"
 #include "StdFElement.h"
 
 using namespace Geometry;
@@ -68,6 +69,11 @@ namespace GenericFactory
 														>::BuildObject
 				);
 
+			add(	WarpedType,
+					&HelperFunctions::Builders	<WarpedBasis,
+														 AbstractBasis<2>
+														>::BuildObject
+				);
 		};
 
 	template <>
@@ -91,13 +97,24 @@ namespace GenericFactory
 					ElementType,
 					shared_ptr<StdBananaFElement<2, LegendreType>> >::Factory()
 		{
-			add(	TriangleType,
-					&HelperFunctions::Builders <StdFElement<2, TriangleType, LegendreType>,
+			add(	SquareType,
+					&HelperFunctions::Builders <StdFIperCube<2, LegendreType>,
 														 StdBananaFElement<2, LegendreType>
 														>::BuildSingleton
 				);
 		};
 
+	template <>
+		Factory <StdBananaFElement<2, WarpedType>,
+					ElementType,
+					shared_ptr<StdBananaFElement<2, WarpedType>> >::Factory()
+		{
+			add(	TriangleType,
+					&HelperFunctions::Builders <StdFElement<2, TriangleType, WarpedType>,
+														 StdBananaFElement<2, WarpedType>
+														>::BuildSingleton
+				);
+		};
 
 } //namespace GenericFactory
 

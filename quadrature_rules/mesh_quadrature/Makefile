@@ -40,14 +40,11 @@ Dirs		= $(ObjDirs) $(LibDirs)
 RefineDir		:= $(BaseDir)/refine_binary
 RefineInclude	:= $(RefineDir)/include
 
-MeshBridgeDir		:= $(BaseDir)/library_bridges/mesh_bridge
-MeshBridgeInclude := $(MeshBridgeDir)/include
-
 # Directory where target binary is created and object files
 ObjDir				:= $(ObjDir)
 LibDir				:= $(LibDir)
 # Search Path For Include Files (InclPaths is included before mode specific InclPaths_MODE)
-InclPaths			:= $(IncludeDir) $(RefineInclude) $(LibMeshInclude) $(MeshBridgeInclude) $(EigenInclude) $(GetPotInclude)
+InclPaths			:= $(IncludeDir) $(RefineInclude) $(LibMeshInclude) $(EigenInclude) $(GetPotInclude)
 InclPaths_Debug	:=
 InclPaths_Release	:=
 # Defined values used by CPP preprocessor (Defines is included before mode specific Defines_MODE)

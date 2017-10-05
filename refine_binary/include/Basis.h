@@ -8,11 +8,25 @@
 #include "TypeEnumerations.h"
 #include "Point.h"
 
-using namespace std;
 
 namespace FiniteElements
 {
-	//TODO: maybe checks on the object to be effectively a basis (linearly independent and maximal)
+	using namespace std;
+
+//	template <size_t d, class iterator>
+//		struct Filler
+//		{
+//			static void FillIndexes(iterator, size_t);
+//		};
+
+//	template <class iterator>
+//		struct Filler<1, iterator>
+//		{
+//			static void FillIndexes(iterator, size_t);
+//		};
+
+
+	//TODO: maybe check the object to be effectively a basis (linearly independent and maximal)
 	//have to be inserted in the construction or after it
 
 	template <size_t dim> //working in |R ^ dim
@@ -21,28 +35,36 @@ namespace FiniteElements
 			protected:
 				/* For degree 0 I always have that the basis is given by 1 element */
 				AbstractBasis() : _size_map(0, 1){};
+				/* To be called by assignment operator in derived classes */
+				virtual void Copy(const AbstractBasis<dim>& basis);
+
 			public:
 				/* This function implements the tensorization */
 				virtual double Evaluate(size_t ind, const Geometry::Point<dim>& p);
-
 				virtual vector<double> EvaluateBasis(size_t degree, const Geometry::Point<dim>& p);
 
-				//size is (degree + dim)! / degree! dim!
-				virtual size_t ComputeSize (const size_t& degree);			
+				/* Size is (degree + dim)! / degree! dim! */
+				virtual size_t ComputeSize (const size_t& degree);
 
 			protected:
 				virtual double OneDEvaluation(size_t index, double x)const = 0;
 
 				virtual void InitializeIndexes(size_t* index, size_t degree, size_t d = dim);
-
 				virtual void UpdateSize(size_t);
 
 				void PrintIndexes();
 			protected:
 				/* _size_map[d] stores the size of an AbstractBasis<dim> of degree d */
-				vector<size_t> _size_map;	
+				vector<size_t> _size_map;
 
 				vector<array<size_t, dim>> _tensorial_indexes;
+		};
+
+	template <size_t dim>
+		void AbstractBasis<dim>::Copy(const AbstractBasis<dim>& basis)
+		{
+			this->_size_map = basis._size_map;
+			this->_tensorial_indexes = basis._tensorial_indexes;
 		};
 
 	template <size_t dim>
@@ -90,7 +112,11 @@ namespace FiniteElements
 
 				this->_tensorial_indexes.resize(ComputeSize(degree));
 				for(size_t current_degree = start_degree; current_degree <= degree; ++current_degree)
+				{
+					typename vector<array<size_t, dim>>::iterator iter = this->_tensorial_indexes.begin() + current_length;
+//					Filler<dim, typename vector<array<size_t, dim>>::iterator>::FillIndexes(iter, current_degree);
 					InitializeIndexes(&current_length, current_degree);
+				}
 			}
 		};
 
@@ -101,35 +127,55 @@ namespace FiniteElements
 		void AbstractBasis<dim>::InitializeIndexes(size_t* index, size_t degree, size_t d)
 		{
 #ifdef MYDEBUG
-			cout << "Sono in InitializeIndexes" << endl;
+			clog << "Sono in InitializeIndexes" << endl;
 
-			cout << "Gli indici attuali sono : " << endl;
+			clog << "Gli indici attuali sono : " << endl;
 			PrintIndexes();
-			cout << "Voglio il grado " << degree << " in posizione " << *index << endl; 
+			clog << "Index: " << *index << endl;
+			clog << "Degree: " << degree << endl;
+			clog << "Dim: " << d << endl; 
 #endif //MYDEBUG
 
 			/* end of recursion, here I update the index parameter*/
 			if (d == 1)
 			{
-				(this->_tensorial_indexes)[(*index)++][dim-1] = degree;
+				(this->_tensorial_indexes)[(*index)++][0] = degree;
 
 #ifdef MYDEBUG
 				cout << "Ho settato l'indice " << degree << " in posizione " << *index - 1 << endl;
-
 				cout << "I nuovi indici sono : " << endl;
 				PrintIndexes();
 #endif //MYDEBUG
 			}
 			else
-			{ 
-				for(size_t current_degree = degree; current_degree + 1; --degree)
+			{
+				for(size_t current_degree = 0; current_degree <= degree; ++current_degree)
 				{
-					this->_tensorial_indexes[(*index)][dim-d] = current_degree;
-					InitializeIndexes (index, degree - current_degree, d - 1);
+					this->_tensorial_indexes[(*index)][d-1] = current_degree;
+					auto residual_degree = degree - current_degree;
+					InitializeIndexes (index, residual_degree, d - 1);
 				}
 			}
 		};
 
+
+//	template <size_t d, class iterator>
+//		void Filler<d, iterator>::FillIndexes(iterator iter, size_t degree)
+//		{
+//			for (size_t ind = 0; ind <= degree; ++ind)
+//			{
+//				(*iter)[d - 1] = ind;
+//				auto residual = degree - ind;
+//				Filler<d-1, iterator>::FillIndexes(iter, residual);
+//			}
+//		};
+
+//	template <class iterator>
+//		void Filler<1, iterator>::FillIndexes (iterator iter, size_t degree)
+//		{
+//			(*iter)[0] = degree;
+//			++iter;
+//		};
 
 	template <size_t dim>
 		size_t AbstractBasis<dim>::ComputeSize (const size_t& degree)

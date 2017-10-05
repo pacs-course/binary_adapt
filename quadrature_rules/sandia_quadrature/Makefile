@@ -42,7 +42,7 @@ RefineInclude	:= $(RefineDir)/include
 
 
 # Search Path For Include Files (InclPaths is included before mode specific InclPaths_MODE)
-InclPaths			:= $(IncludeDir) $(RefineInclude) $(SandiaRuleInclude) $(EigenInclude) $(GetPotInclude)
+InclPaths			:= $(IncludeDir) $(RefineInclude) $(SandiaRuleInclude) $(EigenInclude) $(LibMeshInclude)
 InclPaths_Debug	:=
 InclPaths_Release	:=
 # Defined values used by CPP preprocessor (Defines is included before mode specific Defines_MODE)

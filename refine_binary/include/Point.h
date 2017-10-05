@@ -134,7 +134,18 @@ namespace Geometry
 					if(newline)
 						cout << endl;
 				}
+
+				//friend to enable cout << p
+				friend ostream& operator<< (ostream& output, const Point<dim>& p)
+				{
+					output << "(" << p[0];
+					for (size_t i = 1; i < dim; ++i)
+						output << "," << p[i];
+					output << ")";
+					return output;
+				}
 		};
+
 
 	template <size_t dim>
 		using Vector = Point<dim>;

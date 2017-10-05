@@ -1,18 +1,9 @@
 #include "LibMeshQuadrature.h"
 
-#ifdef DEPRECATED
-#include "LibMeshQuadratureRegister.h"
-#endif //DEPRECATED
-
 #include "BinaryTreeHelper.h"
 
 using namespace std;
 
-#ifdef DEPRECATED
-namespace Banana
-{
-	void LibmeshBananaFun()
-#else //DEPRECATED
 namespace LibmeshBinary
 {
 	__attribute__((destructor))
@@ -25,32 +16,7 @@ namespace LibmeshBinary
 
 	__attribute__((constructor))
 	static void RegisterFunction()
-#endif //DEPRECATED
 	{
-#ifdef DEPRECATED
-/*
-		I instantiate a global variable which does the registration
-		when the library is loaded
-		I use the unnamed namespace to avoid conflicts
-		This does not cause any problem since this variable is not needed anywhere else 
-*/
-		auto& qr(LibmeshBinary::QuadratureRegister::Instance());
-		(void) qr;
-	};
-}
-
-namespace LibmeshBinary
-{
-
-	QuadratureRegister& QuadratureRegister::Instance()
-	{
-		static QuadratureRegister qr;
-		return qr;
-	};
-
-	QuadratureRegister::QuadratureRegister()
-	{
-#endif //DEPRECATED
 #ifdef MYDEBUG
 		clog << "Registering in Quadrature factory" << endl;
 #endif //MYDEBUG
@@ -76,9 +42,18 @@ namespace LibmeshBinary
 																		 Geometry::QuadratureRuleInterface<2>
 																		>::BuildObject);
 		q_two_d_factory.add (Geometry::TriangleType,
-									&HelperFunctions::Builders <LibmeshQuadratureRule<2, Geometry::TriangleType>,
+									&HelperFunctions::Builders <ModifiedTriangleRule,
 															 			 Geometry::QuadratureRuleInterface<2>
 																		>::BuildObject);
+
+#ifdef MYDEBUG
+		cerr << "Registrata in QuadratureFactory<2> LibmeshQuadratureRule<2, " << Geometry::SquareType << "> con chiave: " << Geometry::SquareType << endl;
+		cerr << "Indirizzo factory: " << &q_two_d_factory << endl;
+
+		cerr << "Registrata in QuadratureFactory<2> LibmeshQuadratureRule<2, " << Geometry::TriangleType << "> con chiave: " << Geometry::TriangleType << endl;
+		cerr << "Indirizzo factory: " << &q_two_d_factory << endl;
+#endif //MYDEBUG
+
 	};
 } //namespace LibmeshBinary
 

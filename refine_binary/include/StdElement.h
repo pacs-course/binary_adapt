@@ -7,28 +7,15 @@
 
 #include <utility> //move
 
-using namespace std;
 
 namespace Geometry
 {
+	using namespace std;
+
 	template <size_t dim, ElementType Type = InvalidElementType>
 		class StdElement : public AbstractElement<dim>
 		{
 			public:
-#ifdef SINGLETON_ENABLED
-				static shared_ptr<StdElement> Instance()
-				{
-					static shared_ptr<StdElement> el (new StdElement);					
-					return el;
-				};
-/*
-			It is a Singleton
-*/
-				StdElement& operator =	(const StdElement&) = delete;
-				StdElement					(const StdElement&) = delete;
-
-			protected:
-#endif //SINGLETON_ENABLED
 				StdElement()
 				{
 					auto& quad_factory = QuadratureFactory<dim>::Instance();

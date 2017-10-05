@@ -81,7 +81,7 @@ namespace Geometry
 
 /*
 				It is the inverse function of the bijective map.
-				p belongs to the generic element, while the returned value to the reference element
+				p belongs to the generic element, while the returned value belongs to the reference element
 */
 				virtual Point<dim> ComputeInverse(const Point<dim>& p) const override
 				{
@@ -92,10 +92,9 @@ namespace Geometry
 					return result;
 				};
 
-				virtual double	EvaluateJacobian(const Point<dim>& p) const
+				virtual double	EvaluateJacobian(const Point<dim>&) const
 				{
-					//to silence the warning compiler, since the map is affine the jacobian does not depend on the evaluation point 
-					(void)p;
+					//since the map is affine the jacobian does not depend on the evaluation point 
 					return this->_jacobian;
 				};
 
@@ -133,13 +132,13 @@ namespace Geometry
 /*
 	reference triangle:
 
-	(0,1)
+	(-1,1)
 		|\
 		| \
 		|  \
 		|   \
 		|____\
-	(0,0)		(1,0)
+	(-1,-1)	(1,-1)
 */
 	class TriMap : public AffineMap<2>
 	{

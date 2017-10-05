@@ -1,5 +1,7 @@
 #include <array>
 #include <utility> //std::move
+#include <cstdlib> //system
+#include <iomanip> //std::setfill, std::setw
 
 #include "PluginLoader.h"
 #include "BinaryTreeHelper.h"
@@ -46,7 +48,7 @@ int main(int argc, char** argv)
 	cerr << "PluginLoader costruito" << endl;
 
 	GetPot cl(conf_file.c_str());
-	string quad_library = "binary_tree/quadrature/1D/quad_library";
+	string quad_library = "binary_tree/quadrature/interval/quad_library";
 	string func_library = "binary_tree/functions/func_library";
 
 	string quad_so_file = "lib" + string(cl(quad_library.c_str(), "mesh_quadrature"));
@@ -72,52 +74,59 @@ int main(int argc, char** argv)
 	}
 	cerr << "Plugins loaded" << endl;
 
+	string iteration_number = "binary_tree/algorithm/iteration_number";
+	size_t max_iter = cl(iteration_number.c_str(), 0);
+	cerr << "Starting the algorithm with " << max_iter << " iterations" << endl;
+
+
+	unique_ptr<LibmeshBinary::BinaryRefiner<1>> binary_refiner_ptr(nullptr);
+	try
+	{
+		auto ptr = HelperFunctions::MakeUnique<LibmeshBinary::BinaryRefiner<1>>();
+		binary_refiner_ptr = move(ptr);
+	}
+	catch(exception& ex)
+	{
+		cerr << "Refiner construction failed" << endl;
+		cerr << ex.what() << endl;
+		return 1;
+	}
+
+	string func_ID = "binary_tree/functions/functor";
+	string func_name = cl(func_ID.c_str(), "");
+
+	try
+	{
+		binary_refiner_ptr->Init(func_name);
+		cerr << "Refiner correctly initialized with "<< func_name << endl;
+	}
+	catch(exception& ex)
+	{
+		cerr << ex.what() << endl;
+		cerr << "Refiner initialization failed" << endl;
+		return 1;
+	}
+
+	string identifier = binary_refiner_ptr->GetFunctor().ID();
+	string function_name = binary_refiner_ptr->GetFunctor().Formula();
+
+	string results_dir = "results/" + identifier;
+	string instruction = "mkdir -p " + results_dir;
+	if (system (instruction.c_str()))
+		return 1;
+
 	vector<double> error;
-	size_t max_iter = 40;
+	int digits = max_iter > 0 ? (int) log10 ((double) max_iter) + 1 : 1;
+
 	for (size_t n_iter = 0; n_iter <= max_iter; ++n_iter)
 	{
 #ifdef VERBOSE
-		cerr << endl << "#DOF = " << n_iter << endl;
+		cerr << endl << endl << "Complexity : " << n_iter << endl;
 #endif //VERBOSE
 		auto mesh_ptr = make_shared<libMesh::Mesh> (init.comm());
 
 		int n = 1;
 		libMesh::MeshTools::Generation::build_line(*mesh_ptr, n, 0, 1, LibmeshIntervalType);
-
-		unique_ptr<LibmeshBinary::BinaryRefiner<1>> binary_refiner_ptr(nullptr);
-		try
-		{
-			auto ptr = HelperFunctions::MakeUnique<LibmeshBinary::BinaryRefiner<1>>();
-			binary_refiner_ptr = move(ptr);
-		}
-		catch(exception& ex)
-		{
-			cerr << "Refiner construction failed" << endl;
-			cerr << ex.what() << endl;
-			return 1;
-		}
-		cout << "Sono prima della DEFINE" << endl;
-
-		string func_ID = "binary_tree/functions/functor";
-		string func_name = cl(func_ID.c_str(), "");
-
-		try
-		{
-			binary_refiner_ptr->Init(func_name);
-			cerr << "Refiner correctly initialized with "<< func_name << endl;
-		}
-		catch(exception& ex)
-		{
-			cerr << ex.what() << endl;
-			cerr << "Refiner initialization failed" << endl;
-			return 1;
-		}
-
-		cout << "Cerco l'ID" << endl;
-		string identifier = binary_refiner_ptr->GetFunctor().ID();
-		cout << "Questo e' il mio id: " << identifier << endl;
-		string function_name = binary_refiner_ptr->GetFunctor().Formula();
-
 
 		binary_refiner_ptr->SetMesh(mesh_ptr);
 
@@ -127,31 +136,30 @@ int main(int argc, char** argv)
 		error.push_back(current_error);
 
 #ifdef VERBOSE
-		cout << endl << "Interpolation error after refinement >>>>>> " << current_error << endl << endl;;
-
 		vector<size_t> p_levels = binary_refiner_ptr->ExtractPLevels();
 		cout << "Livelli di p refinement : " << endl;
 		for (auto l : p_levels)
 			cout << l << " ";
 		cout << endl;
 		cout << "The mesh has " << binary_refiner_ptr->ActiveNodesNumber() << " ACTIVE elements" << endl;
+
+		cout << endl << "Interpolation error after refinement: " << current_error << endl;
 #endif //VERBOSE
 
-		if(n_iter == max_iter)
-		{
-			string dir = "results/";
-			string script_name = dir + "p_levels_script_" + identifier;
-			string error_name	 = dir + "error_data_" + identifier;
-			binary_refiner_ptr->ExportGnuPlot(script_name);
-			ofstream error_file(error_name);
-			if (!error_file.is_open())
-				cerr << "Houston we have a problem! I'm not writing on error file!" << endl;
-			error_file << "#Function: " << function_name << endl;
-			size_t cont = 0;
-			for (auto e : error)
-				error_file << cont++ << "	" << e << endl;
-		}
+		stringstream ss;
+		ss << setfill('0') << setw(digits) << to_string(n_iter);
+		string script_name = results_dir + "/p_levels_script_" + ss.str();
+		binary_refiner_ptr->ExportGnuPlot(script_name);
 	}
+
+	string error_name	 = results_dir + "/error_data";
+	ofstream error_file(error_name);
+	if (!error_file.is_open())
+		cerr << "Houston we have a problem! I'm not writing on error file!" << endl;
+	error_file << "#Function: " << function_name << endl;
+	size_t cont = 0;
+	for (auto e : error)
+		error_file << cont++ << "	" << e << endl;
 	
-	cout << "1D refining complete example ended" << endl;
+	cout << endl << "1D refining complete example ended" << endl;
 }

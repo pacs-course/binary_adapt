@@ -35,7 +35,7 @@ namespace LibmeshBinary
 			switch (el_ptr->type())
 			{
 				case libMesh::EDGE2 :
-					result = BinarityMap::TemplateNodeBinarization<1, Interval, libMesh::Edge2> (el_ptr, f_ptr, mesh_refinement);
+					result = BinarityMap::TemplateNodeBinarization<1, Interval, LibmeshIntervalClass> (el_ptr, f_ptr, mesh_refinement);
 					break;
 
 				default :
@@ -44,23 +44,24 @@ namespace LibmeshBinary
 			return result;
 		};
 
-//	template <>
-//		libMesh::Elem* BinarityMap::BinarizeNode<2> (libMesh::Elem* el_ptr,
-//																	BinaryTree::FunctionPtr<2> f_ptr,
-//																	libMesh::MeshRefinement& mesh_refinement)
-//		{
-//			libMesh::Elem* result (nullptr);
-//			switch (el_ptr->type())
-//			{
-//				case libMesh::TRI3 :
-//					//TODO
-//					break;
+	template <>
+		libMesh::Elem* BinarityMap::BinarizeNode<2> (libMesh::Elem* el_ptr,
+																	BinaryTree::FunctionPtr<2> f_ptr,
+																	libMesh::MeshRefinement& mesh_refinement)
+		{
 
-//				default :
-//					throw logic_error("I don't know how to binarize " + to_string(el_ptr->type()) + " type node");
-//			}
-//			return result;
-//		};
+			libMesh::Elem* result (nullptr);
+			switch (el_ptr->type())
+			{
+				case libMesh::TRI3 :
+					result = BinarityMap::TemplateNodeBinarization<2, Triangle, LibmeshTriangleClass> (el_ptr, f_ptr, mesh_refinement);
+					break;
+
+				default :
+					throw logic_error("I don't know how to binarize " + to_string(el_ptr->type()) + " type node");
+			}
+			return result;
+		};
 
 } //namespace LibmeshBinary
 

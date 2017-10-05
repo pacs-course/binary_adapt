@@ -13,6 +13,7 @@
 
 namespace BinaryTree
 {
+
 	class NodeOperator
 	{
 		public:
@@ -58,7 +59,7 @@ namespace BinaryTree
 			public:
 				MeshRefiner() : _objective_function(nullptr),
 									 _godfather(),
-									 _global_error(numeric_limits<double>::max()),
+									 _global_error(std::numeric_limits<double>::max()),
 									 _error_updated(false)
 				{};
 
@@ -140,7 +141,7 @@ namespace BinaryTree
 				virtual void InitializeGodfather() = 0;
 
 			protected:
-				void Init(unique_ptr<Functor<dim>> f_ptr)
+				void Init(std::unique_ptr<Functor<dim>> f_ptr)
 				{
 					/* I convert the unique_ptr in a shared_ptr,
 					since I need to share it with the BinaryNode elements */
@@ -190,7 +191,7 @@ namespace BinaryTree
 				while(daddy)
 				{
 #ifdef MYDEBUG
-					cerr << "Modifico i valori dell'elemento di id # " << daddy->NodeID() << endl;
+					std::cerr << "Modifico i valori dell'elemento di id # " << daddy->NodeID() << std::endl;
 #endif //MYDEBUG
 
 					auto val = daddy->PLevel();
@@ -200,15 +201,15 @@ namespace BinaryTree
 					auto gretel = daddy->Right();
 
 #ifdef MYDEBUG
-					cerr << "Daddy ha q = " << daddy->Q() << endl;
-					cerr << "Daddy ha e tilde = " << daddy->TildeError() << endl;
-					cerr << "Daddy ha e = " << daddy->ProjectionError() << endl;
-					cerr << "Hansel ha q = " << hansel->Q() << endl;
-					cerr << "Hansel ha e tilde = " << hansel->TildeError() << endl;
-					cerr << "Hansel ha e = " << hansel->ProjectionError() << endl;
-					cerr << "Gretel ha q = " << gretel->Q() << endl;
-					cerr << "Gretel ha e tilde = " << gretel->TildeError() << endl;
-					cerr << "Gretel ha e = " << gretel->ProjectionError() << endl;
+					std::cerr << "Daddy ha q = " << daddy->Q() << std::endl;
+					std::cerr << "Daddy ha e tilde = " << daddy->TildeError() << std::endl;
+					std::cerr << "Daddy ha e = " << daddy->ProjectionError() << std::endl;
+					std::cerr << "Hansel ha q = " << hansel->Q() << std::endl;
+					std::cerr << "Hansel ha e tilde = " << hansel->TildeError() << std::endl;
+					std::cerr << "Hansel ha e = " << hansel->ProjectionError() << std::endl;
+					std::cerr << "Gretel ha q = " << gretel->Q() << std::endl;
+					std::cerr << "Gretel ha e tilde = " << gretel->TildeError() << std::endl;
+					std::cerr << "Gretel ha e = " << gretel->ProjectionError() << std::endl;
 #endif //MYDEBUG
 
 					auto new_E = std::min(	hansel->E() + gretel->E(),
@@ -220,18 +221,18 @@ namespace BinaryTree
 											 /
 											 (new_E + old_E_tilde);
 #ifdef MYDEBUG
-					cerr << "E" << endl;
-					cerr << "Old value: " << daddy->E() << endl;
+					std::cerr << "E" << std::endl;
+					std::cerr << "Old value: " << daddy->E() << std::endl;
 #endif //MYDEBUG
 					daddy->E(new_E);
 #ifdef MYDEBUG
-					cerr << "New value: " << new_E << endl;
+					std::cerr << "New value: " << new_E << std::endl;
 #endif //MYDEBUG
 					daddy->ETilde(new_E_tilde);
 #ifdef MYDEBUG
-					cerr << "E tilde" << endl;
-					cerr << "Old value: " << old_E_tilde << endl;
-					cerr << "New value: " << new_E_tilde << endl;
+					std::cerr << "E tilde" << std::endl;
+					std::cerr << "Old value: " << old_E_tilde << std::endl;
+					std::cerr << "New value: " << new_E_tilde << std::endl;
 #endif //MYDEBUG
 
 					BinaryNode* alfa_bro(nullptr);
@@ -240,8 +241,8 @@ namespace BinaryTree
 
 					auto new_q = std::min (alfa_bro->Q(), new_E_tilde);
 #ifdef MYDEBUG
-					cerr << "Il figlio alfa ha q = " << alfa_bro->Q() << endl;
-					cerr << "Il nuovo q vale: " << new_q << endl;
+					std::cerr << "Il figlio alfa ha q = " << alfa_bro->Q() << std::endl;
+					std::cerr << "Il nuovo q vale: " << new_q << std::endl;
 #endif //MYDEBUG
 					daddy->Q(new_q);
 
@@ -263,11 +264,11 @@ namespace BinaryTree
 	void MeshRefiner<dim>::ExportGnuPlot(const std::string& script_name)
 	{
 		std::ofstream output_file(script_name);
-		output_file	<< "#It produces the plot of the plevels of the binary refined mesh" << endl
-				<< "#call it by typing in gnuplot the instruction:" << endl
+		output_file	<< "#It produces the plot of the plevels of the binary refined mesh" << std::endl
+				<< "#call it by typing in gnuplot the instruction:" << std::endl
 				<< "#	call \""
 				<< script_name
-				<< "\"" << endl;
+				<< "\"" << std::endl;
 
 		this->DerivedGnuPlotExport(output_file);
 	};

@@ -10,10 +10,11 @@
 #include "Point.h"
 #include "Functor.h"
 
-using namespace std;
 
 namespace LibmeshBinary
 {
+	using namespace std;
+
 	struct BinarityMap
 	{
 		static bool CheckBinarity(libMesh::MeshBase& mesh);
@@ -78,7 +79,7 @@ namespace LibmeshBinary
 					}
 				}
 
-				//TODO (maybe, otherwise evaluate the possibility to "unbinarize" the mesh after the refinement)
+				//TODO (evaluate the possibility to "unbinarize" the mesh after the refinement)
 
 				mesh.prepare_for_use(/*skip_renumber =*/ false);
 
@@ -93,14 +94,10 @@ namespace LibmeshBinary
 			};
 
 		template <size_t dim>
-			static libMesh::Elem* BinarizeNode (libMesh::Elem* el_ptr,
-															BinaryTree::FunctionPtr<dim> f_ptr, 
-															libMesh::MeshRefinement& mesh_refinement)
+			static libMesh::Elem* BinarizeNode (libMesh::Elem*,
+															BinaryTree::FunctionPtr<dim>, 
+															libMesh::MeshRefinement&)
 			{
-				/*to silence warning by the compiler*/
-				(void) el_ptr;
-				(void) f_ptr;
-				(void) mesh_refinement;
 				/* In the default case (unexpected dim) it throws an exception; concrete behaviour for able-to-handle dim is defined in the specializations */
 				throw invalid_argument("Cannot handle an element of dimension " + to_string(dim));
 				return nullptr;
@@ -118,11 +115,10 @@ namespace LibmeshBinary
 				if (test1.Type() != test2.Type())
 					throw logic_error("Invalid combination of template parameter inside binarize_node");
 #endif //THROW_EXCEPTION
-
 /*
 				The mesh can contain elements of different dimension (i.e. volume objects and boundary objects)
 				Since for the binary tree algorithm I need only the dim objects, I binarize only these ones
-				TODO: verifity if returning the element as it is, if it has not the appropriate dimensionality, could cause problems
+				TODO: verify if returning the element as it is, could cause problems in case it has not the appropriate dimensionality
 */
 				if (el_ptr->dim() != dim)
 					return el_ptr;
@@ -137,13 +133,13 @@ namespace LibmeshBinary
 				if (result)
 				{
 #ifdef MYDEBUG
-					cout << "E' gia' binario l'indirizzo : " << el_ptr << endl;
+					cout << "Already binary the address : " << el_ptr << endl;
 #endif //MYDEBUG
 				}
 				else
 				{
 #ifdef MYDEBUG
-					cout << "Binarizzo l'indirizzo : " << el_ptr << endl;
+					cout << "I make binary the address : " << el_ptr << endl;
 #endif //MYDEBUG
 
 					bool type_recognized = false;
@@ -152,7 +148,7 @@ namespace LibmeshBinary
 					unique_ptr<LibmeshClass> smart_ptr(casted_ptr);
 
 #ifdef MYDEBUG
-					cout << "Reso smart l'indirizzo : " << smart_ptr.get() << endl;
+					cout << "Made smart the address : " << smart_ptr.get() << endl;
 #endif //MYDEBUG
 					if (smart_ptr)
 					{
@@ -162,6 +158,7 @@ namespace LibmeshBinary
 										without deleting the underlying object; the problem is that this object is also pointed by *iter, since it is
 										an element of the mesh, so it cannot be destroyed by calling delete casted_ptr*/
 						result = new BinaryClass(move(smart_ptr), f_ptr, mesh_refinement);
+
 						result->Init();
 #ifdef MYDEBUG
 						cout << "Vediamo se il mio elemento ha il mio metodo:" << endl;
@@ -176,7 +173,7 @@ namespace LibmeshBinary
 						cout << result->dim() << endl;
 #endif //MYDEBUG
 #ifdef MYDEBUG
-						cout << "Ho un oggetto binario all'indirizzo : " << el_ptr << endl;
+						cout << "I have a binary object at the address : " << el_ptr << endl;
 #endif //MYDEBUG
 
 					}
@@ -195,17 +192,18 @@ namespace LibmeshBinary
 */
 		//TODO: since this file has to be in a dynamic loadable library, check if this static variable could make the library "non rientrante"
 		static map<libMesh::MeshBase*, bool> _boolean_map;
-	};
+
+	}; //struct BinarityMap
 
 	template <>
 		libMesh::Elem* BinarityMap::BinarizeNode<1> (libMesh::Elem* el_ptr,
 																	BinaryTree::FunctionPtr<1> f_ptr,
 																	libMesh::MeshRefinement& mesh_refinement);
 
-//	template <>
-//		libMesh::Elem* BinarityMap::BinarizeNode<2> (libMesh::Elem* el_ptr,
-//																	BinaryTree::FunctionPtr<2> f_ptr,
-//																	libMesh::MeshRefinement& mesh_refinement);
+	template <>
+		libMesh::Elem* BinarityMap::BinarizeNode<2> (libMesh::Elem* el_ptr,
+																	BinaryTree::FunctionPtr<2> f_ptr,
+																	libMesh::MeshRefinement& mesh_refinement);
 
 } //namespace LibmeshBinary
 

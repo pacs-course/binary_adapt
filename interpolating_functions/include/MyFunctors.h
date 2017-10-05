@@ -4,10 +4,12 @@
 #include "Functor.h"
 #include "MuParserInterface.h"
 
-#include <GetPot>
-
+//#include <GetPot>
+#include "getpot.h"
 namespace MyFunctions
-{
+{	
+	using namespace std;
+
 	template <size_t dim>
 		class ParserFunctor : public BinaryTree::Functor<dim>
 		{
@@ -30,6 +32,34 @@ namespace MyFunctions
 					//I try to call the _parser operator() to check the correctness of the expression
 					//I don't want to make this check every time I call ParserFunctor::operator()
 					//I do it once here
+					CheckExpressionValidity();
+				};
+
+				//needed for testing purpose
+				ParserFunctor(const std::string& s) : _parser(s)
+				{
+					CheckExpressionValidity();
+				};
+
+				virtual double operator() (const Geometry::Point<dim>& p) const override
+				{
+					return (this->_parser)(p.get());
+				};
+
+				virtual std::string Formula() const override
+				{
+					return this->_parser.Expression();
+				};
+
+				virtual std::string ID() const override
+				{
+					return "RENAME_ME_parsed_functor";
+				};
+
+
+			protected:
+				void CheckExpressionValidity()
+				{
 					try
 					{
 						std::array<double, dim> test;
@@ -49,24 +79,6 @@ namespace MyFunctions
 						//I prefer to throw a runtime_error, since outside this plugin I don't see the mu:: namespace
 						throw std::runtime_error(error);
 					}
-				};
-
-				//needed for testing purpose
-//				ParserFunctor(const std::string& s) : _parser(s){};
-
-				virtual double operator() (const Geometry::Point<dim>& p) const override
-				{
-					return (this->_parser)(p.get());
-				};
-
-				virtual std::string Formula() const override
-				{
-					return this->_parser.Expression();
-				};
-
-				virtual std::string ID() const override
-				{
-					return "parsed_functor_RENAME_ME";
 				};
 
 			protected:
@@ -169,6 +181,15 @@ namespace MyFunctions
 		public:
 			SqrtX(){};
 			virtual double operator() (const Geometry::Point<1>&)const override;
+			virtual std::string Formula()const override;
+			virtual std::string ID()const override;
+	};
+
+	class X2PlusY2 : public BinaryTree::Functor<2>
+	{
+		public:
+			X2PlusY2(){};
+			virtual double operator() (const Geometry::Point<2>&)const override;
 			virtual std::string Formula()const override;
 			virtual std::string ID()const override;
 	};

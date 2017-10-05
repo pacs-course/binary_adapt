@@ -1,0 +1,36 @@
+#It produces the plot of the plevels of the binary refined mesh
+#call it by typing in gnuplot the instruction:
+#	call "results/RENAME_ME_parsed_functor/p_levels_script_43"
+p_0(x) = x > 0.500000 && x <= 1.000000? 5 : 1/0
+p_1(x) = x > 0.250000 && x <= 0.500000? 4 : 1/0
+p_2(x) = x > 0.125000 && x <= 0.250000? 4 : 1/0
+p_3(x) = x > 0.062500 && x <= 0.125000? 4 : 1/0
+p_4(x) = x > 0.031250 && x <= 0.062500? 3 : 1/0
+p_5(x) = x > 0.015625 && x <= 0.031250? 3 : 1/0
+p_6(x) = x > 0.000000 && x <= 0.007812? 10 : 1/0
+p_7(x) = x > 0.007812 && x <= 0.015625? 3 : 1/0
+set xrange [0:1]
+set yrange [-1:11]
+set xlabel "x" font "Helvetica, 20"
+set samples 1000
+set xtics nomirror
+set x2tics ("" 0.5, \
+"" 0.25, \
+"" 0.125, \
+"" 0.0625, \
+"" 0.03125, \
+"" 0.015625, \
+"" 0, \
+"" 0.0078125, \
+"" 1)
+set grid noxtics noytics x2tics
+set tics font "Helvetica,16"
+set key font ",20"
+plot p_0(x) lw 6, \
+p_1(x) lw 6, \
+p_2(x) lw 6, \
+p_3(x) lw 6, \
+p_4(x) lw 6, \
+p_5(x) lw 6, \
+p_6(x) lw 6, \
+p_7(x)lw 6

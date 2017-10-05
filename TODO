@@ -1,0 +1,14 @@
+hp finite elements, Schwabb
+
+visualizzare partizioni intermedie	DONE
+visualizzare funzioni interpolanti
+
+sqrt(abs(x-1/2))	DONE
+sqrt(abs(x-1/3))	DONE
+
+AbstractBasis	-> TensorBasis
+					-> WarpedBasis
+
+Compute the whole basis at the start basing on the iteration number
+
+CoefficientComputer chiama onedevaluation

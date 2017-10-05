@@ -164,6 +164,9 @@ namespace LibmeshBinary
 					size_t cont = 0;
 					for (auto iter = this->_mesh_ptr->active_elements_begin(); iter != this->_mesh_ptr->active_elements_end(); ++iter)
 					{
+#ifdef MYDEBUG
+						cerr << "Active element of id " << (*iter)->id() << endl;
+#endif //MYDEBUG
 						auto nodes = (*iter)->get_nodes();
 						auto p_val = (*iter)->p_level();
 
@@ -196,7 +199,7 @@ namespace LibmeshBinary
 						output_file << f_s << endl;
 					}
 
-					output_file << "set xrange [" << x_min << ":" << x_max + 9 << "]" << endl
+					output_file << "set xrange [" << x_min << ":" << x_max << "]" << endl
 									<< "set yrange [-1:" << p_max + 1 << "]" << endl
 									<< "set xlabel \"x\" font \"Helvetica, 20\"" << endl
 									<< "set samples 1000" << endl
@@ -214,8 +217,8 @@ namespace LibmeshBinary
 
 					size_t i = 0;
 					for (; i < this->_mesh_ptr->n_active_elem() - 1; ++i)
-						output_file << "f" << i << "(x), \\" << endl;
-					output_file << "f" << i << "(x)" << "lw 6" << endl;
+						output_file << "p_" << i << "(x) lw 6, \\" << endl;
+					output_file << "p_" << i << "(x)" << "lw 6" << endl;
 					
 				};
 
@@ -273,7 +276,7 @@ namespace LibmeshBinary
 				std::unique_ptr<libMesh::MeshRefinement> _mesh_refinement_ptr;
 /*
 				libMesh need a LibMeshInit object which has to be constructed before the mesh and destructed after mesh destruction
-				To make _initialized true I have to ways:
+				To make _initialized true I have two ways:
 					- The DerivedInitialization method is called (this means that the Init(f, argc, argv) has been called)
 					  In this case the LibMeshInit obj is an attribute of this class
 					- The SetMesh method is called

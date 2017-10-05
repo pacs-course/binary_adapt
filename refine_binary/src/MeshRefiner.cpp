@@ -1,12 +1,24 @@
 #include "MeshRefiner.h"
 
+using namespace std;
+
 namespace BinaryTree
 {
 	void Counter::operator()(BinaryNode* node)
 	{
-		//this is to avoid warning by the compiler
-//		(void) node;
-		cerr << "Elemento attivo di id # " << node->NodeID() << endl;
+#ifdef VERBOSE
+		cerr << "Elemento attivo di:" << endl;
+		auto id = node->NodeID();
+		cerr << "#id : " << id << endl;
+//#ifdef MYDEBUG
+		cerr << "p level : " << node->PLevel() << endl;
+		cerr << "e = " << node->ProjectionError() << endl;
+		cerr << "E = " << node->E() << endl;
+		cerr << "e~ = " << node->TildeError() << endl;
+		cerr << "q = " << node->Q() << endl;
+		cerr << "E~ = " << node->ETilde() << endl << endl;
+//#endif //MYDEBUG
+#endif //VERBOSE
 		++(this->_counter);
 	};
 

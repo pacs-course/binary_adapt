@@ -102,4 +102,17 @@ namespace MyFunctions
 		return "half_sqrt_x";
 	};
 
+	double X2PlusY2::operator() (const Geometry::Point<2>& x)const
+	{
+		return x[0]*x[0] + x[1]*x[1];
+	};
+	std::string X2PlusY2::Formula()const
+	{
+		return "x^2 + y^2";
+	};
+	std::string X2PlusY2::ID()const
+	{
+		return "x_squared_plus_y_squared";
+	};
+
 } //namespace MyFunctions

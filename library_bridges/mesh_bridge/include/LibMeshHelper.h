@@ -16,7 +16,7 @@ namespace LibmeshBinary
 	since in libMesh there are multiple types describing the same geometry, in this way a potential switch is easier, since it must be done only ones here
 	cannot use the using syntax since I'm renaming enumerators, not types
 */
-	//TODO: find a more c++ way to do it
+	//TODO: find a more c++ style way to do it
 	#define LibmeshInvalidType libMesh::INVALID_ELEM
 	#define LibmeshIntervalType libMesh::EDGE2
 	#define LibmeshTriangleType libMesh::TRI3

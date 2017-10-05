@@ -89,53 +89,44 @@ namespace BinaryTree
 	void BinaryGodfather::SelectActiveNodes()
 	{
 		for (auto& el : this->_elements)
-		{
-			SelectActiveNodesRecursively(el, el->Q());
-		}
+#ifdef CUT_FROM_THE_BOTTOM
+			SelectActiveNodesRecursively(el, el->E());
+#else
+			SelectActiveNodesRecursively(el);
+#endif //CUT_FROM_THE_BOTTOM
 	};
 
-	bool BinaryGodfather::FindQRecursively(BinaryNode* node, const double q_value)
+#ifdef CUT_FROM_THE_BOTTOM
+	void BinaryGodfather::SelectActiveNodesRecursively(BinaryNode* node, const double E_value)
+#else
+	void BinaryGodfather::SelectActiveNodesRecursively(BinaryNode* node)
+#endif //CUT_FROM_THE_BOTTOM
 	{
 		if (node)
 		{
-			if (q_value == node->Q())
-				return true;
-			else
-			{
-				bool left_found = FindQRecursively(node->Left(), q_value);
-				bool right_found = FindQRecursively(node->Right(), q_value);
-				return left_found | right_found;
-			}
-		}
-		return false;
-	};
-
-
-	void BinaryGodfather::SelectActiveNodesRecursively(BinaryNode* node, const double q_value)
-	{
-		if (node)
-		{
-#ifdef MYDEBUG
-			cerr << "Elemento di id " << node->NodeID() << endl;
-			cerr << "Errore di interpolazione " << node->ProjectionError() << endl << endl;
-#endif //MYDEBUG
-
 			auto hansel = node->Left();
 			auto gretel = node->Right();
 
-			bool left_found = FindQRecursively(hansel, q_value);
-			bool right_found = FindQRecursively(gretel, q_value);
+#ifdef CUT_FROM_THE_BOTTOM
+			bool left_found = FindERecursively(hansel, E_value);
+			bool right_found = FindERecursively(gretel, E_value);
 
 			if (!left_found && !right_found)
 			{
-				if (node->Q() != q_value)
+				if (node->E() != E_value)
 					cerr << "Houston we have a problem: q value not found in the tree!" << endl;
-
+#else //CUT_FROM_THE_BOTTOM
+			if (node->E() == node->ProjectionError())
+			{
+#endif //CUT_FROM_THE_BOTTOM
 #ifdef MYDEBUG
-				cerr << "Attivo l'elemento di id " << node->NodeID() << endl;
+				cerr << "Activating element with " << endl;
+				auto id = node->NodeID();
+				cerr << "#id : " << id << endl;
 				cerr << "p level : " << node->PLevel() << endl;
-				cerr << "Errore di interpolazione " << node->ProjectionError() << endl;
-				cerr << "e~ " << node->TildeError() << endl;
+				cerr << "e = " << node->ProjectionError() << endl;
+				cerr << "E = " << node->E() << endl;
+				cerr << "e~ = " << node->TildeError() << endl;
 				cerr << "q = " << node->Q() << endl;
 				cerr << "E~ = " << node->ETilde() << endl << endl;
 #endif //MYDEBUG
@@ -146,13 +137,21 @@ namespace BinaryTree
 			}
 			else
 			{
-				SelectActiveNodesRecursively(hansel, hansel->Q());
-				SelectActiveNodesRecursively(gretel, gretel->Q());
+#ifdef CUT_FROM_THE_BOTTOM
+				SelectActiveNodesRecursively(hansel, hansel->E());
+				SelectActiveNodesRecursively(gretel, gretel->E());
+#else //CUT_FROM_THE_BOTTOM
+				SelectActiveNodesRecursively(hansel);
+				SelectActiveNodesRecursively(gretel);
+#endif //CUT_FROM_THE_BOTTOM
 
 #ifdef MYDEBUG
-				cerr << "Disattivo l'elemento di id " << node->NodeID() << endl;
+				cerr << "Deactivating element with " << endl;
+				auto id = node->NodeID();
+				cerr << "#id : " << id << endl;
 				cerr << "p level : " << node->PLevel() << endl;
-				cerr << "Errore di interpolazione " << node->ProjectionError() << endl;
+				cerr << "e = " << node->ProjectionError() << endl;
+				cerr << "E = " << node->E() << endl;
 				cerr << "e~ " << node->TildeError() << endl;
 				cerr << "q = " << node->Q() << endl;
 				cerr << "E~ = " << node->ETilde() << endl << endl;
@@ -163,15 +162,35 @@ namespace BinaryTree
 		}
 	};
 
+#ifdef CUT_FROM_THE_BOTTOM
+	bool BinaryGodfather::FindERecursively(BinaryNode* node, const double E_value)
+	{
+		if (node)
+		{
+			if (E_value == node->E())
+				return true;
+			else
+			{
+				bool left_found = FindERecursively(node->Left(), E_value);
+				bool right_found = FindERecursively(node->Right(), E_value);
+				return left_found | right_found;
+			}
+		}
+		return false;
+	};
+#endif //CUT_FROM_THE_BOTTOM
 
 	void BinaryGodfather::DeactivateSubTree(BinaryNode* node)
 	{
 		if(node)
 		{
 #ifdef MYDEBUG
-			cerr << "Disattivo l'elemento di id " << node->NodeID() << endl;
+			cerr << "Disattivo l'elemento di " << endl;
+			auto id = node->NodeID();
+			cerr << "#id : " << id << endl;
 			cerr << "p level : " << node->PLevel() << endl;
-			cerr << "Errore di interpolazione " << node->ProjectionError() << endl;
+			cerr << "e = " << node->ProjectionError() << endl;
+			cerr << "E = " << node->E() << endl;
 			cerr << "e~ " << node->TildeError() << endl;
 			cerr << "q = " << node->Q() << endl;
 			cerr << "E~ = " << node->ETilde() << endl << endl;

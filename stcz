@@ -1,0 +1,186 @@
+[3;J[H[2Jmake --directory=interpolating_functions init
+make[1]: Entering directory '/home/soblinsky/Projects/PacsProject/interpolating_functions'
+make[1]: Leaving directory '/home/soblinsky/Projects/PacsProject/interpolating_functions'
+make -j4 --directory=interpolating_functions 
+make[1]: Entering directory '/home/soblinsky/Projects/PacsProject/interpolating_functions'
+make[1]: Leaving directory '/home/soblinsky/Projects/PacsProject/interpolating_functions'
+make --directory=library_bridges/mesh_bridge init
+make[1]: Entering directory '/home/soblinsky/Projects/PacsProject/library_bridges/mesh_bridge'
+make[1]: Leaving directory '/home/soblinsky/Projects/PacsProject/library_bridges/mesh_bridge'
+make -j4 --directory=library_bridges/mesh_bridge 
+make[1]: Entering directory '/home/soblinsky/Projects/PacsProject/library_bridges/mesh_bridge'
+make[1]: Leaving directory '/home/soblinsky/Projects/PacsProject/library_bridges/mesh_bridge'
+make --directory=plugin_loader init
+make[1]: Entering directory '/home/soblinsky/Projects/PacsProject/plugin_loader'
+make[1]: Leaving directory '/home/soblinsky/Projects/PacsProject/plugin_loader'
+make -j4 --directory=plugin_loader 
+make[1]: Entering directory '/home/soblinsky/Projects/PacsProject/plugin_loader'
+make[1]: Leaving directory '/home/soblinsky/Projects/PacsProject/plugin_loader'
+make --directory=quadrature_rules/mesh_quadrature init
+make[1]: Entering directory '/home/soblinsky/Projects/PacsProject/quadrature_rules/mesh_quadrature'
+make[1]: Leaving directory '/home/soblinsky/Projects/PacsProject/quadrature_rules/mesh_quadrature'
+make -j4 --directory=quadrature_rules/mesh_quadrature 
+make[1]: Entering directory '/home/soblinsky/Projects/PacsProject/quadrature_rules/mesh_quadrature'
+make[1]: Leaving directory '/home/soblinsky/Projects/PacsProject/quadrature_rules/mesh_quadrature'
+make --directory=quadrature_rules/sandia_quadrature init
+make[1]: Entering directory '/home/soblinsky/Projects/PacsProject/quadrature_rules/sandia_quadrature'
+make[1]: Leaving directory '/home/soblinsky/Projects/PacsProject/quadrature_rules/sandia_quadrature'
+make -j4 --directory=quadrature_rules/sandia_quadrature 
+make[1]: Entering directory '/home/soblinsky/Projects/PacsProject/quadrature_rules/sandia_quadrature'
+make[1]: Leaving directory '/home/soblinsky/Projects/PacsProject/quadrature_rules/sandia_quadrature'
+make --directory=refine_binary init
+make[1]: Entering directory '/home/soblinsky/Projects/PacsProject/refine_binary'
+make[1]: Leaving directory '/home/soblinsky/Projects/PacsProject/refine_binary'
+make -j4 --directory=refine_binary 
+make[1]: Entering directory '/home/soblinsky/Projects/PacsProject/refine_binary'
+make[1]: Leaving directory '/home/soblinsky/Projects/PacsProject/refine_binary'
+make --directory=example/example1 init
+make[1]: Entering directory '/home/soblinsky/Projects/PacsProject/example/example1'
+make[1]: Leaving directory '/home/soblinsky/Projects/PacsProject/example/example1'
+make -j4 --directory=example/example1 
+make[1]: Entering directory '/home/soblinsky/Projects/PacsProject/example/example1'
+make[1]: Leaving directory '/home/soblinsky/Projects/PacsProject/example/example1'
+make --directory=example/example2 init
+make[1]: Entering directory '/home/soblinsky/Projects/PacsProject/example/example2'
+make[1]: Leaving directory '/home/soblinsky/Projects/PacsProject/example/example2'
+make -j4 --directory=example/example2 
+make[1]: Entering directory '/home/soblinsky/Projects/PacsProject/example/example2'
+compiling: /home/soblinsky/Projects/PacsProject/example/example2/src/main.cpp
+g++ -DVERBOSE -DOPT -I/home/soblinsky/Projects/PacsProject/example/example2/include -I/home/soblinsky/Projects/PacsProject/example/example2/../../library_bridges/mesh_bridge/include -I/home/soblinsky/Projects/PacsProject/example/example2/../../refine_binary/include -I/home/soblinsky/Projects/PacsProject/example/example2/../../interpolating_functions/include -I/home/soblinsky/Projects/PacsProject/example/example2/../../plugin_loader/include -I/usr/local/include/libmesh -I/home/soblinsky/MySoftware/getpot-c++  -march=native -Wall -Wextra -std=c++14 -O3 -c -o '/home/soblinsky/Projects/PacsProject/example/example2/obj/Opt/main.o' '/home/soblinsky/Projects/PacsProject/example/example2/src/main.cpp'
+compiling: /home/soblinsky/Projects/PacsProject/example/example2/src/main.cpp
+g++ -DVERBOSE -DDEBUG -D_GLIBCXX_DEBUG -I/home/soblinsky/Projects/PacsProject/example/example2/include -I/home/soblinsky/Projects/PacsProject/example/example2/../../library_bridges/mesh_bridge/include -I/home/soblinsky/Projects/PacsProject/example/example2/../../refine_binary/include -I/home/soblinsky/Projects/PacsProject/example/example2/../../interpolating_functions/include -I/home/soblinsky/Projects/PacsProject/example/example2/../../plugin_loader/include -I/usr/local/include/libmesh -I/home/soblinsky/MySoftware/getpot-c++  -march=native -Wall -Wextra -g -std=gnu++11 -O2 -felide-constructors -funroll-loops -fstrict-aliasing -Wdisabled-optimization -Wno-variadic-macros -fopenmp -DNDEBUG -c -o '/home/soblinsky/Projects/PacsProject/example/example2/obj/Debug/main.o' '/home/soblinsky/Projects/PacsProject/example/example2/src/main.cpp'
+g++ -DVERBOSE -DOPT -I/home/soblinsky/Projects/PacsProject/example/example2/include -I/home/soblinsky/Projects/PacsProject/example/example2/../../library_bridges/mesh_bridge/include -I/home/soblinsky/Projects/PacsProject/example/example2/../../refine_binary/include -I/home/soblinsky/Projects/PacsProject/example/example2/../../interpolating_functions/include -I/home/soblinsky/Projects/PacsProject/example/example2/../../plugin_loader/include -I/usr/local/include/libmesh -I/home/soblinsky/MySoftware/getpot-c++  -march=native -Wall -Wextra -std=c++14 -O3 '/home/soblinsky/Projects/PacsProject/example/example2/src/main.cpp' -MM -MF '/home/soblinsky/Projects/PacsProject/example/example2/obj/Opt/main.o'.temp.dep
+sed -e"s#main.o#/home/soblinsky/Projects/PacsProject/example/example2/obj/Opt/main.o#" '/home/soblinsky/Projects/PacsProject/example/example2/obj/Opt/main.o'.temp.dep > /home/soblinsky/Projects/PacsProject/example/example2/obj/Opt/main.d
+rm '/home/soblinsky/Projects/PacsProject/example/example2/obj/Opt/main.o'.temp.dep
+g++: generating example
+g++ -Wl,-rpath,/home/soblinsky/Projects/PacsProject/example/example2/../../library_bridges/mesh_bridge/lib -Wl,-rpath,/home/soblinsky/Projects/PacsProject/example/example2/../../refine_binary/lib -Wl,-rpath,/home/soblinsky/Projects/PacsProject/example/example2/../../interpolating_functions/lib -Wl,-rpath,/home/soblinsky/Projects/PacsProject/example/example2/../../plugin_loader/lib -Wl,-rpath,/home/soblinsky/Projects/PacsProject/example/example2/../../quadrature_rules/mesh_quadrature/lib -Wl,-rpath,/home/soblinsky/Projects/PacsProject/example/example2/../../quadrature_rules/sandia_quadrature/lib -Wl,-rpath,/usr/local/lib  -o /home/soblinsky/Projects/PacsProject/example/example2/bin/'example' '/home/soblinsky/Projects/PacsProject/example/example2/obj/Opt/main.o' /home/soblinsky/Projects/PacsProject/example/example2/../../library_bridges/mesh_bridge/lib/libmesh_bridge.so /home/soblinsky/Projects/PacsProject/example/example2/../../refine_binary/lib/librefine_binary.so /home/soblinsky/Projects/PacsProject/example/example2/../../interpolating_functions/lib/libinterpolating_functions.so /home/soblinsky/Projects/PacsProject/example/example2/../../plugin_loader/lib/libplugin_loader.so -L/usr/local/lib  -lpthread -lmesh_opt
+g++ -DVERBOSE -DDEBUG -D_GLIBCXX_DEBUG -I/home/soblinsky/Projects/PacsProject/example/example2/include -I/home/soblinsky/Projects/PacsProject/example/example2/../../library_bridges/mesh_bridge/include -I/home/soblinsky/Projects/PacsProject/example/example2/../../refine_binary/include -I/home/soblinsky/Projects/PacsProject/example/example2/../../interpolating_functions/include -I/home/soblinsky/Projects/PacsProject/example/example2/../../plugin_loader/include -I/usr/local/include/libmesh -I/home/soblinsky/MySoftware/getpot-c++  -march=native -Wall -Wextra -g -std=gnu++11 -O2 -felide-constructors -funroll-loops -fstrict-aliasing -Wdisabled-optimization -Wno-variadic-macros -fopenmp -DNDEBUG '/home/soblinsky/Projects/PacsProject/example/example2/src/main.cpp' -MM -MF '/home/soblinsky/Projects/PacsProject/example/example2/obj/Debug/main.o'.temp.dep
+sed -e"s#main.o#/home/soblinsky/Projects/PacsProject/example/example2/obj/Debug/main.o#" '/home/soblinsky/Projects/PacsProject/example/example2/obj/Debug/main.o'.temp.dep > /home/soblinsky/Projects/PacsProject/example/example2/obj/Debug/main.d
+rm '/home/soblinsky/Projects/PacsProject/example/example2/obj/Debug/main.o'.temp.dep
+g++: generating example_Debug
+g++ -Wl,-rpath,/home/soblinsky/Projects/PacsProject/example/example2/../../library_bridges/mesh_bridge/lib -Wl,-rpath,/home/soblinsky/Projects/PacsProject/example/example2/../../refine_binary/lib -Wl,-rpath,/home/soblinsky/Projects/PacsProject/example/example2/../../interpolating_functions/lib -Wl,-rpath,/home/soblinsky/Projects/PacsProject/example/example2/../../plugin_loader/lib -Wl,-rpath,/home/soblinsky/Projects/PacsProject/example/example2/../../quadrature_rules/mesh_quadrature/lib -Wl,-rpath,/home/soblinsky/Projects/PacsProject/example/example2/../../quadrature_rules/sandia_quadrature/lib -Wl,-rpath,/usr/local/lib  -o /home/soblinsky/Projects/PacsProject/example/example2/bin/'example_Debug' '/home/soblinsky/Projects/PacsProject/example/example2/obj/Debug/main.o' /home/soblinsky/Projects/PacsProject/example/example2/../../library_bridges/mesh_bridge/lib/libmesh_bridge_Debug.so /home/soblinsky/Projects/PacsProject/example/example2/../../refine_binary/lib/librefine_binary_Debug.so /home/soblinsky/Projects/PacsProject/example/example2/../../interpolating_functions/lib/libinterpolating_functions_Debug.so /home/soblinsky/Projects/PacsProject/example/example2/../../plugin_loader/lib/libplugin_loader_Debug.so -L/usr/local/lib  -lpthread -lmesh_dbg
+make[1]: Leaving directory '/home/soblinsky/Projects/PacsProject/example/example2'
+make --directory=test init
+make[1]: Entering directory '/home/soblinsky/Projects/PacsProject/test'
+make[1]: Leaving directory '/home/soblinsky/Projects/PacsProject/test'
+make -j4 --directory=test 
+make[1]: Entering directory '/home/soblinsky/Projects/PacsProject/test'
+make[1]: Leaving directory '/home/soblinsky/Projects/PacsProject/test'
+
+Starting 1D refining complete example
+PluginLoader costruito
+Il file da caricare e': libinterpolating_functions.so
+Added plugin : libsandia_quadrature.so
+Added plugin : libinterpolating_functions.so
+Plugins loaded
+Starting the algorithm with 40 iterations
+Refiner correctly initialized with mu_parser_expr
+
+
+Complexity : 40
+WARNING: OneDEvaluation method in LegendreBasis is deprecated because of inefficiency
+Deactivating element with 
+Nodes : 0.375	0.5	
+#id : 54
+p level : 5
+e = 2.0585e-15
+E = 9.69682e-16
+e~ 2.24004e-14
+q = 5.20608e-16
+E~ = 6.58167e-16
+
+Deactivating element with 
+Nodes : 0.25	0.5	
+#id : 52
+p level : 6
+e = 6.1414e-15
+E = 9.70258e-16
+e~ 3.44042e-14
+q = 5.20608e-16
+E~ = 6.57488e-16
+
+Deactivating element with 
+Nodes : 0	0.5	
+#id : 1
+p level : 7
+e = 1.4563e-14
+E = 9.70258e-16
+e~ 6.97138e-14
+q = 5.20608e-16
+E~ = 6.57026e-16
+
+Deactivating element with 
+Nodes : 0	1	
+#id : 0
+p level : 40
+e = 6.61391e-15
+E = 4.91295e-15
+e~ 0.108401
+q = 4.76089e-16
+E~ = 4.76089e-16
+
+Livelli di p refinement : 
+32 0 0 0 4 
+Elemento attivo di:
+Nodes : 0.5	1	
+#id : 2
+p level : 32
+e = 3.94269e-15
+E = 3.94269e-15
+e~ = 0.0534966
+q = 4.66977e-16
+E~ = 4.66977e-16
+
+Elemento attivo di:
+Nodes : 0	0.25	
+#id : 51
+p level : 0
+e = 4.48336e-26
+E = 4.48336e-26
+e~ = 4.48336e-26
+q = 4.48336e-26
+E~ = 4.48336e-26
+
+Elemento attivo di:
+Nodes : 0.25	0.375	
+#id : 53
+p level : 0
+e = 5.75598e-19
+E = 5.75598e-19
+e~ = 5.75589e-19
+q = 5.75589e-19
+E~ = 5.75589e-19
+
+Elemento attivo di:
+Nodes : 0.375	0.4375	
+#id : 55
+p level : 0
+e = 2.6087e-16
+E = 2.6087e-16
+e~ = 2.57867e-16
+q = 2.57867e-16
+E~ = 2.57867e-16
+
+Elemento attivo di:
+Nodes : 0.4375	0.5	
+#id : 56
+p level : 4
+e = 7.08812e-16
+E = 7.08812e-16
+e~ = 1.60134e-14
+q = 5.20608e-16
+E~ = 5.20608e-16
+
+The mesh has 5 ACTIVE elements
+
+Interpolation error after refinement: 4.91295e-15
+Active element of id 2
+Active element of id 51
+Active element of id 53
+Active element of id 55
+Active element of id 56
+
+1D refining complete example ended
+Memory leak detected!
+Compile in DEBUG mode with --enable-reference-counting
+for more information

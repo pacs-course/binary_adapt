@@ -12,9 +12,10 @@
 
 #include "BinaryTreeHelper.h"
 
-using namespace std;
 namespace GenericFactory
 {
+	using namespace std;
+
 	//! Generic utility to convert identifiers to string (if possible)
 	/*! 
 		Use type traits to identify the correct version

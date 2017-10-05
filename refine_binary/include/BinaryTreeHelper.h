@@ -24,11 +24,7 @@ namespace HelperFunctions
 		{
 			static std::shared_ptr<AbstractProduct> BuildSingleton()
 			{
-#ifndef SINGLETON_ENABLED
 				static std::shared_ptr<AbstractProduct> ptr = std::make_shared<ConcreteProduct>();
-#else
-				std::shared_ptr<AbstractProduct> ptr = ConcreteProduct::Instance();
-#endif //SINGLETON_ENABLED
 				return ptr;
 			};
 

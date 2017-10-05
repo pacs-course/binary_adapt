@@ -7,24 +7,24 @@
 #include <memory> //std::shared_ptr, std::unique_ptr
 #include <utility> //std::move
 
-using namespace std;
-using namespace Geometry;
 
 namespace FiniteElements
 {
+	using namespace std;
+
 	template <size_t dim, BasisType FeType = InvalidFeType>
-		class	AbstractFElement : public AbstractElement<dim>, public AbstractSpace_Interface<dim>
+		class	AbstractFElement : public Geometry::AbstractElement<dim>, public AbstractSpace_Interface<dim>
 		{
 			public:
 /*
-				_map and _ref_felement initialization depends on the pure virtual method type() return, so it cannot be done during object construction; so this operation is done by init method, which call is compulsory before using the object
+				_map and _ref_felement initializations depend on the pure virtual method GetType() return, so it cannot be done during object construction; this operation is done by Init() method, whose call is compulsory before using the object
 */
 				AbstractFElement() : _p_level(0), _initialized(false), _ref_felement(nullptr){};
 
 				virtual ~AbstractFElement()
 				{
 #ifdef DESTRUCTOR_ALERT
-				cout << "Distruggo AbstractFElement" << endl;
+				clog << "Distruggo AbstractFElement" << endl;
 #endif //DESTRUCTOR_ALERT
 				};
 
@@ -33,50 +33,51 @@ namespace FiniteElements
 					if(!(this->_initialized))
 					{
 #ifdef MYDEBUG
-						cout << "Provo a inizializzare AbstractFElement" << endl;
+						clog << "Provo a inizializzare AbstractFElement" << endl;
 #endif //MYDEBUG
-					//TODO: create helper function to combine factory instantiation and call to the object creation
+						//TODO: create helper function to combine factory instantiation and call to the object creation
 						auto& felem_factory(GenericFactory::StdFElementFactory <dim, FeType> ::Instance());
 #ifdef MYDEBUG
-						cout << "cerco in StdFElementFactory<" << dim << ", " << FeType <<"> con chiave " << GetType() << endl;
-						cout << "indirizzo factory: " << &felem_factory << endl;
+						clog << "cerco in StdFElementFactory<" << dim << ", " << FeType <<"> con chiave " << this->GetType() << endl;
+						clog << "indirizzo factory: " << &felem_factory << endl;
 #endif //MYDEBUG
-						this->_ref_felement = felem_factory.create(GetType());
+						this->_ref_felement = felem_factory.create(this->GetType());
 
 #ifdef MYDEBUG
-						cout << "refFElement creato" << endl;
+						clog << "refFElement creato" << endl;
 #endif //MYDEBUG
 						auto& map_factory(GenericFactory::AffineMapFactory<dim>::Instance());
-						this->_map = move(map_factory.create(GetType()));
+						this->_map = move(map_factory.create(this->GetType()));
 #ifdef MYDEBUG
-						cout << "mappa creata" << endl;
+						clog << "mappa creata" << endl;
 #endif //MYDEBUG
 						this->_map -> Init(GetNodes());
 						this->_initialized = true;
 #ifdef MYDEBUG
-						cout << "AbstractFElement inizializzato" << endl;
+						clog << "AbstractFElement inizializzato" << endl;
 #endif //MYDEBUG
 					}
 				};
 
-/*
-				methods depending on geometry, cannot be defined at this level
-*/
-				virtual NodesVector<dim> GetNodes() = 0;
-				virtual ElementType GetType()const = 0;
 
 				virtual BasisType GetFeType()const override
 				{
 					return FeType;
 				};
 
+/*
+				methods depending on geometry, cannot be defined at this level
+*/
+				virtual Geometry::NodesVector<dim> GetNodes() = 0;
+
+				virtual Geometry::ElementType GetType()const = 0;
 
 				//TODO: verify if it's convenient to store the quadrature nodes and weights as an attribute of the element
-				virtual QuadPointVec<dim> GetQuadPoints()const
+				virtual Geometry::QuadPointVec<dim> GetQuadPoints()const
 				{
 					CheckInitialization();
 
-					QuadPointVec<dim> points = _ref_felement->GetQuadPoints();
+					Geometry::QuadPointVec<dim> points = _ref_felement->GetQuadPoints();
 
 					for (auto& p : points)
 						p = _map->Evaluate(p);
@@ -84,17 +85,17 @@ namespace FiniteElements
 					return points;
 				};
 
-				virtual QuadWeightVec GetQuadWeights()const
+				virtual Geometry::QuadWeightVec GetQuadWeights()const
 				{
 					CheckInitialization();
 
-					QuadWeightVec weights = _ref_felement->GetQuadWeights();
+					Geometry::QuadWeightVec weights = _ref_felement->GetQuadWeights();
 /*
 					I'm taking advantage from the fact that _map is affine, so it has an evaluateJacobian() method
 					not dependent on the point of evaluation
 */
 					for (ptrdiff_t i(0); i < weights.size(); ++i)
-						weights[i] = weights[i] * _map->Jacobian();
+						weights[i] *= _map->Jacobian();
 
 					return weights;
 				};
@@ -106,7 +107,7 @@ namespace FiniteElements
 				};
 
 				//TODO: optimize storing already evaluated points
-				virtual double EvaluateBasisFunction (size_t ind, const Point<dim>& point)const
+				virtual double EvaluateBasisFunction (size_t ind, const Geometry::Point<dim>& point)const
 				{
 					CheckInitialization();
 					return 	_ref_felement->EvaluateBasisFunction(ind, _map->ComputeInverse(point))
@@ -116,7 +117,7 @@ namespace FiniteElements
 				};
 
 				//TODO: optimize storing already evaluated points
-				virtual vector<double> EvaluateBasis (const Point<dim>& point)const
+				virtual vector<double> EvaluateBasis (const Geometry::Point<dim>& point)const
 				{
 					CheckInitialization();
 					auto result = this->_ref_felement->EvaluateBasis(this->_p_level,_map->ComputeInverse(point));
@@ -151,7 +152,7 @@ namespace FiniteElements
 
 			protected:
 
-				AffineMap<dim>& UseMap()const
+				Geometry::AffineMap<dim>& UseMap()const
 				{
 					CheckInitialization();
 					return *(this->_map);
@@ -183,7 +184,7 @@ namespace FiniteElements
 /*
 				The affine map through which I can pass from the reference element to the current domain of the object
 */
-				unique_ptr<AffineMap<dim>>	_map;
+				unique_ptr<Geometry::AffineMap<dim>>	_map;
 		};
 
 };//namespace FiniteElements

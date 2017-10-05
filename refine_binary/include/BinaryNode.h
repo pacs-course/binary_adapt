@@ -73,7 +73,7 @@ namespace BinaryTree
 	{
 		public:
 			BinaryGodfather(){};
-		
+
 			template <typename Iterator>
 			void FillElements(Iterator begin, Iterator end, std::function<BinaryNode*(Iterator)> extract = [](Iterator iter){return *iter;})
 			{
@@ -91,9 +91,13 @@ namespace BinaryTree
 		protected:
 			void SortElements();
 			void DeactivateSubTree(BinaryNode*);
-			bool FindQRecursively(BinaryNode*, const double);
+//This is wrong at the moment!
+#ifdef CUT_FROM_THE_BOTTOM
+			bool FindERecursively(BinaryNode*, const double);
 			void SelectActiveNodesRecursively(BinaryNode*, const double);
-
+#else
+			void SelectActiveNodesRecursively(BinaryNode*);
+#endif
 		protected:
 /*
 			these are the binary elements of the initial mesh;

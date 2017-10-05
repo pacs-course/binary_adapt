@@ -8,6 +8,8 @@
 
 #include <GetPot>
 
+using namespace std;
+
 void PrintHelp()
 {
 	//TODO
@@ -30,7 +32,7 @@ int main(int argc, char ** argv)
 	string conf_file = main_input("conf_file", "../../binary_tree.conf");
 
 	GetPot cl(conf_file.c_str());
-	string quad_library = "binary_tree/quadrature/1D/quad_library";
+	string quad_library = "binary_tree/quadrature/interval/quad_library";
 	string func_library = "binary_tree/functions/func_library";
 	string mesh_library = "binary_tree/mesh/mesh_library";
 

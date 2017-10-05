@@ -44,6 +44,8 @@ namespace Geometry
 			protected:
 				//The order of exactness of the quadrature rule
 				size_t _order;
+
+				//TODO: store already computed points in order to optimize
 		};
 
 /*

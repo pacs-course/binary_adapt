@@ -7,12 +7,15 @@
 
 #include <functional> //function
 
+#ifdef SIMMETRY_OPT
 //TODO: use numeric_limits
 #define TOLL 1E-18
-using namespace std;
+#endif //SIMMETRY_OPT
 
 namespace Geometry
 {
+	using namespace std;
+
 /*
 	Abstract class: it implements all the (geometry independent) stuff
 	that an element of the binary tree must have to be used for the
@@ -25,7 +28,7 @@ namespace Geometry
 				virtual ~AbstractElement()
 				{
 #ifdef DESTRUCTOR_ALERT
-				cout << "Distruggo AbstractElement" << endl;
+					cout << "Distruggo AbstractElement" << endl;
 #endif //DESTRUCTOR_ALERT
 				};
 
@@ -50,6 +53,7 @@ namespace Geometry
 					if (nodes.size() != static_cast<size_t> (weights.size()) )
 						throw std::length_error("Trying to integrate with different number of nodes and weights!");
 
+//TODO: to be tested
 #ifdef SIMMETRY_OPT
 					bool simmetric = CheckSimmetry(weights);
 
@@ -102,6 +106,7 @@ namespace Geometry
 				};
 
 				protected:
+#ifdef SIMMETRY_OPT
 					bool CheckSimmetry(const QuadWeightVec& vec) const
 					{
 						int length = vec.size();
@@ -112,6 +117,7 @@ namespace Geometry
 
 						return true;
 					};
+#endif //SIMMETRY_OPT
 		};
 
 } //namespace Geometry

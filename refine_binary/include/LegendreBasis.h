@@ -3,9 +3,12 @@
 
 #include "Basis.h"
 
-#include "jacobi_polynomial.hpp"
-
 #include <memory> //std::shared_ptr
+
+//jacobi_polynomial.hpp need the "using namespace std" before the include
+//I'm in a header file, I don't want to put "using namespace std" outside the namespace FiniteElements
+using namespace std;
+#include "jacobi_polynomial.hpp"
 
 namespace FiniteElements
 {
@@ -22,7 +25,7 @@ namespace FiniteElements
 				{
 					if (this != &input_basis)
 					{
-						//TODO
+						AbstractBasis<dim>::Copy(input_basis);
 					}
 					return *this;
 				};
@@ -32,13 +35,13 @@ namespace FiniteElements
 					*this = input_basis;
 				};
 
-#define MYVERSION
-				/* In the Legendre case I can optimize this function */
+//#define MYVERSION
+				/* In the Legendre case I can optimize this function thanks to the jacobi_polynomial working principle */
 				virtual vector<double> EvaluateBasis(size_t degree, const Geometry::Point<dim>& p) override
 				{
 					size_t length = this->ComputeSize(degree);
 					this->UpdateSize(length);
-					std::vector<unique_ptr<double[]>> evaluations;
+					std::vector<std::unique_ptr<double[]>> evaluations;
 					auto p_iter = p.begin();
 					for(size_t i(0); i < dim; ++i)
 					{
@@ -59,12 +62,19 @@ namespace FiniteElements
 						result.push_back(tot);
 					};
 
-					return result;					
+					return result;
 				};
+
 
 			protected:
 				virtual double OneDEvaluation(size_t index, double x)const override
 				{
+					static bool called = true;
+					if (called)
+					{
+						cerr << "WARNING: OneDEvaluation method in LegendreBasis is deprecated because of inefficiency" << endl;
+						called = false;
+					}
 #ifndef MYVERSION 
 					unique_ptr<double[]> eval(j_polynomial(1, index, 0, 0, &x));
 					double result = eval[index];

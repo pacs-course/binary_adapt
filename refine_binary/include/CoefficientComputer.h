@@ -12,13 +12,11 @@ namespace FiniteElements
 	template <size_t dim, BasisType FeType = InvalidFeType>
 		struct CoefficientComputer
 		{
-			static void ComputeCoefficients (const AbstractFElement<dim, FeType>& f_el,
-														BinaryTree::FunctionPtr<dim> interp_func,
-														vector<double>* coeff_location)
+			static void ComputeCoefficients (const AbstractFElement<dim, FeType>&,
+														BinaryTree::FunctionPtr<dim>,
+														vector<double>*)
 			{
-				(void) f_el;
-				(void) interp_func;
-				(void) coeff_location;
+//TODO: scrivere la versione generale per il calcolo dei coefficienti (prodotto l2 tra le funzioni di base etc.)
 				throw invalid_argument("I don't know how to compute coefficients for " + to_string(FeType) + " finite element type");
 			};
 		};
@@ -26,13 +24,10 @@ namespace FiniteElements
 	template <size_t dim>
 		struct CoefficientComputer<dim, InvalidFeType>
 		{
-			static void ComputeCoefficients (const AbstractFElement<dim, InvalidFeType>& f_el,
-														BinaryTree::FunctionPtr<dim> interp_func,
-														vector<double>* coeff_location)
+			static void ComputeCoefficients (const AbstractFElement<dim, InvalidFeType>&,
+														BinaryTree::FunctionPtr<dim>,
+														vector<double>*)
 			{
-				(void) f_el;
-				(void) interp_func;
-				(void) coeff_location;
 				throw logic_error("Trying to compute coefficients for an InvalidFeType object");
 			};
 		};
@@ -61,9 +56,11 @@ namespace FiniteElements
 				{
 					(*coeff_location)[cursor] = f_el.L2prod ( *interp_func,
 																			[&f_el, &cursor]
-																			(const Point<dim>& p)
+																			(const Geometry::Point<dim>& p)
 																			{ return f_el.EvaluateBasisFunction(cursor, p);}
 																		 );
+//TODO: controllare se nel caso multidimensionale continua a funzionare
+
 					/* dividing by (k + 0.5)^-1 */
 					(*coeff_location)[cursor] *= (cursor + 0.5);
 				}	

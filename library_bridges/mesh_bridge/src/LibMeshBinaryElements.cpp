@@ -88,10 +88,10 @@ namespace LibmeshBinary
 								BinaryTree::FunctionPtr<2> f,
 								libMesh::MeshRefinement& mesh_refinement) :
 
-								BinaryTreeElement<2, LegendreType, LibmeshTriangleClass>(move(el_ptr), f, mesh_refinement )
+								BinaryTreeElement<2, FiniteElements::WarpedType, LibmeshTriangleClass>(move(el_ptr), f, mesh_refinement )
 	{
 		auto nodes = this->_f_element->GetNodes();
-		vector<double> side_lengths(0,3);
+		vector<double> side_lengths(3,0);
 
 		side_lengths[0] = nodes[1].distance(nodes[0]);
 		side_lengths[1] = nodes[2].distance(nodes[1]);

@@ -4,11 +4,6 @@
 #include "Point.h"
 #include "AbstractFactory.h"
 
-namespace Banana
-{
-	void TestFun();
-}
-
 namespace BinaryTree
 {
 /*

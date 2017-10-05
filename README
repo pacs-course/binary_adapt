@@ -3,3 +3,10 @@ Then do:
 	make
 	make check
 
+Configuration files:
+"./binary_tree.conf" to configure the parameters of the algorithm
+"./quadrature_rules/mesh_quadrature/include/mesh_quadrature.conf" to configure the libmesh quadrature rule
+"./quadrature_rules/sandia_quadrature/include/sandia_quadrature.conf" to configure the sandia quadrature rule
+"./interpolating_functions/include/interpolating_functions.conf" to configure the muparser expression
+	remember to set the muparser functor in "binary_tree.conf" if you want to use the muparser framework
+

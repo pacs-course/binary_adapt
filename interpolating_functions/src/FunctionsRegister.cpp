@@ -79,6 +79,10 @@ namespace MyFunctions
 										&HelperFunctions::Builders <ParserFunctor<2>,
 																			 BinaryTree::Functor<2>
 																			>::BuildObject);
+			f_two_d_factory.add ("x_squared_plus_y_squared",
+										&HelperFunctions::Builders <X2PlusY2,
+																			 BinaryTree::Functor<2>
+																			>::BuildObject);
 		};
 }
 

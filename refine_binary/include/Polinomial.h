@@ -9,11 +9,12 @@
 
 #include "Point.h"
 
-using namespace Geometry;
-using namespace std;
 
 namespace FiniteElements
 {
+	using namespace Geometry;
+	using namespace std;
+
 	template <size_t dim>
 		class Polinomial
 		{

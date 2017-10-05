@@ -4,7 +4,6 @@
 #include "TypeEnumerations.h"
 #include "Point.h"
 
-using namespace Geometry;
 
 namespace FiniteElements
 {
@@ -19,7 +18,7 @@ namespace FiniteElements
 #endif //DESTRUCTOR_ALERT
 				};
 
-				virtual double	EvaluateBasisFunction(std::size_t ind, const Point<dim>& point)const = 0;
+				virtual double	EvaluateBasisFunction(std::size_t ind, const Geometry::Point<dim>& point)const = 0;
 
 				virtual std::size_t	BasisSize(std::size_t)const = 0;
 

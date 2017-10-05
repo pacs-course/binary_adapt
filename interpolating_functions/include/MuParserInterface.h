@@ -16,7 +16,7 @@ namespace MyFunctions
 		{
 			public:
 				MuParserInterface();
-//				MuParserInterface(const std::string&);
+				MuParserInterface(const std::string&);
 				~MuParserInterface();
 				MuParserInterface(const MuParserInterface&);
 				MuParserInterface& operator = (const MuParserInterface&);
@@ -38,6 +38,12 @@ namespace MyFunctions
 		MuParserInterface<dim>::MuParserInterface()
 		{
 			AssignVariablesName<dim> (this->_variables, this->_parser);
+		};
+
+	template <size_t dim>
+		MuParserInterface<dim>::MuParserInterface(const std::string& s) : MuParserInterface()
+		{
+			this->Expression(s);
 		};
 
 	template <size_t dim>

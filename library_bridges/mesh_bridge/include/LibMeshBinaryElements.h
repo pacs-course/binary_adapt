@@ -9,15 +9,11 @@
 #include <functional> //std::function
 
 #include <mesh_refinement.h>
-#include <face_tri3.h>
-#include <edge_edge2.h>
-
-using namespace std;
 
 namespace LibmeshBinary
 {
-	using LibmeshIntervalClass = libMesh::Edge2;
-	using LibmeshTriangleClass = libMesh::Tri3;
+	using namespace std;
+
 
 	template <size_t dim, FiniteElements::BasisType FeType = FiniteElements::InvalidFeType, class LibmeshGeometry = InvalidGeometry>
 		class BinaryTreeElement : public LibmeshGeometry, public BinaryTree::AbstractBinaryElement<dim, FeType>
@@ -73,8 +69,8 @@ namespace LibmeshBinary
 
 				virtual size_t NodeID() override
 				{
-//#ifdef MYDEBUG
-					cerr << "Nodi: " << endl;
+#ifdef VERBOSE
+					cerr << "Nodes : ";
 					auto nodes = this->get_nodes();
 					auto length = this->n_nodes();
 					for (size_t i(0); i < length; ++i)
@@ -84,7 +80,7 @@ namespace LibmeshBinary
 							cerr << (*current_ptr)(j) << "	";
 					}
 					cerr << endl;
-//#endif //MYDEBUG
+#endif //VERBOSE
 					return static_cast<size_t>(this->id());
 				};
 
@@ -148,7 +144,7 @@ namespace LibmeshBinary
 
 	//It must be modified the way libMesh elements divides theirselves
 	//The info about the procreation should be stored in the elem.embedding_matrix() method
-	class Triangle : public BinaryTreeElement<2, FiniteElements::LegendreType, LibmeshTriangleClass>
+	class Triangle : public BinaryTreeElement<2, FiniteElements::WarpedType, LibmeshTriangleClass>
 	{
 		public:
 			Triangle(unique_ptr<LibmeshTriangleClass> el_ptr,
@@ -172,9 +168,10 @@ namespace LibmeshBinary
 		protected:
 			/*
 				this are the embedding matrices to be used for the binary bisection of the triangle
-				the one to that will be effectively used depends on which is the longest side
+				the one which will be effectively used depends on which is the longest side
 			*/
 			static const float _binary_embedding_matrices[3][2][3][3];
+			// the index of the longest side
 			size_t _longest_side;
 	};
 

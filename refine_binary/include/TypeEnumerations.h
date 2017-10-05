@@ -15,6 +15,7 @@ namespace FiniteElements
 	{
 		TrivialType	= 0,
 		LegendreType = 1,
+		WarpedType = 2,
 
 		InvalidFeType = 99,
 

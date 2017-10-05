@@ -6,10 +6,10 @@
 
 #include <limits> //numeric_limits::max()
 
-using namespace FiniteElements;
-
 namespace BinaryTree
 {
+	using namespace FiniteElements;
+
 	template <size_t dim, BasisType FeType = InvalidFeType>
 		class AbstractBinaryElement : public BinaryNode 
 		{
@@ -35,9 +35,7 @@ namespace BinaryTree
 					UpdateProjectionError();
 					
 					auto daddy = Dad();
-					//TODO : check the correctness
 					daddy == nullptr ?	this->_tilde_error = this->_projection_error :
-												//TODO : optimize it
 												this->_tilde_error = this->_projection_error * daddy->TildeError()
 																			/
 																			(this->_projection_error + daddy->TildeError());
@@ -89,19 +87,20 @@ namespace BinaryTree
 /*
 					L2 norm of the interpolation error
 */
-					double err =  sqrt(	_f_element->Integrate	(
-																					[&](const Point<dim>& p){
-																														double val = (*(this->_f))(p) - Projection(p);
-																														return val*val;
-																													}
-																				)
+					double err = sqrt	(_f_element->Integrate
+												(
+													[&](const Geometry::Point<dim>& p)	{
+																										double val = (*(this->_f))(p) - Projection(p);
+																										return val*val;
+																									}
+												)
 											);
 
 					this->ProjectionError(err);
 					this->_error_updated = true;
 				};
 
-				virtual double Projection(const Point<dim>& point)
+				virtual double Projection(const Geometry::Point<dim>& point)
 				{
 					ComputeCoefficients();
 					double result(0);
@@ -123,7 +122,7 @@ namespace BinaryTree
 				};
 
 			protected:
-				//function whom projection error has to be computed
+				//function whose projection error has to be computed
 				FunctionPtr<dim> _f;
 				//coefficients of the projection
 				vector<double> _coeff;
