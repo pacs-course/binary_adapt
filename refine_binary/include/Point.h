@@ -125,16 +125,6 @@ namespace Geometry
 					return (*(this) - x).Abs();
 				};
 
-				void Print(bool newline = true) const
-				{
-					cout << "(" << (*this)[0];
-					for (size_t i = 1; i < dim; ++i)
-						cout << "," << (*this)[i];
-					cout << ")";
-					if(newline)
-						cout << endl;
-				}
-
 				//friend to enable cout << p
 				friend ostream& operator<< (ostream& output, const Point<dim>& p)
 				{
@@ -143,6 +133,13 @@ namespace Geometry
 						output << "," << p[i];
 					output << ")";
 					return output;
+				}
+
+				void Print(bool newline = true) const
+				{
+					cout << *this;
+					if(newline)
+						cout << endl;
 				}
 		};
 

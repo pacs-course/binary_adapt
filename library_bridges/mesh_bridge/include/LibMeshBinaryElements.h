@@ -51,20 +51,20 @@ namespace LibmeshBinary
 				virtual BinaryTree::BinaryNode* Left()
 				{
 					if (this->has_children())
-						return BinarityMap::AsBinary(this->child(0));
+						return BinarityMap::AsBinary<dim>(this->child(0));
 
 					return nullptr;
 				}
 				virtual BinaryTree::BinaryNode* Right()
 				{
 					if (this->has_children())
-						return BinarityMap::AsBinary(this->child(1));
+						return BinarityMap::AsBinary<dim>(this->child(1));
 
 					return nullptr;
 				};
 				virtual BinaryTree::BinaryNode* Dad()
 				{
-					return BinarityMap::AsBinary(this->parent());
+					return BinarityMap::AsBinary<dim>(this->parent());
 				};
 
 				virtual size_t NodeID() override

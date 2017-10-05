@@ -1,7 +1,8 @@
 #ifndef __MESH_REFINER_H
 #define __MESH_REFINER_H
 
-#include "BinaryNode.h"
+#include "BinaryGodFather.h"
+#include "MeshRefinerFunctors.h"
 #include "BinaryTreeHelper.h"
 #include "AbstractFactory.h"
 #include "Functor.h"
@@ -13,45 +14,6 @@
 
 namespace BinaryTree
 {
-
-	class NodeOperator
-	{
-		public:
-			NodeOperator(){};
-			virtual void operator()(BinaryNode*) = 0;
-	};
-
-	class Counter : public NodeOperator
-	{
-		public:
-			Counter():_counter(0){};
-			virtual void operator()(BinaryNode*)override;
-			size_t GetCount()const;
-		protected:
-			size_t _counter;
-	};
-
-	class ErrorComputer : public NodeOperator
-	{
-		public:
-			ErrorComputer(double&);
-			virtual void operator()(BinaryNode*)override;
-
-			void ResetError();
-		protected:
-			double& _error_variable;
-	};
-
-	class PlevelsExtractor : public NodeOperator
-	{
-		public:
-			PlevelsExtractor() : _p_levels(){};
-			virtual void operator()(BinaryNode*)override;
-			
-			std::vector<size_t> GetPLevels();
-		protected:
-			std::vector<size_t> _p_levels;
-	};
 
 	template <std::size_t dim>
 		class MeshRefiner
@@ -119,7 +81,6 @@ namespace BinaryTree
 				};
 
 			protected:
-				virtual void DerivedGnuPlotExport(std::ofstream&) = 0;
 				virtual void DerivedInitialization(int argc, char** argv) = 0;
 
 				/*
@@ -137,6 +98,7 @@ namespace BinaryTree
 					This pattern could be used also to implement other kinds of iterator
 				*/
 				virtual void IterateActiveNodes(NodeOperator&) = 0;
+				virtual void IterateActiveNodes(DimOperator<dim>&) = 0;
 
 				virtual void InitializeGodfather() = 0;
 
@@ -153,7 +115,7 @@ namespace BinaryTree
 	The objective function based on which the interpolation error will be computed during the refinement algorithm
 */
 				FunctionPtr<dim> _objective_function;
-				BinaryGodfather _godfather;
+				DimensionedGodFather<dim> _godfather;
 				double _global_error;
 				bool _error_updated;
 		};
@@ -259,6 +221,7 @@ namespace BinaryTree
 			this->_error_updated = false;
 		}; //Refine()
 
+
 	template <std::size_t dim>
 	template <std::size_t dummy, typename std::enable_if< (dummy == 1), size_t>::type>
 	void MeshRefiner<dim>::ExportGnuPlot(const std::string& script_name)
@@ -270,7 +233,36 @@ namespace BinaryTree
 				<< script_name
 				<< "\"" << std::endl;
 
-		this->DerivedGnuPlotExport(output_file);
+		GnuPlotPrinter printer(output_file);
+		IterateActiveNodes(printer);
+
+		double x_min = printer.XMin();
+		double x_max = printer.XMax();
+		size_t p_max = printer.PMax();
+
+		output_file << "set xrange [" << x_min << ":" << x_max << "]" << std::endl
+						<< "set yrange [-1:" << p_max + 1 << "]" << std::endl
+						<< "set xlabel \"x\" font \"Helvetica, 20\"" << std::endl
+						<< "set samples 1000" << std::endl
+						<< "set xtics nomirror" << std::endl
+						<< "set x2tics (";
+
+		auto x_left_vec = printer.XLeftVec();
+		for (auto& val : x_left_vec)
+			output_file << "\"\" " << val << ", \\" << std::endl;
+
+		output_file << "\"\" " << x_max << ")" << std::endl
+						<< "set grid noxtics noytics x2tics" << std::endl
+						<< "set tics font \"Helvetica,16\"" << std::endl
+						<< "set key font \",20\"" << std::endl
+						<< "plot ";
+
+		size_t i = 0;
+		Counter c;
+		IterateActiveNodes(c);
+		for (; i < c.GetCount() - 1; ++i)
+			output_file << "p_" << i << "(x) lw 6, \\" << std::endl;
+		output_file << "p_" << i << "(x)" << "lw 6" << std::endl;
 	};
 
 } //namespace BinaryTree

@@ -364,37 +364,37 @@ TEST_F(LoadTest, LegendreOrthonormality)
 		(k2 == deg) ? (k2 = 0, k1 = ++deg) : (--k1, ++k2);
 	}
 
-	clog << "Constructing the standard triangle" << endl;
-	FiniteElements::StdFElement<2, TriangleType, FiniteElements::WarpedType> std_triangle;
-	order = std_triangle.QuadratureOrder();
-	exactness_size = std_triangle.BasisSize(order);
+//	clog << "Constructing the standard triangle" << endl;
+//	FiniteElements::StdFElement<2, TriangleType, FiniteElements::WarpedType> std_triangle;
+//	order = std_triangle.QuadratureOrder();
+//	exactness_size = std_triangle.BasisSize(order);
 
-	clog << "Checking the orthogonality on the standard triangle" << endl;
+//	clog << "Checking the orthogonality on the standard triangle" << endl;
 
-	iteration_end = (exactness_size < 100) ? exactness_size : 100;
-	for (size_t k(0); k < iteration_end; ++k)
-		for (size_t i = k + 1; i + k <= iteration_end; ++i)
-		{
-			double I = std_triangle.L2prod	(
-															[&](const Point<2>& p){ return std_triangle.EvaluateBasisFunction(i, p);},
-															[&](const Point<2>& p){ return std_triangle.EvaluateBasisFunction(k, p);}
-														);
+//	iteration_end = (exactness_size < 100) ? exactness_size : 100;
+//	for (size_t k(0); k < iteration_end; ++k)
+//		for (size_t i = k + 1; i + k <= iteration_end; ++i)
+//		{
+//			double I = std_triangle.L2prod	(
+//															[&](const Point<2>& p){ return std_triangle.EvaluateBasisFunction(i, p);},
+//															[&](const Point<2>& p){ return std_triangle.EvaluateBasisFunction(k, p);}
+//														);
 
-			string s1 = "Warped functions #"
-						+ to_string(i)
-						+ " and #"
-						+ to_string(k)
-						+ " L2 product = "
-						+ to_string(I);
-			string s2 = "Warped functions #"
-						+ to_string(i)
-						+ " and #"
-						+ to_string(k)
-						+ " are not orthogonal: L2 product = "
-						+ to_string(I);
-			clog << s1 << endl;
-			EXPECT_LT(I, 1E-10) << s2;
-		}
+//			string s1 = "Warped functions #"
+//						+ to_string(i)
+//						+ " and #"
+//						+ to_string(k)
+//						+ " L2 product = "
+//						+ to_string(I);
+//			string s2 = "Warped functions #"
+//						+ to_string(i)
+//						+ " and #"
+//						+ to_string(k)
+//						+ " are not orthogonal: L2 product = "
+//						+ to_string(I);
+//			clog << s1 << endl;
+//			EXPECT_LT(I, 1E-10) << s2;
+//		}
 
 	//TODO: add checks on values not exactly integrated
 

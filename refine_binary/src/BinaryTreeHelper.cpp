@@ -10,6 +10,7 @@ namespace HelperFunctions
 		{
 			case(FiniteElements::TrivialType)		: return "TrivialType";
 			case(FiniteElements::LegendreType)		: return "LegendreType";  
+			case(FiniteElements::WarpedType)			: return "WarpedType";  
 			case(FiniteElements::InvalidFeType)		: return "InvalidFeType";
 			case(FiniteElements::ThirdPartyFeType)	: return "ThirdPartyFeType";
 		}

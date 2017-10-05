@@ -17,15 +17,6 @@ namespace LibmeshBinary
 		return _boolean_map[&mesh];
 	};
 
-	BinaryTree::BinaryNode* BinarityMap::AsBinary(libMesh::Elem* el)
-	{
-#ifdef MYDEBUG
-		cout << "Interpreto come binario l'indirizzo : " << el << endl;
-#endif //MYDEBUG
-
-		return dynamic_cast<BinaryTree::BinaryNode*> (el);
-	};
-
 	template <>
 		libMesh::Elem* BinarityMap::BinarizeNode<1> (libMesh::Elem* el_ptr,
 																	BinaryTree::FunctionPtr<1> f_ptr,

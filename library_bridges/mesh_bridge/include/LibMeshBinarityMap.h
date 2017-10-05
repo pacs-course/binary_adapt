@@ -184,7 +184,15 @@ namespace LibmeshBinary
 				return result;
 			};
 
-		static BinaryTree::BinaryNode* AsBinary(libMesh::Elem* el);
+		template <size_t dim>
+			static BinaryTree::DimensionedNode<dim>* AsBinary(libMesh::Elem* el)
+			{
+#ifdef MYDEBUG
+				cout << "Interpreto come binario l'indirizzo : " << el << endl;
+#endif //MYDEBUG
+
+				return dynamic_cast<BinaryTree::DimensionedNode<dim>*> (el);
+			};
 
 /*
 		A map which tells me if an object of libMesh::Meshbase has been binarized

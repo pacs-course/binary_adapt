@@ -11,13 +11,13 @@ namespace BinaryTree
 	using namespace FiniteElements;
 
 	template <size_t dim, BasisType FeType = InvalidFeType>
-		class AbstractBinaryElement : public BinaryNode 
+		class AbstractBinaryElement : public DimensionedNode<dim> 
 		{
 			public:
 				AbstractBinaryElement(	FunctionPtr<dim> f,
 												shared_ptr<AbstractFElement<dim, FeType> > el_ptr
 											):
-												BinaryNode (),
+												DimensionedNode<dim> (),
 												_f (f),
 												_coeff (),
 												_f_element (el_ptr),
@@ -34,7 +34,7 @@ namespace BinaryTree
 
 					UpdateProjectionError();
 					
-					auto daddy = Dad();
+					BinaryNode* daddy = this->Dad();
 					daddy == nullptr ?	this->_tilde_error = this->_projection_error :
 												this->_tilde_error = this->_projection_error * daddy->TildeError()
 																			/
@@ -72,9 +72,13 @@ namespace BinaryTree
 
 				AbstractFElement<dim, FeType>& GetFElement()const
 				{
-					return *_f_element;
+					return *(this->_f_element);
 				};
 
+				virtual Geometry::NodesVector<dim> Nodes() override
+				{
+					return this->_f_element->GetNodes();
+				};
 			protected:
 				virtual void ProjectionError(const double& val)
 				{

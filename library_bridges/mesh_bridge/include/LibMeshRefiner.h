@@ -149,79 +149,6 @@ namespace LibmeshBinary
 
 			protected:
 
-				virtual void DerivedGnuPlotExport(ofstream& output_file) override
-				{
-					static_assert (dim == 1, "Unexpected dim value");
-
-					double x_min = 0;
-					double x_max = 0;
-					size_t p_max = 0;
-
-					vector<double> x_left_vec;
-					vector<double> x_right_vec;
-					vector<size_t> p_level_vec;
-
-					size_t cont = 0;
-					for (auto iter = this->_mesh_ptr->active_elements_begin(); iter != this->_mesh_ptr->active_elements_end(); ++iter)
-					{
-#ifdef MYDEBUG
-						cerr << "Active element of id " << (*iter)->id() << endl;
-#endif //MYDEBUG
-						auto nodes = (*iter)->get_nodes();
-						auto p_val = (*iter)->p_level();
-
-						auto left_ptr = nodes[0];
-						auto x_left = (*left_ptr)(0);
-						auto right_ptr = nodes[1];
-						auto x_right = (*right_ptr)(0);
-
-						x_left_vec.push_back (x_left);
-						x_right_vec.push_back (x_right);
-						p_level_vec.push_back (p_val);
-
-						if (x_left < x_min)
-							x_min = x_left;
-						if (x_right > x_max)
-							x_max = x_right;
-						if (p_val > p_max)
-							p_max = p_val;
-
-						std::string f_s = "p_" +
-												std::to_string(cont++) +
-												"(x) = x > " +
-												std::to_string(x_left) +
-												" && x <= " +
-												std::to_string(x_right) +
-												"? " +
-												std::to_string(p_val) +
-												" : 1/0";
-
-						output_file << f_s << endl;
-					}
-
-					output_file << "set xrange [" << x_min << ":" << x_max << "]" << endl
-									<< "set yrange [-1:" << p_max + 1 << "]" << endl
-									<< "set xlabel \"x\" font \"Helvetica, 20\"" << endl
-									<< "set samples 1000" << endl
-									<< "set xtics nomirror" << endl
-									<< "set x2tics (";
-
-					for (auto& val : x_left_vec)
-						output_file << "\"\" " << val << ", \\" << endl;
-
-					output_file << "\"\" " << x_max << ")" << endl
-									<< "set grid noxtics noytics x2tics" << endl
-									<< "set tics font \"Helvetica,16\"" << endl
-									<< "set key font \",20\"" << endl
-									<< "plot ";
-
-					size_t i = 0;
-					for (; i < this->_mesh_ptr->n_active_elem() - 1; ++i)
-						output_file << "p_" << i << "(x) lw 6, \\" << endl;
-					output_file << "p_" << i << "(x)" << "lw 6" << endl;
-					
-				};
-
 				virtual void DerivedInitialization(int argc, char** argv)override
 				{
 					this->_libmesh_init_ptr = HelperFunctions::MakeUnique<libMesh::LibMeshInit> (argc, argv);
@@ -240,7 +167,14 @@ namespace LibmeshBinary
 				{
 					std::for_each( this->_mesh_ptr->active_elements_begin(),
 										this->_mesh_ptr->active_elements_end(),
-										[&func](libMesh::Elem* el_ptr){return func(BinarityMap::AsBinary(el_ptr));});
+										[&func](libMesh::Elem* el_ptr){return func(BinarityMap::AsBinary<dim>(el_ptr));});
+				};
+
+				virtual void IterateActiveNodes(BinaryTree::DimOperator<dim>& func) override
+				{
+					std::for_each( this->_mesh_ptr->active_elements_begin(),
+										this->_mesh_ptr->active_elements_end(),
+										[&func](libMesh::Elem* el_ptr){return func(BinarityMap::AsBinary<dim>(el_ptr));});
 				};
 
 				virtual void InitializeGodfather() override
@@ -248,7 +182,7 @@ namespace LibmeshBinary
 					this->_godfather.template FillElements <Iterator>
 																	(this->_mesh_ptr->elements_begin(),
 																	 this->_mesh_ptr->elements_end(),
-																	 [](Iterator iter){return BinarityMap::AsBinary(*iter);}
+																	 [](Iterator iter){return BinarityMap::AsBinary<dim>(*iter);}
 																	);
 
 				};
