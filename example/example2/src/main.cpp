@@ -126,7 +126,9 @@ int main(int argc, char** argv)
 		auto mesh_ptr = make_shared<libMesh::Mesh> (init.comm());
 
 		int n = 1;
-		libMesh::MeshTools::Generation::build_line(*mesh_ptr, n, 0, 1, LibmeshIntervalType);
+		double x_min = 0;
+		double x_max = 1;
+		libMesh::MeshTools::Generation::build_line(*mesh_ptr, n, x_min, x_max, LibmeshIntervalType);
 
 		binary_refiner_ptr->SetMesh(mesh_ptr);
 
@@ -148,8 +150,13 @@ int main(int argc, char** argv)
 
 		stringstream ss;
 		ss << setfill('0') << setw(digits) << to_string(n_iter);
-		string script_name = results_dir + "/p_levels_script_" + ss.str();
-		binary_refiner_ptr->ExportGnuPlot(script_name);
+		string p_levels_script_name = results_dir + "/p_levels_script_" + ss.str();
+		binary_refiner_ptr->ExportGnuPlot(p_levels_script_name);
+
+		size_t n_points = 1000;
+		double step = (x_max - x_min) / n_points;
+		string projected_fun_name = results_dir + "/projection_data_" + ss.str();
+		binary_refiner_ptr->ExportProjection(projected_fun_name, step);
 	}
 
 	string error_name	 = results_dir + "/error_data";

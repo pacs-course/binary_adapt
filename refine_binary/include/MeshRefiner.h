@@ -19,6 +19,7 @@ namespace BinaryTree
 		class MeshRefiner
 		{
 			public:
+				/* constructor */
 				MeshRefiner() : _objective_function(nullptr),
 									 _godfather(),
 									 _global_error(std::numeric_limits<double>::max()),
@@ -29,56 +30,46 @@ namespace BinaryTree
 				functor is the identifier to be passed to FunctionsFactory
 				from the resultant object will be initialized the _objective_function attribute
 */
-				void Init(std::string functor, int argc, char** argv)
-				{
-					auto& f_factory(FunctionsFactory<dim>::Instance());
-					std::unique_ptr<Functor<dim>> f_ptr = f_factory.create(functor);
-
-					Init(move(f_ptr));
-
-					DerivedInitialization(argc, argv);
-				};
+				void Init(std::string, int, char**);
 
 				virtual void LoadMesh(std::string input) = 0;
 				virtual void ExportMesh(std::string output) = 0;
 
 /*
 				It produces a gnuplot script which plots the mesh with the plevel associated to each element
-				It is available only for 1D meshes, other dim values has to be implemented
+				The string parameter is the name of the output file
+				It is available only for 1D meshes, other dim values have to be implemented
 */
 				template <std::size_t dummy = dim, typename std::enable_if< (dummy == 1), size_t>::type = 0>
 				void ExportGnuPlot(const std::string&);
 
-				/*	n_iter is the number of degrees of freedom,
+/*
+				It produces a file with the values of the interpolated function produced by the algorithm
+				The first parameter is the name of the output file, the second one the x-sampling length
+				It is available only for 1D meshes, other dim values have to be implemented
+*/
+				template <std::size_t dummy = dim, typename std::enable_if< (dummy == 1), size_t>::type = 0>
+				void ExportProjection(const std::string&, double);
+
+/*
+				As for the one parameter version, but now x values to be computed are passed to the function
+				in a file named points_file
+*/
+				//TODO
+//				template <std::size_t dummy = dim, typename std::enable_if< (dummy == 1), size_t>::type = 0>
+//				void ExportProjection(const std::string& output_filename, const std::string& points_file);
+
+				/*	n_iter is the called complexity of the algorithm,
 					which corresponds to the number of iterations of the algorithm */
 				virtual void Refine(std::size_t n_iter);
 
-				double GlobalError()
-				{
-					if (!(this->_error_updated))
-						UpdateGlobalError();
+				double GlobalError();
 
-					return this->_global_error;
-				};
+				std::vector<size_t> ExtractPLevels();
 
-				std::vector<size_t> ExtractPLevels()
-				{
-					PlevelsExtractor p_ex;
-					this->IterateActiveNodes(p_ex);
-					return p_ex.GetPLevels();
-				};
+				size_t ActiveNodesNumber();
 
-				size_t ActiveNodesNumber()
-				{
-					Counter cont;
-					this->IterateActiveNodes(cont);
-					return cont.GetCount();
-				};
-
-				const Functor<dim>& GetFunctor() const
-				{
-					return *(this->_objective_function);
-				};
+				const Functor<dim>& GetFunctor() const;
 
 			protected:
 				virtual void DerivedInitialization(int argc, char** argv) = 0;
@@ -91,7 +82,7 @@ namespace BinaryTree
 				virtual void UpdateGlobalError();
 
 				/* Iterate the activated nodes of the mesh
-					for each node n it calls the functor NodeOperator(n)
+					for each node n it calls the functor NodeOperator(n);
 					using this virtual method to navigate the mesh I'm taking advantage
 					from tha fact that the underlying mesh in concrete refiner classes
 					implements an iterator structure to iterate only active elements
@@ -103,12 +94,7 @@ namespace BinaryTree
 				virtual void InitializeGodfather() = 0;
 
 			protected:
-				void Init(std::unique_ptr<Functor<dim>> f_ptr)
-				{
-					/* I convert the unique_ptr in a shared_ptr,
-					since I need to share it with the BinaryNode elements */
-					this->_objective_function = FunctionPtr<dim>(f_ptr.release());
-				};
+				void Init(std::unique_ptr<Functor<dim>> f_ptr);
 
 			protected:
 /*
@@ -127,6 +113,26 @@ namespace BinaryTree
 */
 	template <size_t dim>
 		using MeshRefinerFactory = GenericFactory::ObjectFactory <MeshRefiner<dim>, std::string>;
+
+
+	template <std::size_t dim>
+		void MeshRefiner<dim>::Init(std::string functor, int argc, char** argv)
+		{
+			auto& f_factory(FunctionsFactory<dim>::Instance());
+			std::unique_ptr<Functor<dim>> f_ptr = f_factory.create(functor);
+
+			Init(move(f_ptr));
+
+			DerivedInitialization(argc, argv);
+		};
+
+	template <std::size_t dim>
+		void MeshRefiner<dim>::Init(std::unique_ptr<Functor<dim>> f_ptr)
+		{
+			/* I convert the unique_ptr in a shared_ptr,
+			since I need to share it with the BinaryNode elements */
+			this->_objective_function = FunctionPtr<dim>(f_ptr.release());
+		};
 
 	template <std::size_t dim>
 		void MeshRefiner<dim>::UpdateGlobalError()
@@ -223,47 +229,89 @@ namespace BinaryTree
 
 
 	template <std::size_t dim>
+		double MeshRefiner<dim>::GlobalError()
+		{
+			if (!(this->_error_updated))
+				UpdateGlobalError();
+
+			return this->_global_error;
+		};
+
+	template <std::size_t dim>
+		std::vector<size_t> MeshRefiner<dim>::ExtractPLevels()
+		{
+			PlevelsExtractor p_ex;
+			this->IterateActiveNodes(p_ex);
+			return p_ex.GetPLevels();
+		};
+
+	template <std::size_t dim>
+		size_t MeshRefiner<dim>::ActiveNodesNumber()
+		{
+			Counter cont;
+			this->IterateActiveNodes(cont);
+			return cont.GetCount();
+		};
+
+	template <std::size_t dim>
+		const Functor<dim>& MeshRefiner<dim>::GetFunctor() const
+		{
+			return *(this->_objective_function);
+		};
+
+
+	template <std::size_t dim>
 	template <std::size_t dummy, typename std::enable_if< (dummy == 1), size_t>::type>
-	void MeshRefiner<dim>::ExportGnuPlot(const std::string& script_name)
-	{
-		std::ofstream output_file(script_name);
-		output_file	<< "#It produces the plot of the plevels of the binary refined mesh" << std::endl
-				<< "#call it by typing in gnuplot the instruction:" << std::endl
-				<< "#	call \""
-				<< script_name
-				<< "\"" << std::endl;
+		void MeshRefiner<dim>::ExportGnuPlot(const std::string& script_name)
+		{
+			std::ofstream output_file(script_name);
+			output_file	<< "#It produces the plot of the plevels of the binary refined mesh" << std::endl
+					<< "#call it by typing in gnuplot the instruction:" << std::endl
+					<< "#	call \""
+					<< script_name
+					<< "\"" << std::endl;
 
-		GnuPlotPrinter printer(output_file);
-		IterateActiveNodes(printer);
+			GnuPlotPrinter printer(output_file);
+			IterateActiveNodes(printer);
 
-		double x_min = printer.XMin();
-		double x_max = printer.XMax();
-		size_t p_max = printer.PMax();
+			double x_min = printer.XMin();
+			double x_max = printer.XMax();
+			size_t p_max = printer.PMax();
 
-		output_file << "set xrange [" << x_min << ":" << x_max << "]" << std::endl
-						<< "set yrange [-1:" << p_max + 1 << "]" << std::endl
-						<< "set xlabel \"x\" font \"Helvetica, 20\"" << std::endl
-						<< "set samples 1000" << std::endl
-						<< "set xtics nomirror" << std::endl
-						<< "set x2tics (";
+			output_file << "set xrange [" << x_min << ":" << x_max << "]" << std::endl
+							<< "set yrange [-1:" << p_max + 1 << "]" << std::endl
+							<< "set xlabel \"x\" font \"Helvetica, 20\"" << std::endl
+							<< "set samples 1000" << std::endl
+							<< "set xtics nomirror" << std::endl
+							<< "set x2tics (";
 
-		auto x_left_vec = printer.XLeftVec();
-		for (auto& val : x_left_vec)
-			output_file << "\"\" " << val << ", \\" << std::endl;
+			auto x_left_vec = printer.XLeftVec();
+			for (auto& val : x_left_vec)
+				output_file << "\"\" " << val << ", \\" << std::endl;
 
-		output_file << "\"\" " << x_max << ")" << std::endl
-						<< "set grid noxtics noytics x2tics" << std::endl
-						<< "set tics font \"Helvetica,16\"" << std::endl
-						<< "set key font \",20\"" << std::endl
-						<< "plot ";
+			output_file << "\"\" " << x_max << ")" << std::endl
+							<< "set grid noxtics noytics x2tics" << std::endl
+							<< "set tics font \"Helvetica,16\"" << std::endl
+							<< "set key font \",20\"" << std::endl
+							<< "plot ";
 
-		size_t i = 0;
-		Counter c;
-		IterateActiveNodes(c);
-		for (; i < c.GetCount() - 1; ++i)
-			output_file << "p_" << i << "(x) lw 6, \\" << std::endl;
-		output_file << "p_" << i << "(x)" << "lw 6" << std::endl;
-	};
+			size_t i = 0;
+			Counter c;
+			IterateActiveNodes(c);
+			for (; i < c.GetCount() - 1; ++i)
+				output_file << "p_" << i << "(x) lw 6, \\" << std::endl;
+			output_file << "p_" << i << "(x)" << "lw 6" << std::endl;
+		};
+
+	template <std::size_t dim>
+	template <std::size_t dummy, typename std::enable_if< (dummy == 1), size_t>::type>
+		void MeshRefiner<dim>::ExportProjection(const std::string& output_filename, double x_step)
+		{
+			std::ofstream output_file(output_filename);
+			output_file	<< "# Interpolation data for function: " << this->_objective_function->Formula() << std::endl;
+			ProjectionPrinter printer(output_file, x_step);
+			IterateActiveNodes(printer);
+		};
 
 } //namespace BinaryTree
 #endif //__MESH_REFINER_H

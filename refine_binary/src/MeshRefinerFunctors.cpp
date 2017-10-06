@@ -112,4 +112,17 @@ namespace BinaryTree
 		return this->_x_left_vec;
 	};
 
+	ProjectionPrinter::ProjectionPrinter(ofstream& output_file, double x_step) :	_output_file(output_file),
+																											_x_step(x_step)
+	{}
+
+	void ProjectionPrinter::operator() (DimensionedNode<1>* node)
+	{
+		auto nodes = node->Nodes();
+
+		double x_left = nodes[0];
+		double x_right = nodes[1];
+		for (; x_left < x_right; x_left+=this->_x_step)
+			this->_output_file << x_left << "	" << node->Projection(x_left) << endl;
+	};
 } //namespace BinaryTree

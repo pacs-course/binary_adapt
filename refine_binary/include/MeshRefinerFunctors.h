@@ -77,5 +77,15 @@ namespace BinaryTree
 			size_t _cont;
 	};
 
+	class ProjectionPrinter : public DimOperator<1>
+	{
+		public:
+			ProjectionPrinter(std::ofstream&, double);
+			~ProjectionPrinter(){};
+			virtual void operator() (DimensionedNode<1>*) override;
+		protected:
+			std::ofstream& _output_file;
+			double _x_step;
+	};
 } //namespace BinaryTree
 #endif //__MESH_REFINER_FUNCTORS_H
