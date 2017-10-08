@@ -28,11 +28,11 @@ namespace MyFunctions
 	};
 	string HalfStep::Formula()const
 	{
-		return "I(0.5, +inf)";
+		return "(x > 0.5)";
 	};
 	string HalfStep::ID()const
 	{
-		return "half_step";
+		return "half_0";
 	};
 
 	double HalfX::operator() (const Geometry::Point<1>& p) const
@@ -45,28 +45,28 @@ namespace MyFunctions
 	};
 	string HalfX::Formula()const
 	{
-		return "x * I(0.5, +inf)";
+		return "x * (x > 0.5)";
 	};
 	string HalfX::ID()const
 	{
-		return "half_x";
+		return "half_1";
 	};
 
 	double HalfSquare::operator() (const Geometry::Point<1>& p) const
 	{
 		double val = p[0];
-		if (val >= 0.5)
+		if (val > 0.5)
 			return val*val;
 		
 		return 0.0;
 	};
 	string HalfSquare::Formula()const
 	{
-		return "x^2 * I(0.5, +inf)";
+		return "x^2 * (x > 0.5)";
 	};
 	string HalfSquare::ID()const
 	{
-		return "half_square";
+		return "half_2";
 	};
 
 	double HalfTwenty::operator() (const Geometry::Point<1>& p) const
@@ -79,11 +79,11 @@ namespace MyFunctions
 	};
 	string HalfTwenty::Formula()const
 	{
-		return "x^20 * I(0.5, +inf)";
+		return "x^20 * (x > 0.5)";
 	};
 	string HalfTwenty::ID()const
 	{
-		return "half_twenty";
+		return "half_20";
 	};
 
 	double HalfSqrt::operator() (const Geometry::Point<1>& p) const
@@ -95,7 +95,7 @@ namespace MyFunctions
 	};
 	string HalfSqrt::Formula()const
 	{
-		return "sqrt(x) * I(0.5, +inf)";
+		return "sqrt(x) * (x > 0.5)";
 	};
 	string HalfSqrt::ID()const
 	{
@@ -112,7 +112,7 @@ namespace MyFunctions
 	};
 	std::string X2PlusY2::ID()const
 	{
-		return "x_squared_plus_y_squared";
+		return "x_2_plus_y_2";
 	};
 
 } //namespace MyFunctions

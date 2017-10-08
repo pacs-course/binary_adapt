@@ -16,23 +16,22 @@ namespace FiniteElements
 			public:
 				StdFIperCube()
 				{
+#ifdef DESTRUCTOR_ALERT
+					clog << "Costruisco StdFIperCube" << endl;
+#endif //DESTRUCTOR_ALERT
 					_std_geometry = HelperFunctions::Builders<Geometry::StdIperCube<dim>>::BuildSingleton ();
 
 					auto& basis_factory (GenericFactory::BasisFactory<dim>::Instance());
 					_basis = move(basis_factory.create(FeType));
 
 					//add here other stuff the constructor is expected to do
-#ifdef DESTRUCTOR_ALERT
-					cerr << "Costruisco StdFIperCube" << endl;
-#endif //DESTRUCTOR_ALERT
 				};
 
 			public:
 				virtual ~StdFIperCube()
 				{
-					//TODO
 #ifdef DESTRUCTOR_ALERT
-					cerr << "Distruggo StdFIperCube" << endl;
+					clog << "Distruggo StdFIperCube" << endl;
 #endif //DESTRUCTOR_ALERT
 				};
 
@@ -97,11 +96,11 @@ namespace FiniteElements
 			public:
 				virtual ~StdFElement()
 				{
-					//TODO
 #ifdef DESTRUCTOR_ALERT
-				cout << "Distruggo StdFElement" << endl;
+					clog << "Distruggo StdFElement" << endl;
 #endif //DESTRUCTOR_ALERT
 				};
+
 				virtual BasisType GetFeType()const
 				{
 					return FeType;
@@ -110,20 +109,12 @@ namespace FiniteElements
 				//TODO: optimize storing already evaluated points
 				virtual double EvaluateBasisFunction (size_t ind, const Geometry::Point<dim>& point)const
 				{
-					double result = this->_std_cube->EvaluateBasisFunction(ind, MapBackward(point));
-//					double temp = sqrt(abs(this->_ipercube_map->EvaluateJacobian(point)));
-//					result /= temp;
-					return result;
+					return this->_std_cube->EvaluateBasisFunction(ind, MapBackward(point));
 				};
 
 				virtual vector<double> EvaluateBasis (size_t degree, const Geometry::Point<dim>& point)const
 				{
-					auto result = this->_std_cube->EvaluateBasis(degree, MapBackward(point));
-//					double temp = sqrt(abs(this->_ipercube_map->EvaluateJacobian(point)));
-//					for (auto iter : result)
-//						iter /= temp;
-
-					return result;
+					return this->_std_cube->EvaluateBasis(degree, MapBackward(point));
 				};
 
 

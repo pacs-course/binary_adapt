@@ -105,7 +105,7 @@ namespace MyFunctions
 				};
 				virtual std::string ID()const override	
 				{
-					return "x_exp_beta<" + std::to_string(exp) + ">";
+					return "x_" + std::to_string(exp);
 				};
 		};
 
@@ -125,7 +125,7 @@ namespace MyFunctions
 				};
 				virtual std::string ID()const override
 				{
-					return "advection_diffusion_solution<" + std::to_string(b_mu) + ">";
+					return "adv_diff_" + std::to_string(b_mu);
 				};
 		};
 

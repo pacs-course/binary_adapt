@@ -1,4 +1,5 @@
 clear all
+close all
 clc
 filename = 'error_data'
 delimiterIn = '\t';
@@ -6,11 +7,12 @@ headerlinesIn = 1;
 A = importdata(filename,delimiterIn,headerlinesIn);
 figure;
 errors = A.data(:,2);
-semilogy(A.data(:,1), errors, 'linewidth', 2);
-xlabel ('# iterations');
-ylabel ('L^{2} error');
-title ('Error vs Complexity');
+semilogy(A.data(:,1), errors, 'linewidth', 3);
+xlabel ('# iterations', 'Fontsize', 22);
+ylabel ('L^{2} error', 'Fontsize', 22);
+title ('Error vs Complexity', 'Fontsize', 28);
 ylim([1E-16 1])
+set(gca, 'Fontsize', 18)
 
 [garbage, expr] = strtok(A.textdata, ' ');
 temp = strcat('@(x)', expr);
@@ -18,7 +20,7 @@ temp_2 = cell2mat(strrep(temp, '^', '.^'));
 temp_3 = strrep(temp_2, '*', '.*');
 f = str2func(temp_3);
 
-iter = 10;
+iter = 49;
 
 s_iter = int2str(iter);
 if iter<10
@@ -36,15 +38,18 @@ y = y(I);
 err = errors(iter + 1);
 
 figure;
-plot(x, f(x), 'linewidth', 2);
-xlabel ('x');
-ylabel ('f(x)');
-title ('Analitic function');
+plot(x, f(x), 'linewidth', 3);
+xlabel ('x', 'Fontsize', 22);
+ylabel ('f(x)', 'Fontsize', 22);
+title ('Analitic function', 'Fontsize', 28);
+set(gca, 'Fontsize', 18)
 
 figure;
 plot(x, f(x), 'linewidth', 2);
 hold on;
-plot(x, y, 'linewidth', 2);
-xlabel ('x');
-legend('f(x)', 'f_{p} (x)')
-title(  {strcat('Complexity: ', int2str(iter)); strcat('Error = ', num2str(err))});
+plot(x, y, 'o' ,'linewidth', 2);
+xlabel ('x', 'Fontsize', 22);
+lgd=legend('f(x)', 'f_{p} (x)')
+lgd.FontSize = 16
+title(  {strcat('Complexity: ', int2str(iter)); strcat('Error = ', num2str(err))}, 'Fontsize', 28);
+set(gca, 'Fontsize', 18)

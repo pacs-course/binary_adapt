@@ -126,7 +126,6 @@ TEST_F(LibmeshTest, GeneralIntegration)
 	clog << "GeneralIntegration ended" << endl << endl;
 };
 
-#ifdef TRY_IT
 
 TEST_F(LibmeshTest, BinaryElementsConstruction)
 {
@@ -206,7 +205,7 @@ TEST_F(LibmeshTest, IntervalProjectionTest)
 		size_t i = 0;
 		for (; i + k <= order; ++i)
 		{
-			double I = f_el.L2prod	(
+			double I = f_el.L2Prod	(
 												[&](const Point<1>& p){ return f_el.EvaluateBasisFunction(i, p);},
 												[&](const Point<1>& p){ return f_el.EvaluateBasisFunction(k, p);}
 											);
@@ -234,11 +233,10 @@ TEST_F(LibmeshTest, IntervalProjectionTest)
 	clog << "Checking the basis normality on the (0, 1) interval :" << endl;
 	for (size_t i(0); i < order/2; ++i)
 	{
-		double I = f_el.L2prod	(
-											[&](const Point<1>& p){ return f_el.EvaluateBasisFunction(i, p);},
+		double I = f_el.L2Norm	(
 											[&](const Point<1>& p){ return f_el.EvaluateBasisFunction(i, p);}
 										);
-		I *= (static_cast<double>(i) + 0.5);
+		I *= I * (static_cast<double>(i) + 0.5);
 		auto err = abs(I - 1);
 
 		string s1 = "Legendre function #"
@@ -274,6 +272,8 @@ TEST_F(LibmeshTest, IntervalProjectionTest)
 	clog << "IntervalProjectionTest ended" << endl << endl;
 }
 
+#ifdef TRY_IT
+
 TEST_F(LibmeshTest, SquareProjectionTest)
 {
 	clog << endl << "Starting SquareProjectionTest" << endl;
@@ -306,7 +306,7 @@ TEST_F(LibmeshTest, SquareProjectionTest)
 	for (size_t k(0); k < iteration_end; ++k)
 		for (size_t i = 0; i + k <= iteration_end; ++i)
 		{
-			double I = f_el2.L2prod	(
+			double I = f_el2.L2Prod	(
 												[&](const Point<2>& p){ return f_el2.EvaluateBasisFunction(i, p);},
 												[&](const Point<2>& p){ return f_el2.EvaluateBasisFunction(k, p);}
 											);
@@ -340,7 +340,7 @@ TEST_F(LibmeshTest, SquareProjectionTest)
 
 	for (size_t i(0); i < iteration_end; ++i)
 	{
-		double I = f_el2.L2prod	(
+		double I = f_el2.L2Prod	(
 											[&](const Point<2>& p){ return f_el2.EvaluateBasisFunction(i, p);},
 											[&](const Point<2>& p){ return f_el2.EvaluateBasisFunction(i, p);}
 										);
@@ -370,8 +370,6 @@ TEST_F(LibmeshTest, SquareProjectionTest)
 }
 #endif //TRY_IT
 
-//#define TRY_IT
-#ifdef TRY_IT
 TEST_F(LibmeshTest, TriangleProjectionTest)
 {
 	clog << endl << "Starting TriangleProjectionTest" << endl;
@@ -385,298 +383,280 @@ TEST_F(LibmeshTest, TriangleProjectionTest)
 
 	auto& f_factory(BinaryTree::FunctionsFactory<2>::Instance());
 	unique_ptr<BinaryTree::Functor<2>> smart_ptr = f_factory.create("x_squared_plus_y_squared");
+	BinaryTree::FunctionPtr<2> f_ptr(smart_ptr.release());
 
-	auto libmesh_ptr = mesh.elem_ptr(0);
+	LibmeshBinary::BinarityMap::MakeBinary<2> (mesh_refiner, f_ptr);
+	ASSERT_TRUE(LibmeshBinary::BinarityMap::CheckBinarity(mesh)) << "After MakeBinary mesh is not binary!";
 
-	auto el = dynamic_cast<LibmeshBinary::LibmeshTriangleClass*>(libmesh_ptr);
-	ASSERT_NE(el, nullptr) << "Mesh element not recognized casting to LibmeshBinary::LibmeshSquareClass*";
-	
-	unique_ptr<LibmeshBinary::LibmeshTriangleClass> smart_el (el);
-	LibmeshBinary::FElement<2, WarpedType, LibmeshBinary::LibmeshTClass> f_el(move(smart_el));
-//	f_el.Init();
+	auto el = dynamic_cast<LibmeshBinary::BinaryTreeElement<2, WarpedType, LibmeshBinary::LibmeshTriangleClass>*> (*(mesh.elements_begin()));
+	ASSERT_NE(el, nullptr) << "Mesh element not recognized casting to LibmeshBinary::BinaryElement";
 
-//	order = f_el.QuadratureOrder();
-//	auto exactness_size = f_el.BasisSize(order);
+	const auto& f_el(el->GetFElement());
 
-//	size_t iteration_end = (exactness_size < 100) ? exactness_size : 100;
-//	clog << "Checking the basis orthogonality on the triangle co{(0,0),(1,0),(0,1)}:" << endl;
-//	for (size_t k(0); k < iteration_end; ++k)
-//		for (size_t i = 0; i + k <= iteration_end; ++i)
-//		{
-//			double I = f_el.L2prod	(
-//												[&](const Point<2>& p){ return f_el.EvaluateBasisFunction(i, p);},
-//												[&](const Point<2>& p){ return f_el.EvaluateBasisFunction(k, p);}
-//											);
+	auto order = f_el.QuadratureOrder();
+	auto exactness_size = f_el.BasisSize(order);
 
-//			if (i != k)
-//			{
-//				string s1 = "Legendre functions #"
-//							+ to_string(i)
-//							+ " and #"
-//							+ to_string(k)
-//							+ " L2 product = "
-//							+ to_string(I);
-//				string s2 = "Legendre functions #"
-//							+ to_string(i)
-//							+ " and #"
-//							+ to_string(k)
-//							+ " are not orthogonal: L2 product = "
-//							+ to_string(I);
-//				clog << s1 << endl;
-//				EXPECT_LT(I, 1E-10) << s2;
-//			}
-//		}
+	size_t iteration_end = (exactness_size < 50) ? exactness_size : 50;
+	clog << "Checking the basis orthogonality on the triangle co{(0,0),(1,0),(0,1)}:" << endl;
+#ifdef ASPETTA
+	for (size_t k(0); k < iteration_end; ++k)
+		for (size_t i = 0; i + k <= iteration_end; ++i)
+		{
+			double I = f_el.L2Prod	(
+												[&](const Point<2>& p){ return f_el.EvaluateBasisFunction(i, p);},
+												[&](const Point<2>& p){ return f_el.EvaluateBasisFunction(k, p);}
+											);
 
+			if (i != k)
+			{
+				string s1 = "Warped functions #"
+							+ to_string(i)
+							+ " and #"
+							+ to_string(k)
+							+ " L2 product = "
+							+ to_string(I);
+				string s2 = "Warped functions #"
+							+ to_string(i)
+							+ " and #"
+							+ to_string(k)
+							+ " are not orthogonal: L2 product = "
+							+ to_string(I);
+				clog << s1 << endl;
+				EXPECT_LT(I, 1E-10) << s2;
+			}
+		}
+#endif //ASPETTA
+	clog << "Projecting x^2 + y^2 on the triangle co{(0,0),(1,0),(0,1)}" << endl;
+	EXPECT_EQ(el->PLevel(), 0) << "p level not modified yet, expected zero but it values " + to_string(el->PLevel());
+	double error = el->ProjectionError();
+	clog << "Errore di interpolazione su P" << el->PLevel() << " : " << error << endl;
 
-//	clog << "Checking the basis normality on the triangle co{(0,0),(1,0),(0,1)} :" << endl;
-//	size_t normality_size = f_el2.BasisSize(order/2);
-//	iteration_end = (normality_size < 100) ? normality_size : 100;
-
-//	size_t k1 = 0, k2 = 0;
-//	size_t deg = 0;
-
-//	for (size_t i(0); i < iteration_end; ++i)
-//	{
-//		double I = f_el.L2prod	(
-//											[&](const Point<2>& p){ return f_el.EvaluateBasisFunction(i, p);},
-//											[&](const Point<2>& p){ return f_el.EvaluateBasisFunction(i, p);}
-//										);
-
-//		double K1 = (static_cast<double>(k1) + 0.5);
-//		double K2 = (static_cast<double>(k2) + 0.5);
-//		I *= K1*K2;
-
-//		auto err = abs(I - 1);
-
-//		string s1 = "Legendre function #"
-//					+ to_string(i)
-//					+ " norm = "
-//					+ to_string(I);
-//		string s2 = "Legendre function #"
-//						+ to_string(i)
-//						+ " is not normal: Integral = "
-//						+ to_string(I);
-//		clog << s1 << endl;
-//		EXPECT_LT(err, 1E-10) << s2;
-
-//		(k2 == deg) ? (k2 = 0, k1 = ++deg) : (--k1, ++k2);
-//	}
+	// quadrature exact till order - 2 since i'm doing the L2 product with x^2 + y^2
+	for (size_t p = 1; p <= order - 2; ++p)
+	{
+		el->PLevel(p);
+		EXPECT_EQ(el->PLevel(), p) << "Element p level: expected " + to_string(p) + " is " + to_string(el->PLevel());
+		error = el->ProjectionError();
+		
+		if (p >= 2) //x^2 + y^2 expected to be exactly integrated
+			EXPECT_LT(error, 1E-10) << "x^2 wrongly projected on P" + to_string(p) + " : interpolation error = " + to_string(error);
+		clog << "Errore di interpolazione su P" << el->PLevel() << " : " << error << endl;
+	}
 
 //	//TODO: add checks on values not exactly integrated
 
-//	clog << "TriangleProjectionTest ended" << endl << endl;
+	clog << "TriangleProjectionTest ended" << endl << endl;
 };
-#endif //TRY_IT
 
-//TEST_F(LibmeshTest, LibmeshRefinement)
-//{
-//	clog << endl << "Starting LibmeshRefinement" << endl;
+TEST_F(LibmeshTest, LibmeshRefinement)
+{
+	clog << endl << "Starting LibmeshRefinement" << endl;
 
-//	size_t cont = 0;
-//	int n = 1;
-//	libMesh::Mesh mesh(_mesh_init_ptr->comm());
+	size_t cont = 0;
+	int n = 1;
+	libMesh::Mesh mesh(_mesh_init_ptr->comm());
 
-//	// Build a 1D mesh with n elements from x=1 to x=2
-//	libMesh::MeshTools::Generation::build_line(mesh, n, 1., 2., LibmeshIntervalType);
-//	auto& element_ptr = *(mesh.elements_begin());
+	// Build a 1D mesh with n elements from x=1 to x=2
+	libMesh::MeshTools::Generation::build_line(mesh, n, 1., 2., LibmeshIntervalType);
+	auto& element_ptr = *(mesh.elements_begin());
 
-//	ASSERT_NE(element_ptr, nullptr) << "Mesh element pointer is null";
+	ASSERT_NE(element_ptr, nullptr) << "Mesh element pointer is null";
 
-//	LibmeshBinary::LibmeshIntervalClass* copy_element_ptr = dynamic_cast<LibmeshBinary::LibmeshIntervalClass*>(element_ptr);
-//	ASSERT_NE(copy_element_ptr, nullptr) << "Element type not recognized casting to LibmeshBinary::LibmeshIntervalClass*";
+	LibmeshBinary::LibmeshIntervalClass* copy_element_ptr = dynamic_cast<LibmeshBinary::LibmeshIntervalClass*>(element_ptr);
+	ASSERT_NE(copy_element_ptr, nullptr) << "Element type not recognized casting to LibmeshBinary::LibmeshIntervalClass*";
 
-//	//I want to call the assignment operator
-//	LibmeshBinary::LibmeshIntervalClass copy_element = *copy_element_ptr;
-//	copy_element_ptr = &copy_element;
-//	ASSERT_TRUE(copy_element_ptr->operator== (*element_ptr)) << "The two elements are different";
+	//I want to call the assignment operator
+	LibmeshBinary::LibmeshIntervalClass copy_element = *copy_element_ptr;
+	copy_element_ptr = &copy_element;
+	ASSERT_TRUE(copy_element_ptr->operator== (*element_ptr)) << "The two elements are different";
 
-//	auto el_nodes = element_ptr->get_nodes();
-//	auto copy_el_nodes = copy_element_ptr->get_nodes();
-//	EXPECT_EQ ( (*el_nodes)->norm(), (*copy_el_nodes)->norm() );
-//	
-//	EXPECT_EQ ( (*(el_nodes[0]))(0), (*(copy_el_nodes[0]))(0) );
-//	EXPECT_EQ ( (*(el_nodes[1]))(0), (*(copy_el_nodes[1]))(0) );
+	auto el_nodes = element_ptr->get_nodes();
+	auto copy_el_nodes = copy_element_ptr->get_nodes();
+	EXPECT_EQ ( (*el_nodes)->norm(), (*copy_el_nodes)->norm() );
+	
+	EXPECT_EQ ( (*(el_nodes[0]))(0), (*(copy_el_nodes[0]))(0) );
+	EXPECT_EQ ( (*(el_nodes[1]))(0), (*(copy_el_nodes[1]))(0) );
 
-//	//libmesh element has not copy constructor implement,
-//	//so the default one should copy the address of the nodes attribute in the copy
-//	EXPECT_EQ(el_nodes[0], copy_el_nodes[0]);
+	//libmesh element has not copy constructor implement,
+	//so the default one should copy the address of the nodes attribute in the copy
+	EXPECT_EQ(el_nodes[0], copy_el_nodes[0]);
 
-//#ifdef ACTIVATE_BUG
-//	//insert_elem destroys the element pointed by element_ptr since it has the same id of its copy
-//	//the destruction deletes memory pointed by copy_el_nodes
-//	mesh.insert_elem(copy_element_ptr);
-//#endif //ACTIVATE_BUG
+#ifdef ACTIVATE_BUG
+	//insert_elem destroys the element pointed by element_ptr since it has the same id of its copy
+	//the destruction deletes memory pointed by copy_el_nodes
+	mesh.insert_elem(copy_element_ptr);
+#endif //ACTIVATE_BUG
 
-////	element_ptr = copy_element_ptr;
+//	element_ptr = copy_element_ptr;
 
-//	EXPECT_TRUE (copy_element_ptr->operator== (**(mesh.elements_begin())) ) << "After the insert the element is different from the starting one";
-//	el_nodes = element_ptr->get_nodes();
-//	copy_el_nodes = mesh.elem_ptr(0)->get_nodes();	
-//	EXPECT_EQ ( (*(el_nodes[0]))(0), (*(copy_el_nodes[0]))(0) );
-//	EXPECT_EQ ( (*(el_nodes[1]))(0), (*(copy_el_nodes[1]))(0) );
+	EXPECT_TRUE (copy_element_ptr->operator== (**(mesh.elements_begin())) ) << "After the insert the element is different from the starting one";
+	el_nodes = element_ptr->get_nodes();
+	copy_el_nodes = mesh.elem_ptr(0)->get_nodes();	
+	EXPECT_EQ ( (*(el_nodes[0]))(0), (*(copy_el_nodes[0]))(0) );
+	EXPECT_EQ ( (*(el_nodes[1]))(0), (*(copy_el_nodes[1]))(0) );
 
-//	mesh.prepare_for_use(/*skip_renumber =*/ false);
+	mesh.prepare_for_use(/*skip_renumber =*/ false);
 
-//	element_ptr->set_refinement_flag(libMesh::Elem::REFINE);
+	element_ptr->set_refinement_flag(libMesh::Elem::REFINE);
 
-//	EXPECT_EQ (mesh.n_elem(), 1);
-//	EXPECT_EQ ((*mesh.elements_begin())->refinement_flag(), libMesh::Elem::REFINE);
-//	EXPECT_EQ (element_ptr, *(mesh.elements_begin()));
+	EXPECT_EQ (mesh.n_elem(), 1);
+	EXPECT_EQ ((*mesh.elements_begin())->refinement_flag(), libMesh::Elem::REFINE);
+	EXPECT_EQ (element_ptr, *(mesh.elements_begin()));
 
-//	clog << "I start one refinement iteration on the first mesh element" << endl;
-//	libMesh::MeshRefinement refiner(mesh);
-//	element_ptr->refine(refiner);
+	clog << "I start one refinement iteration on the first mesh element" << endl;
+	libMesh::MeshRefinement refiner(mesh);
+	element_ptr->refine(refiner);
 
-//	int count = mesh.n_elem();
+	int count = mesh.n_elem();
 
-//	for (auto iter = mesh.elements_begin(); iter != mesh.elements_end(); ++iter)
-//		if (!(*iter)->active())
-//			--count;
+	for (auto iter = mesh.elements_begin(); iter != mesh.elements_end(); ++iter)
+		if (!(*iter)->active())
+			--count;
 
-//	EXPECT_EQ(mesh.n_elem(), 3) << "Started from a mesh with "
-//											+ to_string(n)
-//											+ " elements; after refining one element there are "
-//											+ to_string(mesh.n_elem())
-//											+ " elements";
+	EXPECT_EQ(mesh.n_elem(), 3) << "Started from a mesh with "
+											+ to_string(n)
+											+ " elements; after refining one element there are "
+											+ to_string(mesh.n_elem())
+											+ " elements";
 
-//	EXPECT_EQ(count, 2) << "Started from a mesh with "
-//								+ to_string(n)
-//								+ " elements; after refining one element there are"
-//								+ to_string(cont) + " ACTIVE elements";
+	EXPECT_EQ(count, 2) << "Started from a mesh with "
+								+ to_string(n)
+								+ " elements; after refining one element there are"
+								+ to_string(cont) + " ACTIVE elements";
 
-//	clog << "LibmeshRefinement ended" << endl << endl;
-//};
+	clog << "LibmeshRefinement ended" << endl << endl;
+};
 
-//TEST_F(LibmeshTest, ManualBinaryRefinement)
-//{
-//	clog << endl << "Starting ManualBinaryRefinement" << endl;
+TEST_F(LibmeshTest, ManualBinaryRefinement)
+{
+	clog << endl << "Starting ManualBinaryRefinement" << endl;
 
-//	int n = 1;
-//	libMesh::Mesh mesh(_mesh_init_ptr->comm());
+	int n = 1;
+	libMesh::Mesh mesh(_mesh_init_ptr->comm());
 
-//	// Build a 1D mesh with n elements from x=1 to x=2
-//	libMesh::MeshTools::Generation::build_line(mesh, n, 1., 2., LibmeshIntervalType);
-//	libMesh::MeshRefinement refiner(mesh);
+	// Build a 1D mesh with n elements from x=1 to x=2
+	libMesh::MeshTools::Generation::build_line(mesh, n, 1., 2., LibmeshIntervalType);
+	libMesh::MeshRefinement refiner(mesh);
 
-//	auto& f_factory(BinaryTree::FunctionsFactory<1>::Instance());
-//	unique_ptr<BinaryTree::Functor<1>> smart_ptr = f_factory.create("x_squared");
-//	BinaryTree::FunctionPtr<1> f_ptr (smart_ptr.release());
+	auto& f_factory(BinaryTree::FunctionsFactory<1>::Instance());
+	unique_ptr<BinaryTree::Functor<1>> smart_ptr = f_factory.create("x_squared");
+	BinaryTree::FunctionPtr<1> f_ptr (smart_ptr.release());
 
-//#define MAKE_OPTION
-//#ifdef MAKE_OPTION
-//	LibmeshBinary::BinarityMap::MakeBinary<1>(refiner, f_ptr);
-//	LibmeshBinary::Interval* I = dynamic_cast<LibmeshBinary::Interval*>(mesh.elem(0));
-//	ASSERT_NE (I, nullptr) << "MakeBinary has not worked properly!";
+#define MAKE_OPTION
+#ifdef MAKE_OPTION
+	LibmeshBinary::BinarityMap::MakeBinary<1>(refiner, f_ptr);
+	LibmeshBinary::Interval* I = dynamic_cast<LibmeshBinary::Interval*>(mesh.elem(0));
+	ASSERT_NE (I, nullptr) << "MakeBinary has not worked properly!";
 
-//#else //MAKE_OPTION
+#else //MAKE_OPTION
 
-//	//construction ed initialization of a Binary object of type Interval
-//	auto iter = mesh.elements_begin();
-//	auto ptr = dynamic_cast<LibmeshBinary::LibmeshIntervalClass*>(*iter);
-//	ASSERT_NE(copy_element_ptr, nullptr) << "Element type not recognized casting to LibmeshBinary::LibmeshIntervalClass*";
+	//construction ed initialization of a Binary object of type Interval
+	auto iter = mesh.elements_begin();
+	auto ptr = dynamic_cast<LibmeshBinary::LibmeshIntervalClass*>(*iter);
+	ASSERT_NE(copy_element_ptr, nullptr) << "Element type not recognized casting to LibmeshBinary::LibmeshIntervalClass*";
 
-//	auto smart_ptr = unique_ptr<LibmeshBinary::LibmeshIntervalClass>(ptr);
-//	LibmeshBinary::Interval* I = new LibmeshBinary::Interval(move(smart_ptr), f_ptr, refiner);
-//	I->Init();
-//	*iter = I;
+	auto smart_ptr = unique_ptr<LibmeshBinary::LibmeshIntervalClass>(ptr);
+	LibmeshBinary::Interval* I = new LibmeshBinary::Interval(move(smart_ptr), f_ptr, refiner);
+	I->Init();
+	*iter = I;
 
-//	//to check if I have a LibmeshGeometry method as expected
-//	EXPECT_TRUE (I->active());
+	//to check if I have a LibmeshGeometry method as expected
+	EXPECT_TRUE (I->active());
 
-//#endif //MAKE_OPTION
+#endif //MAKE_OPTION
 
-//	clog << "I directly call the Interval refine method" << endl;
-//	I->Bisect();
-//	EXPECT_TRUE(LibmeshBinary::BinarityMap::CheckBinarity(mesh));
-//	EXPECT_NE(I->Left(), nullptr) << "After refinement the interval has not left child";
-//	EXPECT_NE(I->Right(), nullptr) << "After refinement the interval has not right child";
-//	
-//	auto hansel = dynamic_cast<LibmeshBinary::Interval*>(I->Left());
-//	auto gretel = dynamic_cast<LibmeshBinary::Interval*>(I->Right());
-//	ASSERT_NE(hansel, nullptr) << "Binary element not recognized casting to LibmeshBinary::Interval*";
-//	ASSERT_NE(gretel, nullptr) << "Binary element not recognized casting to LibmeshBinary::Interval*";
+	clog << "I directly call the Interval refine method" << endl;
+	I->Bisect();
+	EXPECT_TRUE(LibmeshBinary::BinarityMap::CheckBinarity(mesh));
+	EXPECT_NE(I->Left(), nullptr) << "After refinement the interval has not left child";
+	EXPECT_NE(I->Right(), nullptr) << "After refinement the interval has not right child";
+	
+	auto hansel = dynamic_cast<LibmeshBinary::Interval*>(I->Left());
+	auto gretel = dynamic_cast<LibmeshBinary::Interval*>(I->Right());
+	ASSERT_NE(hansel, nullptr) << "Binary element not recognized casting to LibmeshBinary::Interval*";
+	ASSERT_NE(gretel, nullptr) << "Binary element not recognized casting to LibmeshBinary::Interval*";
 
-//	EXPECT_TRUE(hansel->active());
-//	EXPECT_TRUE(gretel->active());	
-//	EXPECT_FALSE(I->active());	
-////	hansel->Activate();
-////	gretel->Activate();
-////	I->Deactivate();
+	EXPECT_TRUE(hansel->active());
+	EXPECT_TRUE(gretel->active());	
+	EXPECT_FALSE(I->active());	
+//	hansel->Activate();
+//	gretel->Activate();
+//	I->Deactivate();
 
-//	mesh.prepare_for_use(/*skip_renumber =*/ false);
+	mesh.prepare_for_use(/*skip_renumber =*/ false);
 
-//	size_t cont = 0;
+	size_t cont = 0;
 
-//	for (auto iter = mesh.active_elements_begin(); iter != mesh.active_elements_end(); ++iter)
-//		++cont;
+	for (auto iter = mesh.active_elements_begin(); iter != mesh.active_elements_end(); ++iter)
+		++cont;
 
-//	EXPECT_EQ(mesh.n_elem(), 3) << "Started from a mesh with "
-//											+ to_string(n)
-//											+ " elements; after refining one time one element there are "
-//											+ to_string(mesh.n_elem())
-//											+ " elements";
+	EXPECT_EQ(mesh.n_elem(), 3) << "Started from a mesh with "
+											+ to_string(n)
+											+ " elements; after refining one time one element there are "
+											+ to_string(mesh.n_elem())
+											+ " elements";
 
-//	EXPECT_EQ(cont, 2) << "Started from a mesh with "
-//								+ to_string(n)
-//								+ " elements; after one refining one time one element there are "
-//								+ to_string(cont) + " ACTIVE elements";
+	EXPECT_EQ(cont, 2) << "Started from a mesh with "
+								+ to_string(n)
+								+ " elements; after one refining one time one element there are "
+								+ to_string(cont) + " ACTIVE elements";
 
-//	clog << "ManualBinaryRefinement ended" << endl << endl;
-//};
+	clog << "ManualBinaryRefinement ended" << endl << endl;
+};
 
-////TODO, TOP PRIORITY
-//TEST_F(LibmeshTest, BinaryRefinement)
-//{
-//	clog << endl << "Starting BinaryRefinement" << endl;
+//TODO, TOP PRIORITY
+TEST_F(LibmeshTest, BinaryRefinement)
+{
+	clog << endl << "Starting BinaryRefinement" << endl;
 
-//	auto mesh_ptr = make_shared<libMesh::Mesh> (_mesh_init_ptr->comm());
+	auto mesh_ptr = make_shared<libMesh::Mesh> (_mesh_init_ptr->comm());
 
-//	int n = 2;
-//	libMesh::MeshTools::Generation::build_line(*mesh_ptr, n, 0, 1, LibmeshIntervalType);
-//	LibmeshBinary::BinaryRefiner<1> binary_refiner;
-//	binary_refiner.Init("x_squared");
-//	binary_refiner.SetMesh(mesh_ptr);
-//	EXPECT_EQ(mesh_ptr, binary_refiner.GetMesh());
+	int n = 2;
+	libMesh::MeshTools::Generation::build_line(*mesh_ptr, n, 0, 1, LibmeshIntervalType);
+	LibmeshBinary::BinaryRefiner<1> binary_refiner;
+	binary_refiner.Init("x_squared");
+	binary_refiner.SetMesh(mesh_ptr);
+	EXPECT_EQ(mesh_ptr, binary_refiner.GetMesh());
 
-//	size_t n_iter(10);
-//	clog << "Starting Binary Tree hp Refinement with " << n_iter << " degrees of freedom" << endl;
-//	binary_refiner.Refine(n_iter);
+	size_t n_iter(10);
+	clog << "Starting Binary Tree hp Refinement with " << n_iter << " degrees of freedom" << endl;
+	binary_refiner.Refine(n_iter);
 
-//	int cont = mesh_ptr->n_elem();
+	int cont = mesh_ptr->n_elem();
 
-//	for (auto iter = mesh_ptr->elements_begin(); iter != mesh_ptr->elements_end(); ++iter)
-//		if ((*iter)->refinement_flag() == libMesh::Elem::INACTIVE)
-//			--cont;
-//		else
-//			cout << "Active Element of polinomial degree : " << (*iter)->p_level() << endl;
-//	cout << "I have started from a mesh with " << n << " elements; after refinement it has " << mesh_ptr->n_elem() << " elements, " << cont << " of them are ACTIVE" << endl;
+	for (auto iter = mesh_ptr->elements_begin(); iter != mesh_ptr->elements_end(); ++iter)
+		if ((*iter)->refinement_flag() == libMesh::Elem::INACTIVE)
+			--cont;
+		else
+			cout << "Active Element of polinomial degree : " << (*iter)->p_level() << endl;
+	cout << "I have started from a mesh with " << n << " elements; after refinement it has " << mesh_ptr->n_elem() << " elements, " << cont << " of them are ACTIVE" << endl;
 
-//	cout << endl << "Now I check the same thing with the active elements iteration" << endl;
-//	cout << "The mesh has " << binary_refiner.ActiveNodesNumber() << " ACTIVE elements" << endl;
+	cout << endl << "Now I check the same thing with the active elements iteration" << endl;
+	cout << "The mesh has " << binary_refiner.ActiveNodesNumber() << " ACTIVE elements" << endl;
 
-//	vector<size_t> p_levels = binary_refiner.ExtractPLevels();
-//	cout << "Livelli di p refinement : " << endl;
-//	for (auto l : p_levels)
-//		cout << l << " ";
-//	cout << endl;
+	vector<size_t> p_levels = binary_refiner.ExtractPLevels();
+	cout << "Livelli di p refinement : " << endl;
+	for (auto l : p_levels)
+		cout << l << " ";
+	cout << endl;
 
-//	clog << "BinaryRefinement ended" << endl << endl;
-//};
+	clog << "BinaryRefinement ended" << endl << endl;
+};
 
-////TODO
-//TEST_F(LibmeshTest, IOTest)
-//{
-//	clog << endl << "Starting libMesh file IO test" << endl;
+//TODO
+TEST_F(LibmeshTest, IOTest)
+{
+	clog << endl << "Starting libMesh file IO test" << endl;
 
-//	libMesh::Mesh mesh(_mesh_init_ptr->comm());
+	libMesh::Mesh mesh(_mesh_init_ptr->comm());
 
-//	// Build a 2D square (1,2)x(1,2) mesh with nx subdivisions along x axis and ny subdivisions along y axis
-//	int nx = 1, ny = 1;
-//	libMesh::MeshTools::Generation::build_square(mesh, nx, ny, 1., 2., 1., 2., LibmeshTriangleType);
-//	mesh.write("./mesh2d.msh");
+	// Build a 2D square (1,2)x(1,2) mesh with nx subdivisions along x axis and ny subdivisions along y axis
+	int nx = 1, ny = 1;
+	libMesh::MeshTools::Generation::build_square(mesh, nx, ny, 1., 2., 1., 2., LibmeshTriangleType);
+	mesh.write("./mesh2d.msh");
 
-//	clog << "libMesh file IO test ended" << endl << endl;
-//};
+	clog << "libMesh file IO test ended" << endl << endl;
+};
 
 ////TODO: perche' il primo polinomio non integrato esattamente ha norma nulla?
 //TEST_F(LibmeshTest, FirstNotExactElement)
@@ -699,11 +679,10 @@ TEST_F(LibmeshTest, TriangleProjectionTest)
 
 //	clog << "Let's check the normality of the element #" << i << " of the basis :" << endl;
 
-//	double I = f_el.L2prod	(
-//										[&](const Point<1>& p){ return f_el.EvaluateBasisFunction(i, p);},
+//	double I = f_el.L2Norm	(
 //										[&](const Point<1>& p){ return f_el.EvaluateBasisFunction(i, p);}
 //									);
-//	I *= i + 0.5;
+//	I *= I * (i + 0.5);
 //	//TODO: do something on this value
 //	clog << "Integral: " << I << endl;
 

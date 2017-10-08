@@ -44,7 +44,7 @@ namespace LibmeshBinary
 				virtual ~BinaryTreeElement()
 				{
 #ifdef DESTRUCTOR_ALERT
-					cerr << "Distruggo BinaryTreeElement" << endl;
+					clog << "Distruggo BinaryTreeElement" << endl;
 #endif //DESTRUCTOR_ALERT
 				};
 
@@ -70,16 +70,24 @@ namespace LibmeshBinary
 				virtual size_t NodeID() override
 				{
 #ifdef VERBOSE
-					cerr << "Nodes : ";
+					cout << "Nodes : ";
 					auto nodes = this->get_nodes();
 					auto length = this->n_nodes();
-					for (size_t i(0); i < length; ++i)
+					size_t i(0);
+					while (i < length-1)
 					{
 						auto current_ptr = nodes[i];
-						for (size_t j(0); j < dim; ++j)
-							cerr << (*current_ptr)(j) << "	";
+						size_t j(0);
+						while (j < dim - 1)
+							cout << (*current_ptr)(j++) << ",";
+						cout << (*current_ptr)(j) << "	";
+						++i;
 					}
-					cerr << endl;
+					auto current_ptr = nodes[i];
+					size_t j(0);
+					while (j < dim - 1)
+						cout << (*current_ptr)(j++) << ",";
+					cout << (*current_ptr)(j) << endl;
 #endif //VERBOSE
 					return static_cast<size_t>(this->id());
 				};
@@ -87,7 +95,7 @@ namespace LibmeshBinary
 				virtual void Bisect() override
 				{
 #ifdef MYDEBUG
-					cerr << "Sono in BinElement::refine" << endl;
+					clog << "Sono in BinElement::refine" << endl;
 #endif //MYDEBUG
 					/* First I check that the derived class which implements the refine makes two children */
 					if (this->n_children() != 2)
@@ -97,25 +105,25 @@ namespace LibmeshBinary
 
 					libMesh::Elem::refine(this->_mesh_refinement);
 #ifdef MYDEBUG
-					cerr << "Effettuata la Elem::refine" << endl;
-					cerr << "L'indirizzo del primo figlio e' : " << this->child(0) << endl;
-					cerr << "L'indirizzo del secondo figlio e' : " << this->child(1) << endl;
+					clog << "Effettuata la Elem::refine" << endl;
+					clog << "L'indirizzo del primo figlio e' : " << this->child(0) << endl;
+					clog << "L'indirizzo del secondo figlio e' : " << this->child(1) << endl;
 #endif //MYDEBUG
 					//TODO: optimize this step, it recomputes all the mesh elements, not only the two new children
 					BinarityMap::MakeBinary<dim>(this->_mesh_refinement, this->_f);
 #ifdef MYDEBUG
-					cerr << "Binarizzati i nuovi elementi" << endl;
-					cerr << "L'indirizzo del primo figlio e' : " << this->child(0) << endl;
-					cerr << "L'indirizzo del secondo figlio e' : " << this->child(1) << endl;
-					cerr << "Visti come BinaryNode*" << endl;
-					cerr << "L'indirizzo del primo figlio e' : " << Left() << endl;
-					cerr << "L'indirizzo del secondo figlio e' : " << Right() << endl;
+					clog << "Binarizzati i nuovi elementi" << endl;
+					clog << "L'indirizzo del primo figlio e' : " << this->child(0) << endl;
+					clog << "L'indirizzo del secondo figlio e' : " << this->child(1) << endl;
+					clog << "Visti come BinaryNode*" << endl;
+					clog << "L'indirizzo del primo figlio e' : " << Left() << endl;
+					clog << "L'indirizzo del secondo figlio e' : " << Right() << endl;
 					auto& mesh(_mesh_refinement.get_mesh());
 					int cont = mesh.n_elem();
 					for (auto iter = mesh.elements_begin(); iter != mesh.elements_end(); ++iter)
 						if ((*iter)->refinement_flag() == libMesh::Elem::INACTIVE)
 							--cont;
-					std::cerr << "After refinement mesh has " << mesh.n_elem() << " elements, " << cont << " of them are ACTIVE" << endl;
+					clog << "After refinement mesh has " << mesh.n_elem() << " elements, " << cont << " of them are ACTIVE" << endl;
 #endif //MYDEBUG
 				};
 

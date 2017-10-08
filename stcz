@@ -1,0 +1,3287 @@
+[3;J[H[2Jmake --directory=interpolating_functions init
+make[1]: Entering directory '/home/soblinsky/Projects/PacsProject/interpolating_functions'
+make[1]: Leaving directory '/home/soblinsky/Projects/PacsProject/interpolating_functions'
+make -j4 --directory=interpolating_functions 
+make[1]: Entering directory '/home/soblinsky/Projects/PacsProject/interpolating_functions'
+make[1]: Leaving directory '/home/soblinsky/Projects/PacsProject/interpolating_functions'
+make --directory=library_bridges/mesh_bridge init
+make[1]: Entering directory '/home/soblinsky/Projects/PacsProject/library_bridges/mesh_bridge'
+make[1]: Leaving directory '/home/soblinsky/Projects/PacsProject/library_bridges/mesh_bridge'
+make -j4 --directory=library_bridges/mesh_bridge 
+make[1]: Entering directory '/home/soblinsky/Projects/PacsProject/library_bridges/mesh_bridge'
+make[1]: Leaving directory '/home/soblinsky/Projects/PacsProject/library_bridges/mesh_bridge'
+make --directory=plugin_loader init
+make[1]: Entering directory '/home/soblinsky/Projects/PacsProject/plugin_loader'
+make[1]: Leaving directory '/home/soblinsky/Projects/PacsProject/plugin_loader'
+make -j4 --directory=plugin_loader 
+make[1]: Entering directory '/home/soblinsky/Projects/PacsProject/plugin_loader'
+make[1]: Leaving directory '/home/soblinsky/Projects/PacsProject/plugin_loader'
+make --directory=quadrature_rules/mesh_quadrature init
+make[1]: Entering directory '/home/soblinsky/Projects/PacsProject/quadrature_rules/mesh_quadrature'
+make[1]: Leaving directory '/home/soblinsky/Projects/PacsProject/quadrature_rules/mesh_quadrature'
+make -j4 --directory=quadrature_rules/mesh_quadrature 
+make[1]: Entering directory '/home/soblinsky/Projects/PacsProject/quadrature_rules/mesh_quadrature'
+make[1]: Leaving directory '/home/soblinsky/Projects/PacsProject/quadrature_rules/mesh_quadrature'
+make --directory=quadrature_rules/sandia_quadrature init
+make[1]: Entering directory '/home/soblinsky/Projects/PacsProject/quadrature_rules/sandia_quadrature'
+make[1]: Leaving directory '/home/soblinsky/Projects/PacsProject/quadrature_rules/sandia_quadrature'
+make -j4 --directory=quadrature_rules/sandia_quadrature 
+make[1]: Entering directory '/home/soblinsky/Projects/PacsProject/quadrature_rules/sandia_quadrature'
+make[1]: Leaving directory '/home/soblinsky/Projects/PacsProject/quadrature_rules/sandia_quadrature'
+make --directory=refine_binary init
+make[1]: Entering directory '/home/soblinsky/Projects/PacsProject/refine_binary'
+make[1]: Leaving directory '/home/soblinsky/Projects/PacsProject/refine_binary'
+make -j4 --directory=refine_binary 
+make[1]: Entering directory '/home/soblinsky/Projects/PacsProject/refine_binary'
+make[1]: Leaving directory '/home/soblinsky/Projects/PacsProject/refine_binary'
+make --directory=example/example1 init
+make[1]: Entering directory '/home/soblinsky/Projects/PacsProject/example/example1'
+make[1]: Leaving directory '/home/soblinsky/Projects/PacsProject/example/example1'
+make -j4 --directory=example/example1 
+make[1]: Entering directory '/home/soblinsky/Projects/PacsProject/example/example1'
+make[1]: Leaving directory '/home/soblinsky/Projects/PacsProject/example/example1'
+make --directory=example/example2 init
+make[1]: Entering directory '/home/soblinsky/Projects/PacsProject/example/example2'
+make[1]: Leaving directory '/home/soblinsky/Projects/PacsProject/example/example2'
+make -j4 --directory=example/example2 
+make[1]: Entering directory '/home/soblinsky/Projects/PacsProject/example/example2'
+make[1]: Leaving directory '/home/soblinsky/Projects/PacsProject/example/example2'
+make --directory=test init
+make[1]: Entering directory '/home/soblinsky/Projects/PacsProject/test'
+make[1]: Leaving directory '/home/soblinsky/Projects/PacsProject/test'
+make -j4 --directory=test 
+make[1]: Entering directory '/home/soblinsky/Projects/PacsProject/test'
+make[1]: Leaving directory '/home/soblinsky/Projects/PacsProject/test'
+
+Starting 1D refining complete example
+PluginLoader costruito
+Il file da caricare e': libinterpolating_functions.so
+Added plugin : libsandia_quadrature.so
+Added plugin : libinterpolating_functions.so
+Plugins loaded
+Starting the algorithm with 40 iterations
+Refiner correctly initialized with mu_parser_expr
+
+
+Complexity : 0
+WARNING: OneDEvaluation method in LegendreBasis is deprecated because of inefficiency
+Livelli di p refinement : 
+0 
+Elemento attivo di:
+Nodes : 0	1	
+#id : 0
+p level : 0
+e = 0.108401
+E = 0.108401
+e~ = 0.108401
+q = 0.108401
+E~ = 0.108401
+
+The mesh has 1 ACTIVE elements
+
+Interpolation error after refinement: 0.108401
+Elemento attivo di:
+Nodes : 0	1	
+#id : 0
+p level : 0
+e = 0.108401
+E = 0.108401
+e~ = 0.108401
+q = 0.108401
+E~ = 0.108401
+
+
+
+Complexity : 1
+Livelli di p refinement : 
+1 
+Elemento attivo di:
+Nodes : 0	1	
+#id : 0
+p level : 1
+e = 0.100658
+E = 0.100658
+e~ = 0.108401
+q = 0.0521931
+E~ = 0.0521931
+
+The mesh has 1 ACTIVE elements
+
+Interpolation error after refinement: 0.100658
+Elemento attivo di:
+Nodes : 0	1	
+#id : 0
+p level : 1
+e = 0.100658
+E = 0.100658
+e~ = 0.108401
+q = 0.0521931
+E~ = 0.0521931
+
+
+
+Complexity : 2
+Livelli di p refinement : 
+2 
+Elemento attivo di:
+Nodes : 0	1	
+#id : 0
+p level : 2
+e = 0.0889537
+E = 0.0889537
+e~ = 0.108401
+q = 0.0328932
+E~ = 0.0328932
+
+The mesh has 1 ACTIVE elements
+
+Interpolation error after refinement: 0.0889537
+Elemento attivo di:
+Nodes : 0	1	
+#id : 0
+p level : 2
+e = 0.0889537
+E = 0.0889537
+e~ = 0.108401
+q = 0.0328932
+E~ = 0.0328932
+
+
+
+Complexity : 3
+Deactivating element with 
+Nodes : 0	1	
+#id : 0
+p level : 3
+e = 0.074802
+E = 0.0704905
+e~ 0.108401
+q = 0.0224277
+E~ = 0.0224277
+
+Livelli di p refinement : 
+0 2 
+Elemento attivo di:
+Nodes : 0	0.5	
+#id : 1
+p level : 0
+e = 6.97138e-14
+E = 6.97138e-14
+e~ = 6.97138e-14
+q = 6.97138e-14
+E~ = 6.97138e-14
+
+Elemento attivo di:
+Nodes : 0.5	1	
+#id : 2
+p level : 2
+e = 0.0704905
+E = 0.0704905
+e~ = 0.0534966
+q = 0.0227794
+E~ = 0.0227794
+
+The mesh has 2 ACTIVE elements
+
+Interpolation error after refinement: 0.0704905
+Elemento attivo di:
+Nodes : 0	0.5	
+#id : 1
+p level : 0
+e = 6.97138e-14
+E = 6.97138e-14
+e~ = 6.97138e-14
+q = 6.97138e-14
+E~ = 6.97138e-14
+
+Elemento attivo di:
+Nodes : 0.5	1	
+#id : 2
+p level : 2
+e = 0.0704905
+E = 0.0704905
+e~ = 0.0534966
+q = 0.0227794
+E~ = 0.0227794
+
+
+
+Complexity : 4
+Deactivating element with 
+Nodes : 0.5	1	
+#id : 2
+p level : 3
+e = 0.0495504
+E = 0.0434077
+e~ 0.0534966
+q = 0.0149395
+E~ = 0.0149395
+
+Deactivating element with 
+Nodes : 0	1	
+#id : 0
+p level : 4
+e = 0.0598416
+E = 0.0434077
+e~ 0.108401
+q = 0.0147874
+E~ = 0.0147874
+
+Livelli di p refinement : 
+0 0 2 
+Elemento attivo di:
+Nodes : 0	0.5	
+#id : 1
+p level : 0
+e = 6.97138e-14
+E = 6.97138e-14
+e~ = 6.97138e-14
+q = 6.97138e-14
+E~ = 6.97138e-14
+
+Elemento attivo di:
+Nodes : 0.5	0.75	
+#id : 3
+p level : 0
+e = 8.95023e-07
+E = 8.95023e-07
+e~ = 8.95008e-07
+q = 8.95008e-07
+E~ = 8.95008e-07
+
+Elemento attivo di:
+Nodes : 0.75	1	
+#id : 4
+p level : 2
+e = 0.0434068
+E = 0.0434068
+e~ = 0.0348314
+q = 0.0152673
+E~ = 0.0152673
+
+The mesh has 3 ACTIVE elements
+
+Interpolation error after refinement: 0.0434077
+Elemento attivo di:
+Nodes : 0	0.5	
+#id : 1
+p level : 0
+e = 6.97138e-14
+E = 6.97138e-14
+e~ = 6.97138e-14
+q = 6.97138e-14
+E~ = 6.97138e-14
+
+Elemento attivo di:
+Nodes : 0.5	0.75	
+#id : 3
+p level : 0
+e = 8.95023e-07
+E = 8.95023e-07
+e~ = 8.95008e-07
+q = 8.95008e-07
+E~ = 8.95008e-07
+
+Elemento attivo di:
+Nodes : 0.75	1	
+#id : 4
+p level : 2
+e = 0.0434068
+E = 0.0434068
+e~ = 0.0348314
+q = 0.0152673
+E~ = 0.0152673
+
+
+
+Complexity : 5
+Deactivating element with 
+Nodes : 0.75	1	
+#id : 4
+p level : 3
+e = 0.0215225
+E = 0.0173405
+e~ 0.0348314
+q = 0.00811901
+E~ = 0.00811901
+
+Deactivating element with 
+Nodes : 0.5	1	
+#id : 2
+p level : 4
+e = 0.031549
+E = 0.0173414
+e~ 0.0534966
+q = 0.00802554
+E~ = 0.00802554
+
+Deactivating element with 
+Nodes : 0	1	
+#id : 0
+p level : 5
+e = 0.0455316
+E = 0.0173414
+e~ 0.108401
+q = 0.00798145
+E~ = 0.00798145
+
+Livelli di p refinement : 
+0 0 0 2 
+Elemento attivo di:
+Nodes : 0	0.5	
+#id : 1
+p level : 0
+e = 6.97138e-14
+E = 6.97138e-14
+e~ = 6.97138e-14
+q = 6.97138e-14
+E~ = 6.97138e-14
+
+Elemento attivo di:
+Nodes : 0.5	0.75	
+#id : 3
+p level : 0
+e = 8.95023e-07
+E = 8.95023e-07
+e~ = 8.95008e-07
+q = 8.95008e-07
+E~ = 8.95008e-07
+
+Elemento attivo di:
+Nodes : 0.75	0.875	
+#id : 5
+p level : 0
+e = 0.000405638
+E = 0.000405638
+e~ = 0.000400968
+q = 0.000400968
+E~ = 0.000400968
+
+Elemento attivo di:
+Nodes : 0.875	1	
+#id : 6
+p level : 2
+e = 0.0169349
+E = 0.0169349
+e~ = 0.0248999
+q = 0.00824629
+E~ = 0.00824629
+
+The mesh has 4 ACTIVE elements
+
+Interpolation error after refinement: 0.0173414
+Elemento attivo di:
+Nodes : 0	0.5	
+#id : 1
+p level : 0
+e = 6.97138e-14
+E = 6.97138e-14
+e~ = 6.97138e-14
+q = 6.97138e-14
+E~ = 6.97138e-14
+
+Elemento attivo di:
+Nodes : 0.5	0.75	
+#id : 3
+p level : 0
+e = 8.95023e-07
+E = 8.95023e-07
+e~ = 8.95008e-07
+q = 8.95008e-07
+E~ = 8.95008e-07
+
+Elemento attivo di:
+Nodes : 0.75	0.875	
+#id : 5
+p level : 0
+e = 0.000405638
+E = 0.000405638
+e~ = 0.000400968
+q = 0.000400968
+E~ = 0.000400968
+
+Elemento attivo di:
+Nodes : 0.875	1	
+#id : 6
+p level : 2
+e = 0.0169349
+E = 0.0169349
+e~ = 0.0248999
+q = 0.00824629
+E~ = 0.00824629
+
+
+
+Complexity : 6
+Deactivating element with 
+Nodes : 0.75	1	
+#id : 4
+p level : 4
+e = 0.00898721
+E = 0.0052428
+e~ 0.0348314
+q = 0.00304878
+E~ = 0.00318567
+
+Deactivating element with 
+Nodes : 0.5	1	
+#id : 2
+p level : 5
+e = 0.0182158
+E = 0.00524369
+e~ 0.0534966
+q = 0.00304878
+E~ = 0.00317151
+
+Deactivating element with 
+Nodes : 0	1	
+#id : 0
+p level : 6
+e = 0.0329378
+E = 0.00524369
+e~ 0.108401
+q = 0.00304878
+E~ = 0.0031646
+
+Livelli di p refinement : 
+0 0 0 3 
+Elemento attivo di:
+Nodes : 0	0.5	
+#id : 1
+p level : 0
+e = 6.97138e-14
+E = 6.97138e-14
+e~ = 6.97138e-14
+q = 6.97138e-14
+E~ = 6.97138e-14
+
+Elemento attivo di:
+Nodes : 0.5	0.75	
+#id : 3
+p level : 0
+e = 8.95023e-07
+E = 8.95023e-07
+e~ = 8.95008e-07
+q = 8.95008e-07
+E~ = 8.95008e-07
+
+Elemento attivo di:
+Nodes : 0.75	0.875	
+#id : 5
+p level : 0
+e = 0.000405638
+E = 0.000405638
+e~ = 0.000400968
+q = 0.000400968
+E~ = 0.000400968
+
+Elemento attivo di:
+Nodes : 0.875	1	
+#id : 6
+p level : 3
+e = 0.00483716
+E = 0.00483716
+e~ = 0.0248999
+q = 0.00304878
+E~ = 0.00304878
+
+The mesh has 4 ACTIVE elements
+
+Interpolation error after refinement: 0.00524369
+Elemento attivo di:
+Nodes : 0	0.5	
+#id : 1
+p level : 0
+e = 6.97138e-14
+E = 6.97138e-14
+e~ = 6.97138e-14
+q = 6.97138e-14
+E~ = 6.97138e-14
+
+Elemento attivo di:
+Nodes : 0.5	0.75	
+#id : 3
+p level : 0
+e = 8.95023e-07
+E = 8.95023e-07
+e~ = 8.95008e-07
+q = 8.95008e-07
+E~ = 8.95008e-07
+
+Elemento attivo di:
+Nodes : 0.75	0.875	
+#id : 5
+p level : 0
+e = 0.000405638
+E = 0.000405638
+e~ = 0.000400968
+q = 0.000400968
+E~ = 0.000400968
+
+Elemento attivo di:
+Nodes : 0.875	1	
+#id : 6
+p level : 3
+e = 0.00483716
+E = 0.00483716
+e~ = 0.0248999
+q = 0.00304878
+E~ = 0.00304878
+
+
+
+Complexity : 7
+Deactivating element with 
+Nodes : 0.75	1	
+#id : 4
+p level : 5
+e = 0.00320086
+E = 0.0015078
+e~ 0.0348314
+q = 0.000809516
+E~ = 0.00102341
+
+Deactivating element with 
+Nodes : 0.5	1	
+#id : 2
+p level : 6
+e = 0.00954953
+E = 0.0015087
+e~ 0.0534966
+q = 0.000809516
+E~ = 0.00102236
+
+Deactivating element with 
+Nodes : 0	1	
+#id : 0
+p level : 7
+e = 0.0226447
+E = 0.0015087
+e~ 0.108401
+q = 0.000809516
+E~ = 0.00102164
+
+Livelli di p refinement : 
+0 0 0 4 
+Elemento attivo di:
+Nodes : 0	0.5	
+#id : 1
+p level : 0
+e = 6.97138e-14
+E = 6.97138e-14
+e~ = 6.97138e-14
+q = 6.97138e-14
+E~ = 6.97138e-14
+
+Elemento attivo di:
+Nodes : 0.5	0.75	
+#id : 3
+p level : 0
+e = 8.95023e-07
+E = 8.95023e-07
+e~ = 8.95008e-07
+q = 8.95008e-07
+E~ = 8.95008e-07
+
+Elemento attivo di:
+Nodes : 0.75	0.875	
+#id : 5
+p level : 0
+e = 0.000405638
+E = 0.000405638
+e~ = 0.000400968
+q = 0.000400968
+E~ = 0.000400968
+
+Elemento attivo di:
+Nodes : 0.875	1	
+#id : 6
+p level : 4
+e = 0.00110216
+E = 0.00110216
+e~ = 0.0248999
+q = 0.000809516
+E~ = 0.000809516
+
+The mesh has 4 ACTIVE elements
+
+Interpolation error after refinement: 0.0015087
+Elemento attivo di:
+Nodes : 0	0.5	
+#id : 1
+p level : 0
+e = 6.97138e-14
+E = 6.97138e-14
+e~ = 6.97138e-14
+q = 6.97138e-14
+E~ = 6.97138e-14
+
+Elemento attivo di:
+Nodes : 0.5	0.75	
+#id : 3
+p level : 0
+e = 8.95023e-07
+E = 8.95023e-07
+e~ = 8.95008e-07
+q = 8.95008e-07
+E~ = 8.95008e-07
+
+Elemento attivo di:
+Nodes : 0.75	0.875	
+#id : 5
+p level : 0
+e = 0.000405638
+E = 0.000405638
+e~ = 0.000400968
+q = 0.000400968
+E~ = 0.000400968
+
+Elemento attivo di:
+Nodes : 0.875	1	
+#id : 6
+p level : 4
+e = 0.00110216
+E = 0.00110216
+e~ = 0.0248999
+q = 0.000809516
+E~ = 0.000809516
+
+
+
+Complexity : 8
+Deactivating element with 
+Nodes : 0.75	1	
+#id : 4
+p level : 6
+e = 0.000983271
+E = 0.000612083
+e~ 0.0348314
+q = 0.000383012
+E~ = 0.000383012
+
+Deactivating element with 
+Nodes : 0.5	1	
+#id : 2
+p level : 7
+e = 0.00455155
+E = 0.000612978
+e~ 0.0534966
+q = 0.000383012
+E~ = 0.000383214
+
+Deactivating element with 
+Nodes : 0	1	
+#id : 0
+p level : 8
+e = 0.0147884
+E = 0.000612978
+e~ 0.108401
+q = 0.000383012
+E~ = 0.000383113
+
+Livelli di p refinement : 
+0 0 0 5 
+Elemento attivo di:
+Nodes : 0	0.5	
+#id : 1
+p level : 0
+e = 6.97138e-14
+E = 6.97138e-14
+e~ = 6.97138e-14
+q = 6.97138e-14
+E~ = 6.97138e-14
+
+Elemento attivo di:
+Nodes : 0.5	0.75	
+#id : 3
+p level : 0
+e = 8.95023e-07
+E = 8.95023e-07
+e~ = 8.95008e-07
+q = 8.95008e-07
+E~ = 8.95008e-07
+
+Elemento attivo di:
+Nodes : 0.75	0.875	
+#id : 5
+p level : 0
+e = 0.000405638
+E = 0.000405638
+e~ = 0.000400968
+q = 0.000400968
+E~ = 0.000400968
+
+Elemento attivo di:
+Nodes : 0.875	1	
+#id : 6
+p level : 5
+e = 0.000206446
+E = 0.000206446
+e~ = 0.0248999
+q = 0.000164495
+E~ = 0.000164495
+
+The mesh has 4 ACTIVE elements
+
+Interpolation error after refinement: 0.000612978
+Elemento attivo di:
+Nodes : 0	0.5	
+#id : 1
+p level : 0
+e = 6.97138e-14
+E = 6.97138e-14
+e~ = 6.97138e-14
+q = 6.97138e-14
+E~ = 6.97138e-14
+
+Elemento attivo di:
+Nodes : 0.5	0.75	
+#id : 3
+p level : 0
+e = 8.95023e-07
+E = 8.95023e-07
+e~ = 8.95008e-07
+q = 8.95008e-07
+E~ = 8.95008e-07
+
+Elemento attivo di:
+Nodes : 0.75	0.875	
+#id : 5
+p level : 0
+e = 0.000405638
+E = 0.000405638
+e~ = 0.000400968
+q = 0.000400968
+E~ = 0.000400968
+
+Elemento attivo di:
+Nodes : 0.875	1	
+#id : 6
+p level : 5
+e = 0.000206446
+E = 0.000206446
+e~ = 0.0248999
+q = 0.000164495
+E~ = 0.000164495
+
+
+
+Complexity : 9
+Deactivating element with 
+Nodes : 0.5	1	
+#id : 2
+p level : 8
+e = 0.00197492
+E = 0.000263936
+e~ 0.0534966
+q = 0.000155943
+E~ = 0.000156291
+
+Deactivating element with 
+Nodes : 0	1	
+#id : 0
+p level : 9
+e = 0.0091688
+E = 0.000263936
+e~ 0.108401
+q = 0.000155943
+E~ = 0.000156274
+
+Livelli di p refinement : 
+0 0 7 
+Elemento attivo di:
+Nodes : 0	0.5	
+#id : 1
+p level : 0
+e = 6.97138e-14
+E = 6.97138e-14
+e~ = 6.97138e-14
+q = 6.97138e-14
+E~ = 6.97138e-14
+
+Elemento attivo di:
+Nodes : 0.5	0.75	
+#id : 3
+p level : 0
+e = 8.95023e-07
+E = 8.95023e-07
+e~ = 8.95008e-07
+q = 8.95008e-07
+E~ = 8.95008e-07
+
+Elemento attivo di:
+Nodes : 0.75	1	
+#id : 4
+p level : 7
+e = 0.000263041
+E = 0.000263041
+e~ = 0.0348314
+q = 0.000155943
+E~ = 0.000155943
+
+The mesh has 3 ACTIVE elements
+
+Interpolation error after refinement: 0.000263936
+Elemento attivo di:
+Nodes : 0	0.5	
+#id : 1
+p level : 0
+e = 6.97138e-14
+E = 6.97138e-14
+e~ = 6.97138e-14
+q = 6.97138e-14
+E~ = 6.97138e-14
+
+Elemento attivo di:
+Nodes : 0.5	0.75	
+#id : 3
+p level : 0
+e = 8.95023e-07
+E = 8.95023e-07
+e~ = 8.95008e-07
+q = 8.95008e-07
+E~ = 8.95008e-07
+
+Elemento attivo di:
+Nodes : 0.75	1	
+#id : 4
+p level : 7
+e = 0.000263041
+E = 0.000263041
+e~ = 0.0348314
+q = 0.000155943
+E~ = 0.000155943
+
+
+
+Complexity : 10
+Deactivating element with 
+Nodes : 0.5	1	
+#id : 2
+p level : 9
+e = 0.000781091
+E = 6.26782e-05
+e~ 0.0534966
+q = 4.42513e-05
+E~ = 4.47371e-05
+
+Deactivating element with 
+Nodes : 0	1	
+#id : 0
+p level : 10
+e = 0.00539341
+E = 6.26782e-05
+e~ 0.108401
+q = 4.42513e-05
+E~ = 4.47357e-05
+
+Livelli di p refinement : 
+0 0 8 
+Elemento attivo di:
+Nodes : 0	0.5	
+#id : 1
+p level : 0
+e = 6.97138e-14
+E = 6.97138e-14
+e~ = 6.97138e-14
+q = 6.97138e-14
+E~ = 6.97138e-14
+
+Elemento attivo di:
+Nodes : 0.5	0.75	
+#id : 3
+p level : 0
+e = 8.95023e-07
+E = 8.95023e-07
+e~ = 8.95008e-07
+q = 8.95008e-07
+E~ = 8.95008e-07
+
+Elemento attivo di:
+Nodes : 0.75	1	
+#id : 4
+p level : 8
+e = 6.17832e-05
+E = 6.17832e-05
+e~ = 0.0348314
+q = 4.42513e-05
+E~ = 4.42513e-05
+
+The mesh has 3 ACTIVE elements
+
+Interpolation error after refinement: 6.26782e-05
+Elemento attivo di:
+Nodes : 0	0.5	
+#id : 1
+p level : 0
+e = 6.97138e-14
+E = 6.97138e-14
+e~ = 6.97138e-14
+q = 6.97138e-14
+E~ = 6.97138e-14
+
+Elemento attivo di:
+Nodes : 0.5	0.75	
+#id : 3
+p level : 0
+e = 8.95023e-07
+E = 8.95023e-07
+e~ = 8.95008e-07
+q = 8.95008e-07
+E~ = 8.95008e-07
+
+Elemento attivo di:
+Nodes : 0.75	1	
+#id : 4
+p level : 8
+e = 6.17832e-05
+E = 6.17832e-05
+e~ = 0.0348314
+q = 4.42513e-05
+E~ = 4.42513e-05
+
+
+
+Complexity : 11
+Deactivating element with 
+Nodes : 0.5	1	
+#id : 2
+p level : 10
+e = 0.000281919
+E = 1.37249e-05
+e~ 0.0534966
+q = 9.94617e-06
+E~ = 1.05028e-05
+
+Deactivating element with 
+Nodes : 0	1	
+#id : 0
+p level : 11
+e = 0.00300787
+E = 1.37249e-05
+e~ 0.108401
+q = 9.94617e-06
+E~ = 1.05027e-05
+
+Livelli di p refinement : 
+0 0 9 
+Elemento attivo di:
+Nodes : 0	0.5	
+#id : 1
+p level : 0
+e = 6.97138e-14
+E = 6.97138e-14
+e~ = 6.97138e-14
+q = 6.97138e-14
+E~ = 6.97138e-14
+
+Elemento attivo di:
+Nodes : 0.5	0.75	
+#id : 3
+p level : 0
+e = 8.95023e-07
+E = 8.95023e-07
+e~ = 8.95008e-07
+q = 8.95008e-07
+E~ = 8.95008e-07
+
+Elemento attivo di:
+Nodes : 0.75	1	
+#id : 4
+p level : 9
+e = 1.28299e-05
+E = 1.28299e-05
+e~ = 0.0348314
+q = 9.94617e-06
+E~ = 9.94617e-06
+
+The mesh has 3 ACTIVE elements
+
+Interpolation error after refinement: 1.37249e-05
+Elemento attivo di:
+Nodes : 0	0.5	
+#id : 1
+p level : 0
+e = 6.97138e-14
+E = 6.97138e-14
+e~ = 6.97138e-14
+q = 6.97138e-14
+E~ = 6.97138e-14
+
+Elemento attivo di:
+Nodes : 0.5	0.75	
+#id : 3
+p level : 0
+e = 8.95023e-07
+E = 8.95023e-07
+e~ = 8.95008e-07
+q = 8.95008e-07
+E~ = 8.95008e-07
+
+Elemento attivo di:
+Nodes : 0.75	1	
+#id : 4
+p level : 9
+e = 1.28299e-05
+E = 1.28299e-05
+e~ = 0.0348314
+q = 9.94617e-06
+E~ = 9.94617e-06
+
+
+
+Complexity : 12
+Deactivating element with 
+Nodes : 0.5	1	
+#id : 2
+p level : 11
+e = 9.29559e-05
+E = 3.2643e-06
+e~ 0.0534966
+q = 1.91347e-06
+E~ = 2.4903e-06
+
+Deactivating element with 
+Nodes : 0	1	
+#id : 0
+p level : 12
+e = 0.00158906
+E = 3.2643e-06
+e~ 0.108401
+q = 1.91347e-06
+E~ = 2.4903e-06
+
+Livelli di p refinement : 
+0 0 10 
+Elemento attivo di:
+Nodes : 0	0.5	
+#id : 1
+p level : 0
+e = 6.97138e-14
+E = 6.97138e-14
+e~ = 6.97138e-14
+q = 6.97138e-14
+E~ = 6.97138e-14
+
+Elemento attivo di:
+Nodes : 0.5	0.75	
+#id : 3
+p level : 0
+e = 8.95023e-07
+E = 8.95023e-07
+e~ = 8.95008e-07
+q = 8.95008e-07
+E~ = 8.95008e-07
+
+Elemento attivo di:
+Nodes : 0.75	1	
+#id : 4
+p level : 10
+e = 2.36928e-06
+E = 2.36928e-06
+e~ = 0.0348314
+q = 1.91347e-06
+E~ = 1.91347e-06
+
+The mesh has 3 ACTIVE elements
+
+Interpolation error after refinement: 3.2643e-06
+Elemento attivo di:
+Nodes : 0	0.5	
+#id : 1
+p level : 0
+e = 6.97138e-14
+E = 6.97138e-14
+e~ = 6.97138e-14
+q = 6.97138e-14
+E~ = 6.97138e-14
+
+Elemento attivo di:
+Nodes : 0.5	0.75	
+#id : 3
+p level : 0
+e = 8.95023e-07
+E = 8.95023e-07
+e~ = 8.95008e-07
+q = 8.95008e-07
+E~ = 8.95008e-07
+
+Elemento attivo di:
+Nodes : 0.75	1	
+#id : 4
+p level : 10
+e = 2.36928e-06
+E = 2.36928e-06
+e~ = 0.0348314
+q = 1.91347e-06
+E~ = 1.91347e-06
+
+
+
+Complexity : 13
+Deactivating element with 
+Nodes : 0.5	1	
+#id : 2
+p level : 12
+e = 2.80258e-05
+E = 1.28602e-06
+e~ 0.0534966
+q = 8.48068e-07
+E~ = 8.48068e-07
+
+Deactivating element with 
+Nodes : 0	1	
+#id : 0
+p level : 13
+e = 0.000794531
+E = 1.28602e-06
+e~ 0.108401
+q = 8.48068e-07
+E~ = 8.48068e-07
+
+Livelli di p refinement : 
+0 0 11 
+Elemento attivo di:
+Nodes : 0	0.5	
+#id : 1
+p level : 0
+e = 6.97138e-14
+E = 6.97138e-14
+e~ = 6.97138e-14
+q = 6.97138e-14
+E~ = 6.97138e-14
+
+Elemento attivo di:
+Nodes : 0.5	0.75	
+#id : 3
+p level : 0
+e = 8.95023e-07
+E = 8.95023e-07
+e~ = 8.95008e-07
+q = 8.95008e-07
+E~ = 8.95008e-07
+
+Elemento attivo di:
+Nodes : 0.75	1	
+#id : 4
+p level : 11
+e = 3.90997e-07
+E = 3.90997e-07
+e~ = 0.0348314
+q = 3.24657e-07
+E~ = 3.24657e-07
+
+The mesh has 3 ACTIVE elements
+
+Interpolation error after refinement: 1.28602e-06
+Elemento attivo di:
+Nodes : 0	0.5	
+#id : 1
+p level : 0
+e = 6.97138e-14
+E = 6.97138e-14
+e~ = 6.97138e-14
+q = 6.97138e-14
+E~ = 6.97138e-14
+
+Elemento attivo di:
+Nodes : 0.5	0.75	
+#id : 3
+p level : 0
+e = 8.95023e-07
+E = 8.95023e-07
+e~ = 8.95008e-07
+q = 8.95008e-07
+E~ = 8.95008e-07
+
+Elemento attivo di:
+Nodes : 0.75	1	
+#id : 4
+p level : 11
+e = 3.90997e-07
+E = 3.90997e-07
+e~ = 0.0348314
+q = 3.24657e-07
+E~ = 3.24657e-07
+
+
+
+Complexity : 14
+Deactivating element with 
+Nodes : 0.5	1	
+#id : 2
+p level : 13
+e = 7.73199e-06
+E = 1.10001e-06
+e~ 0.0534966
+q = 3.95615e-07
+E~ = 4.78875e-07
+
+Deactivating element with 
+Nodes : 0	1	
+#id : 0
+p level : 14
+e = 0.000375596
+E = 1.10001e-06
+e~ 0.108401
+q = 3.95615e-07
+E~ = 4.78874e-07
+
+Livelli di p refinement : 
+0 1 11 
+Elemento attivo di:
+Nodes : 0	0.5	
+#id : 1
+p level : 0
+e = 6.97138e-14
+E = 6.97138e-14
+e~ = 6.97138e-14
+q = 6.97138e-14
+E~ = 6.97138e-14
+
+Elemento attivo di:
+Nodes : 0.5	0.75	
+#id : 3
+p level : 1
+e = 7.09016e-07
+E = 7.09016e-07
+e~ = 8.95008e-07
+q = 3.95615e-07
+E~ = 3.95615e-07
+
+Elemento attivo di:
+Nodes : 0.75	1	
+#id : 4
+p level : 11
+e = 3.90997e-07
+E = 3.90997e-07
+e~ = 0.0348314
+q = 3.24657e-07
+E~ = 3.24657e-07
+
+The mesh has 3 ACTIVE elements
+
+Interpolation error after refinement: 1.10001e-06
+Elemento attivo di:
+Nodes : 0	0.5	
+#id : 1
+p level : 0
+e = 6.97138e-14
+E = 6.97138e-14
+e~ = 6.97138e-14
+q = 6.97138e-14
+E~ = 6.97138e-14
+
+Elemento attivo di:
+Nodes : 0.5	0.75	
+#id : 3
+p level : 1
+e = 7.09016e-07
+E = 7.09016e-07
+e~ = 8.95008e-07
+q = 3.95615e-07
+E~ = 3.95615e-07
+
+Elemento attivo di:
+Nodes : 0.75	1	
+#id : 4
+p level : 11
+e = 3.90997e-07
+E = 3.90997e-07
+e~ = 0.0348314
+q = 3.24657e-07
+E~ = 3.24657e-07
+
+
+
+Complexity : 15
+Deactivating element with 
+Nodes : 0.5	1	
+#id : 2
+p level : 14
+e = 1.95311e-06
+E = 8.73716e-07
+e~ 0.0534966
+q = 3.09333e-07
+E~ = 3.09333e-07
+
+Deactivating element with 
+Nodes : 0	1	
+#id : 0
+p level : 15
+e = 0.000167677
+E = 8.73716e-07
+e~ 0.108401
+q = 3.09333e-07
+E~ = 3.09333e-07
+
+Livelli di p refinement : 
+0 2 11 
+Elemento attivo di:
+Nodes : 0	0.5	
+#id : 1
+p level : 0
+e = 6.97138e-14
+E = 6.97138e-14
+e~ = 6.97138e-14
+q = 6.97138e-14
+E~ = 6.97138e-14
+
+Elemento attivo di:
+Nodes : 0.5	0.75	
+#id : 3
+p level : 2
+e = 4.82719e-07
+E = 4.82719e-07
+e~ = 8.95008e-07
+q = 2.17424e-07
+E~ = 2.17424e-07
+
+Elemento attivo di:
+Nodes : 0.75	1	
+#id : 4
+p level : 11
+e = 3.90997e-07
+E = 3.90997e-07
+e~ = 0.0348314
+q = 3.24657e-07
+E~ = 3.24657e-07
+
+The mesh has 3 ACTIVE elements
+
+Interpolation error after refinement: 8.73716e-07
+Elemento attivo di:
+Nodes : 0	0.5	
+#id : 1
+p level : 0
+e = 6.97138e-14
+E = 6.97138e-14
+e~ = 6.97138e-14
+q = 6.97138e-14
+E~ = 6.97138e-14
+
+Elemento attivo di:
+Nodes : 0.5	0.75	
+#id : 3
+p level : 2
+e = 4.82719e-07
+E = 4.82719e-07
+e~ = 8.95008e-07
+q = 2.17424e-07
+E~ = 2.17424e-07
+
+Elemento attivo di:
+Nodes : 0.75	1	
+#id : 4
+p level : 11
+e = 3.90997e-07
+E = 3.90997e-07
+e~ = 0.0348314
+q = 3.24657e-07
+E~ = 3.24657e-07
+
+
+
+Complexity : 16
+Deactivating element with 
+Nodes : 0	1	
+#id : 0
+p level : 16
+e = 7.06008e-05
+E = 4.51881e-07
+e~ 0.108401
+q = 1.8363e-07
+E~ = 1.8363e-07
+
+Livelli di p refinement : 
+0 15 
+Elemento attivo di:
+Nodes : 0	0.5	
+#id : 1
+p level : 0
+e = 6.97138e-14
+E = 6.97138e-14
+e~ = 6.97138e-14
+q = 6.97138e-14
+E~ = 6.97138e-14
+
+Elemento attivo di:
+Nodes : 0.5	1	
+#id : 2
+p level : 15
+e = 4.51881e-07
+E = 4.51881e-07
+e~ = 0.0534966
+q = 1.8363e-07
+E~ = 1.8363e-07
+
+The mesh has 2 ACTIVE elements
+
+Interpolation error after refinement: 4.51881e-07
+Elemento attivo di:
+Nodes : 0	0.5	
+#id : 1
+p level : 0
+e = 6.97138e-14
+E = 6.97138e-14
+e~ = 6.97138e-14
+q = 6.97138e-14
+E~ = 6.97138e-14
+
+Elemento attivo di:
+Nodes : 0.5	1	
+#id : 2
+p level : 15
+e = 4.51881e-07
+E = 4.51881e-07
+e~ = 0.0534966
+q = 1.8363e-07
+E~ = 1.8363e-07
+
+
+
+Complexity : 17
+Deactivating element with 
+Nodes : 0	1	
+#id : 0
+p level : 17
+e = 2.79969e-05
+E = 9.57764e-08
+e~ 0.108401
+q = 6.29456e-08
+E~ = 6.29457e-08
+
+Livelli di p refinement : 
+0 16 
+Elemento attivo di:
+Nodes : 0	0.5	
+#id : 1
+p level : 0
+e = 6.97138e-14
+E = 6.97138e-14
+e~ = 6.97138e-14
+q = 6.97138e-14
+E~ = 6.97138e-14
+
+Elemento attivo di:
+Nodes : 0.5	1	
+#id : 2
+p level : 16
+e = 9.57763e-08
+E = 9.57763e-08
+e~ = 0.0534966
+q = 6.29456e-08
+E~ = 6.29456e-08
+
+The mesh has 2 ACTIVE elements
+
+Interpolation error after refinement: 9.57764e-08
+Elemento attivo di:
+Nodes : 0	0.5	
+#id : 1
+p level : 0
+e = 6.97138e-14
+E = 6.97138e-14
+e~ = 6.97138e-14
+q = 6.97138e-14
+E~ = 6.97138e-14
+
+Elemento attivo di:
+Nodes : 0.5	1	
+#id : 2
+p level : 16
+e = 9.57763e-08
+E = 9.57763e-08
+e~ = 0.0534966
+q = 6.29456e-08
+E~ = 6.29456e-08
+
+
+
+Complexity : 18
+Deactivating element with 
+Nodes : 0	1	
+#id : 0
+p level : 18
+e = 1.04395e-05
+E = 1.85953e-08
+e~ 0.108401
+q = 1.43546e-08
+E~ = 1.43547e-08
+
+Livelli di p refinement : 
+0 17 
+Elemento attivo di:
+Nodes : 0	0.5	
+#id : 1
+p level : 0
+e = 6.97138e-14
+E = 6.97138e-14
+e~ = 6.97138e-14
+q = 6.97138e-14
+E~ = 6.97138e-14
+
+Elemento attivo di:
+Nodes : 0.5	1	
+#id : 2
+p level : 17
+e = 1.85952e-08
+E = 1.85952e-08
+e~ = 0.0534966
+q = 1.43546e-08
+E~ = 1.43546e-08
+
+The mesh has 2 ACTIVE elements
+
+Interpolation error after refinement: 1.85953e-08
+Elemento attivo di:
+Nodes : 0	0.5	
+#id : 1
+p level : 0
+e = 6.97138e-14
+E = 6.97138e-14
+e~ = 6.97138e-14
+q = 6.97138e-14
+E~ = 6.97138e-14
+
+Elemento attivo di:
+Nodes : 0.5	1	
+#id : 2
+p level : 17
+e = 1.85952e-08
+E = 1.85952e-08
+e~ = 0.0534966
+q = 1.43546e-08
+E~ = 1.43546e-08
+
+
+
+Complexity : 19
+Deactivating element with 
+Nodes : 0	1	
+#id : 0
+p level : 19
+e = 3.65383e-06
+E = 3.30621e-09
+e~ 0.108401
+q = 2.68722e-09
+E~ = 2.68727e-09
+
+Livelli di p refinement : 
+0 18 
+Elemento attivo di:
+Nodes : 0	0.5	
+#id : 1
+p level : 0
+e = 6.97138e-14
+E = 6.97138e-14
+e~ = 6.97138e-14
+q = 6.97138e-14
+E~ = 6.97138e-14
+
+Elemento attivo di:
+Nodes : 0.5	1	
+#id : 2
+p level : 18
+e = 3.30614e-09
+E = 3.30614e-09
+e~ = 0.0534966
+q = 2.68722e-09
+E~ = 2.68722e-09
+
+The mesh has 2 ACTIVE elements
+
+Interpolation error after refinement: 3.30621e-09
+Elemento attivo di:
+Nodes : 0	0.5	
+#id : 1
+p level : 0
+e = 6.97138e-14
+E = 6.97138e-14
+e~ = 6.97138e-14
+q = 6.97138e-14
+E~ = 6.97138e-14
+
+Elemento attivo di:
+Nodes : 0.5	1	
+#id : 2
+p level : 18
+e = 3.30614e-09
+E = 3.30614e-09
+e~ = 0.0534966
+q = 2.68722e-09
+E~ = 2.68722e-09
+
+
+
+Complexity : 20
+Deactivating element with 
+Nodes : 0	1	
+#id : 0
+p level : 20
+e = 1.19798e-06
+E = 5.38063e-10
+e~ 0.108401
+q = 4.48251e-10
+E~ = 4.48301e-10
+
+Livelli di p refinement : 
+0 19 
+Elemento attivo di:
+Nodes : 0	0.5	
+#id : 1
+p level : 0
+e = 6.97138e-14
+E = 6.97138e-14
+e~ = 6.97138e-14
+q = 6.97138e-14
+E~ = 6.97138e-14
+
+Elemento attivo di:
+Nodes : 0.5	1	
+#id : 2
+p level : 19
+e = 5.37993e-10
+E = 5.37993e-10
+e~ = 0.0534966
+q = 4.48251e-10
+E~ = 4.48251e-10
+
+The mesh has 2 ACTIVE elements
+
+Interpolation error after refinement: 5.38063e-10
+Elemento attivo di:
+Nodes : 0	0.5	
+#id : 1
+p level : 0
+e = 6.97138e-14
+E = 6.97138e-14
+e~ = 6.97138e-14
+q = 6.97138e-14
+E~ = 6.97138e-14
+
+Elemento attivo di:
+Nodes : 0.5	1	
+#id : 2
+p level : 19
+e = 5.37993e-10
+E = 5.37993e-10
+e~ = 0.0534966
+q = 4.48251e-10
+E~ = 4.48251e-10
+
+
+
+Complexity : 21
+Deactivating element with 
+Nodes : 0	1	
+#id : 0
+p level : 21
+e = 3.67122e-07
+E = 8.01269e-11
+e~ 0.108401
+q = 6.79257e-11
+E~ = 6.7977e-11
+
+Livelli di p refinement : 
+0 20 
+Elemento attivo di:
+Nodes : 0	0.5	
+#id : 1
+p level : 0
+e = 6.97138e-14
+E = 6.97138e-14
+e~ = 6.97138e-14
+q = 6.97138e-14
+E~ = 6.97138e-14
+
+Elemento attivo di:
+Nodes : 0.5	1	
+#id : 2
+p level : 20
+e = 8.00571e-11
+E = 8.00571e-11
+e~ = 0.0534966
+q = 6.79257e-11
+E~ = 6.79257e-11
+
+The mesh has 2 ACTIVE elements
+
+Interpolation error after refinement: 8.01269e-11
+Elemento attivo di:
+Nodes : 0	0.5	
+#id : 1
+p level : 0
+e = 6.97138e-14
+E = 6.97138e-14
+e~ = 6.97138e-14
+q = 6.97138e-14
+E~ = 6.97138e-14
+
+Elemento attivo di:
+Nodes : 0.5	1	
+#id : 2
+p level : 20
+e = 8.00571e-11
+E = 8.00571e-11
+e~ = 0.0534966
+q = 6.79257e-11
+E~ = 6.79257e-11
+
+
+
+Complexity : 22
+Deactivating element with 
+Nodes : 0	1	
+#id : 0
+p level : 22
+e = 1.04892e-07
+E = 1.09513e-11
+e~ 0.108401
+q = 9.37905e-12
+E~ = 9.43179e-12
+
+Livelli di p refinement : 
+0 21 
+Elemento attivo di:
+Nodes : 0	0.5	
+#id : 1
+p level : 0
+e = 6.97138e-14
+E = 6.97138e-14
+e~ = 6.97138e-14
+q = 6.97138e-14
+E~ = 6.97138e-14
+
+Elemento attivo di:
+Nodes : 0.5	1	
+#id : 2
+p level : 21
+e = 1.08816e-11
+E = 1.08816e-11
+e~ = 0.0534966
+q = 9.37905e-12
+E~ = 9.37905e-12
+
+The mesh has 2 ACTIVE elements
+
+Interpolation error after refinement: 1.09513e-11
+Elemento attivo di:
+Nodes : 0	0.5	
+#id : 1
+p level : 0
+e = 6.97138e-14
+E = 6.97138e-14
+e~ = 6.97138e-14
+q = 6.97138e-14
+E~ = 6.97138e-14
+
+Elemento attivo di:
+Nodes : 0.5	1	
+#id : 2
+p level : 21
+e = 1.08816e-11
+E = 1.08816e-11
+e~ = 0.0534966
+q = 9.37905e-12
+E~ = 9.37905e-12
+
+
+
+Complexity : 23
+Deactivating element with 
+Nodes : 0	1	
+#id : 0
+p level : 23
+e = 2.78619e-08
+E = 1.41868e-12
+e~ 0.108401
+q = 1.17934e-12
+E~ = 1.23319e-12
+
+Livelli di p refinement : 
+0 22 
+Elemento attivo di:
+Nodes : 0	0.5	
+#id : 1
+p level : 0
+e = 6.97138e-14
+E = 6.97138e-14
+e~ = 6.97138e-14
+q = 6.97138e-14
+E~ = 6.97138e-14
+
+Elemento attivo di:
+Nodes : 0.5	1	
+#id : 2
+p level : 22
+e = 1.34896e-12
+E = 1.34896e-12
+e~ = 0.0534966
+q = 1.17934e-12
+E~ = 1.17934e-12
+
+The mesh has 2 ACTIVE elements
+
+Interpolation error after refinement: 1.41868e-12
+Elemento attivo di:
+Nodes : 0	0.5	
+#id : 1
+p level : 0
+e = 6.97138e-14
+E = 6.97138e-14
+e~ = 6.97138e-14
+q = 6.97138e-14
+E~ = 6.97138e-14
+
+Elemento attivo di:
+Nodes : 0.5	1	
+#id : 2
+p level : 22
+e = 1.34896e-12
+E = 1.34896e-12
+e~ = 0.0534966
+q = 1.17934e-12
+E~ = 1.17934e-12
+
+
+
+Complexity : 24
+Deactivating element with 
+Nodes : 0	1	
+#id : 0
+p level : 24
+e = 6.85832e-09
+E = 2.21972e-13
+e~ 0.108401
+q = 1.34849e-13
+E~ = 1.88112e-13
+
+Livelli di p refinement : 
+0 23 
+Elemento attivo di:
+Nodes : 0	0.5	
+#id : 1
+p level : 0
+e = 6.97138e-14
+E = 6.97138e-14
+e~ = 6.97138e-14
+q = 6.97138e-14
+E~ = 6.97138e-14
+
+Elemento attivo di:
+Nodes : 0.5	1	
+#id : 2
+p level : 23
+e = 1.52258e-13
+E = 1.52258e-13
+e~ = 0.0534966
+q = 1.34849e-13
+E~ = 1.34849e-13
+
+The mesh has 2 ACTIVE elements
+
+Interpolation error after refinement: 2.21972e-13
+Elemento attivo di:
+Nodes : 0	0.5	
+#id : 1
+p level : 0
+e = 6.97138e-14
+E = 6.97138e-14
+e~ = 6.97138e-14
+q = 6.97138e-14
+E~ = 6.97138e-14
+
+Elemento attivo di:
+Nodes : 0.5	1	
+#id : 2
+p level : 23
+e = 1.52258e-13
+E = 1.52258e-13
+e~ = 0.0534966
+q = 1.34849e-13
+E~ = 1.34849e-13
+
+
+
+Complexity : 25
+Deactivating element with 
+Nodes : 0	1	
+#id : 0
+p level : 25
+e = 1.55871e-09
+E = 8.56909e-14
+e~ 0.108401
+q = 5.88726e-14
+E~ = 5.88726e-14
+
+Livelli di p refinement : 
+0 24 
+Elemento attivo di:
+Nodes : 0	0.5	
+#id : 1
+p level : 0
+e = 6.97138e-14
+E = 6.97138e-14
+e~ = 6.97138e-14
+q = 6.97138e-14
+E~ = 6.97138e-14
+
+Elemento attivo di:
+Nodes : 0.5	1	
+#id : 2
+p level : 24
+e = 1.59771e-14
+E = 1.59771e-14
+e~ = 0.0534966
+q = 1.42846e-14
+E~ = 1.42846e-14
+
+The mesh has 2 ACTIVE elements
+
+Interpolation error after refinement: 8.56909e-14
+Elemento attivo di:
+Nodes : 0	0.5	
+#id : 1
+p level : 0
+e = 6.97138e-14
+E = 6.97138e-14
+e~ = 6.97138e-14
+q = 6.97138e-14
+E~ = 6.97138e-14
+
+Elemento attivo di:
+Nodes : 0.5	1	
+#id : 2
+p level : 24
+e = 1.59771e-14
+E = 1.59771e-14
+e~ = 0.0534966
+q = 1.42846e-14
+E~ = 1.42846e-14
+
+
+
+Complexity : 26
+Deactivating element with 
+Nodes : 0	1	
+#id : 0
+p level : 26
+e = 3.257e-10
+E = 8.07113e-14
+e~ 0.108401
+q = 3.35659e-14
+E~ = 3.40418e-14
+
+Livelli di p refinement : 
+1 24 
+Elemento attivo di:
+Nodes : 0	0.5	
+#id : 1
+p level : 1
+e = 6.47342e-14
+E = 6.47342e-14
+e~ = 6.97138e-14
+q = 3.35659e-14
+E~ = 3.35659e-14
+
+Elemento attivo di:
+Nodes : 0.5	1	
+#id : 2
+p level : 24
+e = 1.59771e-14
+E = 1.59771e-14
+e~ = 0.0534966
+q = 1.42846e-14
+E~ = 1.42846e-14
+
+The mesh has 2 ACTIVE elements
+
+Interpolation error after refinement: 8.07113e-14
+Elemento attivo di:
+Nodes : 0	0.5	
+#id : 1
+p level : 1
+e = 6.47342e-14
+E = 6.47342e-14
+e~ = 6.97138e-14
+q = 3.35659e-14
+E~ = 3.35659e-14
+
+Elemento attivo di:
+Nodes : 0.5	1	
+#id : 2
+p level : 24
+e = 1.59771e-14
+E = 1.59771e-14
+e~ = 0.0534966
+q = 1.42846e-14
+E~ = 1.42846e-14
+
+
+
+Complexity : 27
+Deactivating element with 
+Nodes : 0	1	
+#id : 0
+p level : 27
+e = 6.22662e-11
+E = 7.31841e-14
+e~ 0.108401
+q = 2.11539e-14
+E~ = 2.32343e-14
+
+Livelli di p refinement : 
+2 24 
+Elemento attivo di:
+Nodes : 0	0.5	
+#id : 1
+p level : 2
+e = 5.7207e-14
+E = 5.7207e-14
+e~ = 6.97138e-14
+q = 2.11539e-14
+E~ = 2.11539e-14
+
+Elemento attivo di:
+Nodes : 0.5	1	
+#id : 2
+p level : 24
+e = 1.59771e-14
+E = 1.59771e-14
+e~ = 0.0534966
+q = 1.42846e-14
+E~ = 1.42846e-14
+
+The mesh has 2 ACTIVE elements
+
+Interpolation error after refinement: 7.31841e-14
+Elemento attivo di:
+Nodes : 0	0.5	
+#id : 1
+p level : 2
+e = 5.7207e-14
+E = 5.7207e-14
+e~ = 6.97138e-14
+q = 2.11539e-14
+E~ = 2.11539e-14
+
+Elemento attivo di:
+Nodes : 0.5	1	
+#id : 2
+p level : 24
+e = 1.59771e-14
+E = 1.59771e-14
+e~ = 0.0534966
+q = 1.42846e-14
+E~ = 1.42846e-14
+
+
+
+Complexity : 28
+Deactivating element with 
+Nodes : 0	0.5	
+#id : 1
+p level : 3
+e = 4.81059e-14
+E = 4.53331e-14
+e~ 6.97138e-14
+q = 1.44235e-14
+E~ = 1.44235e-14
+
+Deactivating element with 
+Nodes : 0	1	
+#id : 0
+p level : 28
+e = 1.08289e-11
+E = 6.13102e-14
+e~ 0.108401
+q = 1.44235e-14
+E~ = 1.68491e-14
+
+Livelli di p refinement : 
+24 0 2 
+Elemento attivo di:
+Nodes : 0.5	1	
+#id : 2
+p level : 24
+e = 1.59771e-14
+E = 1.59771e-14
+e~ = 0.0534966
+q = 1.42846e-14
+E~ = 1.42846e-14
+
+Elemento attivo di:
+Nodes : 0	0.25	
+#id : 51
+p level : 0
+e = 4.48336e-26
+E = 4.48336e-26
+e~ = 4.48336e-26
+q = 4.48336e-26
+E~ = 4.48336e-26
+
+Elemento attivo di:
+Nodes : 0.25	0.5	
+#id : 52
+p level : 2
+e = 4.53331e-14
+E = 4.53331e-14
+e~ = 3.44042e-14
+q = 1.46496e-14
+E~ = 1.46496e-14
+
+The mesh has 3 ACTIVE elements
+
+Interpolation error after refinement: 6.13102e-14
+Elemento attivo di:
+Nodes : 0.5	1	
+#id : 2
+p level : 24
+e = 1.59771e-14
+E = 1.59771e-14
+e~ = 0.0534966
+q = 1.42846e-14
+E~ = 1.42846e-14
+
+Elemento attivo di:
+Nodes : 0	0.25	
+#id : 51
+p level : 0
+e = 4.48336e-26
+E = 4.48336e-26
+e~ = 4.48336e-26
+q = 4.48336e-26
+E~ = 4.48336e-26
+
+Elemento attivo di:
+Nodes : 0.25	0.5	
+#id : 52
+p level : 2
+e = 4.53331e-14
+E = 4.53331e-14
+e~ = 3.44042e-14
+q = 1.46496e-14
+E~ = 1.46496e-14
+
+
+
+Complexity : 29
+Deactivating element with 
+Nodes : 0.25	0.5	
+#id : 52
+p level : 3
+e = 3.18663e-14
+E = 2.79159e-14
+e~ 3.44042e-14
+q = 9.60773e-15
+E~ = 9.60773e-15
+
+Deactivating element with 
+Nodes : 0	0.5	
+#id : 1
+p level : 4
+e = 3.84847e-14
+E = 2.79159e-14
+e~ 6.97138e-14
+q = 9.50993e-15
+E~ = 9.50993e-15
+
+Deactivating element with 
+Nodes : 0	1	
+#id : 0
+p level : 29
+e = 1.70168e-12
+E = 4.3893e-14
+e~ 0.108401
+q = 1.21754e-14
+E~ = 1.21754e-14
+
+Livelli di p refinement : 
+24 0 0 2 
+Elemento attivo di:
+Nodes : 0.5	1	
+#id : 2
+p level : 24
+e = 1.59771e-14
+E = 1.59771e-14
+e~ = 0.0534966
+q = 1.42846e-14
+E~ = 1.42846e-14
+
+Elemento attivo di:
+Nodes : 0	0.25	
+#id : 51
+p level : 0
+e = 4.48336e-26
+E = 4.48336e-26
+e~ = 4.48336e-26
+q = 4.48336e-26
+E~ = 4.48336e-26
+
+Elemento attivo di:
+Nodes : 0.25	0.375	
+#id : 53
+p level : 0
+e = 5.75598e-19
+E = 5.75598e-19
+e~ = 5.75589e-19
+q = 5.75589e-19
+E~ = 5.75589e-19
+
+Elemento attivo di:
+Nodes : 0.375	0.5	
+#id : 54
+p level : 2
+e = 2.79154e-14
+E = 2.79154e-14
+e~ = 2.24004e-14
+q = 9.81858e-15
+E~ = 9.81858e-15
+
+The mesh has 4 ACTIVE elements
+
+Interpolation error after refinement: 4.3893e-14
+Elemento attivo di:
+Nodes : 0.5	1	
+#id : 2
+p level : 24
+e = 1.59771e-14
+E = 1.59771e-14
+e~ = 0.0534966
+q = 1.42846e-14
+E~ = 1.42846e-14
+
+Elemento attivo di:
+Nodes : 0	0.25	
+#id : 51
+p level : 0
+e = 4.48336e-26
+E = 4.48336e-26
+e~ = 4.48336e-26
+q = 4.48336e-26
+E~ = 4.48336e-26
+
+Elemento attivo di:
+Nodes : 0.25	0.375	
+#id : 53
+p level : 0
+e = 5.75598e-19
+E = 5.75598e-19
+e~ = 5.75589e-19
+q = 5.75589e-19
+E~ = 5.75589e-19
+
+Elemento attivo di:
+Nodes : 0.375	0.5	
+#id : 54
+p level : 2
+e = 2.79154e-14
+E = 2.79154e-14
+e~ = 2.24004e-14
+q = 9.81858e-15
+E~ = 9.81858e-15
+
+
+
+Complexity : 30
+Deactivating element with 
+Nodes : 0.25	0.5	
+#id : 52
+p level : 3
+e = 3.18663e-14
+E = 2.79159e-14
+e~ 3.44042e-14
+q = 9.60773e-15
+E~ = 9.60773e-15
+
+Deactivating element with 
+Nodes : 0	0.5	
+#id : 1
+p level : 4
+e = 3.84847e-14
+E = 2.79159e-14
+e~ 6.97138e-14
+q = 9.50993e-15
+E~ = 9.50993e-15
+
+Deactivating element with 
+Nodes : 0	1	
+#id : 0
+p level : 30
+e = 2.39701e-13
+E = 3.18682e-14
+e~ 0.108401
+q = 8.80962e-15
+E~ = 8.80962e-15
+
+Livelli di p refinement : 
+25 0 0 2 
+Elemento attivo di:
+Nodes : 0.5	1	
+#id : 2
+p level : 25
+e = 3.95226e-15
+E = 3.95226e-15
+e~ = 0.0534966
+q = 3.09573e-15
+E~ = 3.09573e-15
+
+Elemento attivo di:
+Nodes : 0	0.25	
+#id : 51
+p level : 0
+e = 4.48336e-26
+E = 4.48336e-26
+e~ = 4.48336e-26
+q = 4.48336e-26
+E~ = 4.48336e-26
+
+Elemento attivo di:
+Nodes : 0.25	0.375	
+#id : 53
+p level : 0
+e = 5.75598e-19
+E = 5.75598e-19
+e~ = 5.75589e-19
+q = 5.75589e-19
+E~ = 5.75589e-19
+
+Elemento attivo di:
+Nodes : 0.375	0.5	
+#id : 54
+p level : 2
+e = 2.79154e-14
+E = 2.79154e-14
+e~ = 2.24004e-14
+q = 9.81858e-15
+E~ = 9.81858e-15
+
+The mesh has 4 ACTIVE elements
+
+Interpolation error after refinement: 3.18682e-14
+Elemento attivo di:
+Nodes : 0.5	1	
+#id : 2
+p level : 25
+e = 3.95226e-15
+E = 3.95226e-15
+e~ = 0.0534966
+q = 3.09573e-15
+E~ = 3.09573e-15
+
+Elemento attivo di:
+Nodes : 0	0.25	
+#id : 51
+p level : 0
+e = 4.48336e-26
+E = 4.48336e-26
+e~ = 4.48336e-26
+q = 4.48336e-26
+E~ = 4.48336e-26
+
+Elemento attivo di:
+Nodes : 0.25	0.375	
+#id : 53
+p level : 0
+e = 5.75598e-19
+E = 5.75598e-19
+e~ = 5.75589e-19
+q = 5.75589e-19
+E~ = 5.75589e-19
+
+Elemento attivo di:
+Nodes : 0.375	0.5	
+#id : 54
+p level : 2
+e = 2.79154e-14
+E = 2.79154e-14
+e~ = 2.24004e-14
+q = 9.81858e-15
+E~ = 9.81858e-15
+
+
+
+Complexity : 31
+Deactivating element with 
+Nodes : 0.375	0.5	
+#id : 54
+p level : 3
+e = 1.38413e-14
+E = 1.11519e-14
+e~ 2.24004e-14
+q = 5.22142e-15
+E~ = 5.22142e-15
+
+Deactivating element with 
+Nodes : 0.25	0.5	
+#id : 52
+p level : 4
+e = 2.02895e-14
+E = 1.11524e-14
+e~ 3.44042e-14
+q = 5.16131e-15
+E~ = 5.16131e-15
+
+Deactivating element with 
+Nodes : 0	0.5	
+#id : 1
+p level : 5
+e = 2.92818e-14
+E = 1.11524e-14
+e~ 6.97138e-14
+q = 5.13295e-15
+E~ = 5.13295e-15
+
+Deactivating element with 
+Nodes : 0	1	
+#id : 0
+p level : 31
+e = 3.02493e-14
+E = 1.51047e-14
+e~ 0.108401
+q = 5.13295e-15
+E~ = 5.56431e-15
+
+Livelli di p refinement : 
+25 0 0 0 2 
+Elemento attivo di:
+Nodes : 0.5	1	
+#id : 2
+p level : 25
+e = 3.95226e-15
+E = 3.95226e-15
+e~ = 0.0534966
+q = 3.09573e-15
+E~ = 3.09573e-15
+
+Elemento attivo di:
+Nodes : 0	0.25	
+#id : 51
+p level : 0
+e = 4.48336e-26
+E = 4.48336e-26
+e~ = 4.48336e-26
+q = 4.48336e-26
+E~ = 4.48336e-26
+
+Elemento attivo di:
+Nodes : 0.25	0.375	
+#id : 53
+p level : 0
+e = 5.75598e-19
+E = 5.75598e-19
+e~ = 5.75589e-19
+q = 5.75589e-19
+E~ = 5.75589e-19
+
+Elemento attivo di:
+Nodes : 0.375	0.4375	
+#id : 55
+p level : 0
+e = 2.6087e-16
+E = 2.6087e-16
+e~ = 2.57867e-16
+q = 2.57867e-16
+E~ = 2.57867e-16
+
+Elemento attivo di:
+Nodes : 0.4375	0.5	
+#id : 56
+p level : 2
+e = 1.0891e-14
+E = 1.0891e-14
+e~ = 1.60134e-14
+q = 5.30327e-15
+E~ = 5.30327e-15
+
+The mesh has 5 ACTIVE elements
+
+Interpolation error after refinement: 1.51047e-14
+Elemento attivo di:
+Nodes : 0.5	1	
+#id : 2
+p level : 25
+e = 3.95226e-15
+E = 3.95226e-15
+e~ = 0.0534966
+q = 3.09573e-15
+E~ = 3.09573e-15
+
+Elemento attivo di:
+Nodes : 0	0.25	
+#id : 51
+p level : 0
+e = 4.48336e-26
+E = 4.48336e-26
+e~ = 4.48336e-26
+q = 4.48336e-26
+E~ = 4.48336e-26
+
+Elemento attivo di:
+Nodes : 0.25	0.375	
+#id : 53
+p level : 0
+e = 5.75598e-19
+E = 5.75598e-19
+e~ = 5.75589e-19
+q = 5.75589e-19
+E~ = 5.75589e-19
+
+Elemento attivo di:
+Nodes : 0.375	0.4375	
+#id : 55
+p level : 0
+e = 2.6087e-16
+E = 2.6087e-16
+e~ = 2.57867e-16
+q = 2.57867e-16
+E~ = 2.57867e-16
+
+Elemento attivo di:
+Nodes : 0.4375	0.5	
+#id : 56
+p level : 2
+e = 1.0891e-14
+E = 1.0891e-14
+e~ = 1.60134e-14
+q = 5.30327e-15
+E~ = 5.30327e-15
+
+
+
+Complexity : 32
+Livelli di p refinement : 
+32 
+Elemento attivo di:
+Nodes : 0	1	
+#id : 0
+p level : 32
+e = 5.34888e-15
+E = 5.34888e-15
+e~ = 0.108401
+q = 2.72723e-15
+E~ = 2.72723e-15
+
+The mesh has 1 ACTIVE elements
+
+Interpolation error after refinement: 5.34888e-15
+Elemento attivo di:
+Nodes : 0	1	
+#id : 0
+p level : 32
+e = 5.34888e-15
+E = 5.34888e-15
+e~ = 0.108401
+q = 2.72723e-15
+E~ = 2.72723e-15
+
+
+
+Complexity : 33
+Livelli di p refinement : 
+33 
+Elemento attivo di:
+Nodes : 0	1	
+#id : 0
+p level : 33
+e = 4.25575e-15
+E = 4.25575e-15
+e~ = 0.108401
+q = 1.6621e-15
+E~ = 1.6621e-15
+
+The mesh has 1 ACTIVE elements
+
+Interpolation error after refinement: 4.25575e-15
+Elemento attivo di:
+Nodes : 0	1	
+#id : 0
+p level : 33
+e = 4.25575e-15
+E = 4.25575e-15
+e~ = 0.108401
+q = 1.6621e-15
+E~ = 1.6621e-15
+
+
+
+Complexity : 34
+Livelli di p refinement : 
+34 
+Elemento attivo di:
+Nodes : 0	1	
+#id : 0
+p level : 34
+e = 4.29557e-15
+E = 4.29557e-15
+e~ = 0.108401
+q = 1.1984e-15
+E~ = 1.1984e-15
+
+The mesh has 1 ACTIVE elements
+
+Interpolation error after refinement: 4.29557e-15
+Elemento attivo di:
+Nodes : 0	1	
+#id : 0
+p level : 34
+e = 4.29557e-15
+E = 4.29557e-15
+e~ = 0.108401
+q = 1.1984e-15
+E~ = 1.1984e-15
+
+
+
+Complexity : 35
+Livelli di p refinement : 
+35 
+Elemento attivo di:
+Nodes : 0	1	
+#id : 0
+p level : 35
+e = 4.41485e-15
+E = 4.41485e-15
+e~ = 0.108401
+q = 9.42548e-16
+E~ = 9.42548e-16
+
+The mesh has 1 ACTIVE elements
+
+Interpolation error after refinement: 4.41485e-15
+Elemento attivo di:
+Nodes : 0	1	
+#id : 0
+p level : 35
+e = 4.41485e-15
+E = 4.41485e-15
+e~ = 0.108401
+q = 9.42548e-16
+E~ = 9.42548e-16
+
+
+
+Complexity : 36
+Livelli di p refinement : 
+36 
+Elemento attivo di:
+Nodes : 0	1	
+#id : 0
+p level : 36
+e = 4.63557e-15
+E = 4.63557e-15
+e~ = 0.108401
+q = 7.83283e-16
+E~ = 7.83283e-16
+
+The mesh has 1 ACTIVE elements
+
+Interpolation error after refinement: 4.63557e-15
+Elemento attivo di:
+Nodes : 0	1	
+#id : 0
+p level : 36
+e = 4.63557e-15
+E = 4.63557e-15
+e~ = 0.108401
+q = 7.83283e-16
+E~ = 7.83283e-16
+
+
+
+Complexity : 37
+Deactivating element with 
+Nodes : 0.375	0.5	
+#id : 54
+p level : 5
+e = 2.0585e-15
+E = 9.69682e-16
+e~ 2.24004e-14
+q = 5.20608e-16
+E~ = 6.58167e-16
+
+Deactivating element with 
+Nodes : 0.25	0.5	
+#id : 52
+p level : 6
+e = 6.1414e-15
+E = 9.70258e-16
+e~ 3.44042e-14
+q = 5.20608e-16
+E~ = 6.57488e-16
+
+Deactivating element with 
+Nodes : 0	0.5	
+#id : 1
+p level : 7
+e = 1.4563e-14
+E = 9.70258e-16
+e~ 6.97138e-14
+q = 5.20608e-16
+E~ = 6.57026e-16
+
+Deactivating element with 
+Nodes : 0	1	
+#id : 0
+p level : 37
+e = 4.97047e-15
+E = 4.79532e-15
+e~ 0.108401
+q = 6.73304e-16
+E~ = 6.73304e-16
+
+Livelli di p refinement : 
+29 0 0 0 4 
+Elemento attivo di:
+Nodes : 0.5	1	
+#id : 2
+p level : 29
+e = 3.82506e-15
+E = 3.82506e-15
+e~ = 0.0534966
+q = 7.28138e-16
+E~ = 7.28138e-16
+
+Elemento attivo di:
+Nodes : 0	0.25	
+#id : 51
+p level : 0
+e = 4.48336e-26
+E = 4.48336e-26
+e~ = 4.48336e-26
+q = 4.48336e-26
+E~ = 4.48336e-26
+
+Elemento attivo di:
+Nodes : 0.25	0.375	
+#id : 53
+p level : 0
+e = 5.75598e-19
+E = 5.75598e-19
+e~ = 5.75589e-19
+q = 5.75589e-19
+E~ = 5.75589e-19
+
+Elemento attivo di:
+Nodes : 0.375	0.4375	
+#id : 55
+p level : 0
+e = 2.6087e-16
+E = 2.6087e-16
+e~ = 2.57867e-16
+q = 2.57867e-16
+E~ = 2.57867e-16
+
+Elemento attivo di:
+Nodes : 0.4375	0.5	
+#id : 56
+p level : 4
+e = 7.08812e-16
+E = 7.08812e-16
+e~ = 1.60134e-14
+q = 5.20608e-16
+E~ = 5.20608e-16
+
+The mesh has 5 ACTIVE elements
+
+Interpolation error after refinement: 4.79532e-15
+Elemento attivo di:
+Nodes : 0.5	1	
+#id : 2
+p level : 29
+e = 3.82506e-15
+E = 3.82506e-15
+e~ = 0.0534966
+q = 7.28138e-16
+E~ = 7.28138e-16
+
+Elemento attivo di:
+Nodes : 0	0.25	
+#id : 51
+p level : 0
+e = 4.48336e-26
+E = 4.48336e-26
+e~ = 4.48336e-26
+q = 4.48336e-26
+E~ = 4.48336e-26
+
+Elemento attivo di:
+Nodes : 0.25	0.375	
+#id : 53
+p level : 0
+e = 5.75598e-19
+E = 5.75598e-19
+e~ = 5.75589e-19
+q = 5.75589e-19
+E~ = 5.75589e-19
+
+Elemento attivo di:
+Nodes : 0.375	0.4375	
+#id : 55
+p level : 0
+e = 2.6087e-16
+E = 2.6087e-16
+e~ = 2.57867e-16
+q = 2.57867e-16
+E~ = 2.57867e-16
+
+Elemento attivo di:
+Nodes : 0.4375	0.5	
+#id : 56
+p level : 4
+e = 7.08812e-16
+E = 7.08812e-16
+e~ = 1.60134e-14
+q = 5.20608e-16
+E~ = 5.20608e-16
+
+
+
+Complexity : 38
+Deactivating element with 
+Nodes : 0.375	0.5	
+#id : 54
+p level : 5
+e = 2.0585e-15
+E = 9.69682e-16
+e~ 2.24004e-14
+q = 5.20608e-16
+E~ = 6.58167e-16
+
+Deactivating element with 
+Nodes : 0.25	0.5	
+#id : 52
+p level : 6
+e = 6.1414e-15
+E = 9.70258e-16
+e~ 3.44042e-14
+q = 5.20608e-16
+E~ = 6.57488e-16
+
+Deactivating element with 
+Nodes : 0	0.5	
+#id : 1
+p level : 7
+e = 1.4563e-14
+E = 9.70258e-16
+e~ 6.97138e-14
+q = 5.20608e-16
+E~ = 6.57026e-16
+
+Deactivating element with 
+Nodes : 0	1	
+#id : 0
+p level : 38
+e = 5.42754e-15
+E = 4.83568e-15
+e~ 0.108401
+q = 5.91013e-16
+E~ = 5.91013e-16
+
+Livelli di p refinement : 
+30 0 0 0 4 
+Elemento attivo di:
+Nodes : 0.5	1	
+#id : 2
+p level : 30
+e = 3.86542e-15
+E = 3.86542e-15
+e~ = 0.0534966
+q = 6.12719e-16
+E~ = 6.12719e-16
+
+Elemento attivo di:
+Nodes : 0	0.25	
+#id : 51
+p level : 0
+e = 4.48336e-26
+E = 4.48336e-26
+e~ = 4.48336e-26
+q = 4.48336e-26
+E~ = 4.48336e-26
+
+Elemento attivo di:
+Nodes : 0.25	0.375	
+#id : 53
+p level : 0
+e = 5.75598e-19
+E = 5.75598e-19
+e~ = 5.75589e-19
+q = 5.75589e-19
+E~ = 5.75589e-19
+
+Elemento attivo di:
+Nodes : 0.375	0.4375	
+#id : 55
+p level : 0
+e = 2.6087e-16
+E = 2.6087e-16
+e~ = 2.57867e-16
+q = 2.57867e-16
+E~ = 2.57867e-16
+
+Elemento attivo di:
+Nodes : 0.4375	0.5	
+#id : 56
+p level : 4
+e = 7.08812e-16
+E = 7.08812e-16
+e~ = 1.60134e-14
+q = 5.20608e-16
+E~ = 5.20608e-16
+
+The mesh has 5 ACTIVE elements
+
+Interpolation error after refinement: 4.83568e-15
+Elemento attivo di:
+Nodes : 0.5	1	
+#id : 2
+p level : 30
+e = 3.86542e-15
+E = 3.86542e-15
+e~ = 0.0534966
+q = 6.12719e-16
+E~ = 6.12719e-16
+
+Elemento attivo di:
+Nodes : 0	0.25	
+#id : 51
+p level : 0
+e = 4.48336e-26
+E = 4.48336e-26
+e~ = 4.48336e-26
+q = 4.48336e-26
+E~ = 4.48336e-26
+
+Elemento attivo di:
+Nodes : 0.25	0.375	
+#id : 53
+p level : 0
+e = 5.75598e-19
+E = 5.75598e-19
+e~ = 5.75589e-19
+q = 5.75589e-19
+E~ = 5.75589e-19
+
+Elemento attivo di:
+Nodes : 0.375	0.4375	
+#id : 55
+p level : 0
+e = 2.6087e-16
+E = 2.6087e-16
+e~ = 2.57867e-16
+q = 2.57867e-16
+E~ = 2.57867e-16
+
+Elemento attivo di:
+Nodes : 0.4375	0.5	
+#id : 56
+p level : 4
+e = 7.08812e-16
+E = 7.08812e-16
+e~ = 1.60134e-14
+q = 5.20608e-16
+E~ = 5.20608e-16
+
+
+
+Complexity : 39
+Deactivating element with 
+Nodes : 0.375	0.5	
+#id : 54
+p level : 5
+e = 2.0585e-15
+E = 9.69682e-16
+e~ 2.24004e-14
+q = 5.20608e-16
+E~ = 6.58167e-16
+
+Deactivating element with 
+Nodes : 0.25	0.5	
+#id : 52
+p level : 6
+e = 6.1414e-15
+E = 9.70258e-16
+e~ 3.44042e-14
+q = 5.20608e-16
+E~ = 6.57488e-16
+
+Deactivating element with 
+Nodes : 0	0.5	
+#id : 1
+p level : 7
+e = 1.4563e-14
+E = 9.70258e-16
+e~ 6.97138e-14
+q = 5.20608e-16
+E~ = 6.57026e-16
+
+Deactivating element with 
+Nodes : 0	1	
+#id : 0
+p level : 39
+e = 5.98429e-15
+E = 4.88062e-15
+e~ 0.108401
+q = 5.27175e-16
+E~ = 5.27175e-16
+
+Livelli di p refinement : 
+31 0 0 0 4 
+Elemento attivo di:
+Nodes : 0.5	1	
+#id : 2
+p level : 31
+e = 3.91037e-15
+E = 3.91037e-15
+e~ = 0.0534966
+q = 5.29717e-16
+E~ = 5.29717e-16
+
+Elemento attivo di:
+Nodes : 0	0.25	
+#id : 51
+p level : 0
+e = 4.48336e-26
+E = 4.48336e-26
+e~ = 4.48336e-26
+q = 4.48336e-26
+E~ = 4.48336e-26
+
+Elemento attivo di:
+Nodes : 0.25	0.375	
+#id : 53
+p level : 0
+e = 5.75598e-19
+E = 5.75598e-19
+e~ = 5.75589e-19
+q = 5.75589e-19
+E~ = 5.75589e-19
+
+Elemento attivo di:
+Nodes : 0.375	0.4375	
+#id : 55
+p level : 0
+e = 2.6087e-16
+E = 2.6087e-16
+e~ = 2.57867e-16
+q = 2.57867e-16
+E~ = 2.57867e-16
+
+Elemento attivo di:
+Nodes : 0.4375	0.5	
+#id : 56
+p level : 4
+e = 7.08812e-16
+E = 7.08812e-16
+e~ = 1.60134e-14
+q = 5.20608e-16
+E~ = 5.20608e-16
+
+The mesh has 5 ACTIVE elements
+
+Interpolation error after refinement: 4.88062e-15
+Elemento attivo di:
+Nodes : 0.5	1	
+#id : 2
+p level : 31
+e = 3.91037e-15
+E = 3.91037e-15
+e~ = 0.0534966
+q = 5.29717e-16
+E~ = 5.29717e-16
+
+Elemento attivo di:
+Nodes : 0	0.25	
+#id : 51
+p level : 0
+e = 4.48336e-26
+E = 4.48336e-26
+e~ = 4.48336e-26
+q = 4.48336e-26
+E~ = 4.48336e-26
+
+Elemento attivo di:
+Nodes : 0.25	0.375	
+#id : 53
+p level : 0
+e = 5.75598e-19
+E = 5.75598e-19
+e~ = 5.75589e-19
+q = 5.75589e-19
+E~ = 5.75589e-19
+
+Elemento attivo di:
+Nodes : 0.375	0.4375	
+#id : 55
+p level : 0
+e = 2.6087e-16
+E = 2.6087e-16
+e~ = 2.57867e-16
+q = 2.57867e-16
+E~ = 2.57867e-16
+
+Elemento attivo di:
+Nodes : 0.4375	0.5	
+#id : 56
+p level : 4
+e = 7.08812e-16
+E = 7.08812e-16
+e~ = 1.60134e-14
+q = 5.20608e-16
+E~ = 5.20608e-16
+
+
+
+Complexity : 40
+Deactivating element with 
+Nodes : 0.375	0.5	
+#id : 54
+p level : 5
+e = 2.0585e-15
+E = 9.69682e-16
+e~ 2.24004e-14
+q = 5.20608e-16
+E~ = 6.58167e-16
+
+Deactivating element with 
+Nodes : 0.25	0.5	
+#id : 52
+p level : 6
+e = 6.1414e-15
+E = 9.70258e-16
+e~ 3.44042e-14
+q = 5.20608e-16
+E~ = 6.57488e-16
+
+Deactivating element with 
+Nodes : 0	0.5	
+#id : 1
+p level : 7
+e = 1.4563e-14
+E = 9.70258e-16
+e~ 6.97138e-14
+q = 5.20608e-16
+E~ = 6.57026e-16
+
+Deactivating element with 
+Nodes : 0	1	
+#id : 0
+p level : 40
+e = 6.61391e-15
+E = 4.91295e-15
+e~ 0.108401
+q = 4.76089e-16
+E~ = 4.76089e-16
+
+Livelli di p refinement : 
+32 0 0 0 4 
+Elemento attivo di:
+Nodes : 0.5	1	
+#id : 2
+p level : 32
+e = 3.94269e-15
+E = 3.94269e-15
+e~ = 0.0534966
+q = 4.66977e-16
+E~ = 4.66977e-16
+
+Elemento attivo di:
+Nodes : 0	0.25	
+#id : 51
+p level : 0
+e = 4.48336e-26
+E = 4.48336e-26
+e~ = 4.48336e-26
+q = 4.48336e-26
+E~ = 4.48336e-26
+
+Elemento attivo di:
+Nodes : 0.25	0.375	
+#id : 53
+p level : 0
+e = 5.75598e-19
+E = 5.75598e-19
+e~ = 5.75589e-19
+q = 5.75589e-19
+E~ = 5.75589e-19
+
+Elemento attivo di:
+Nodes : 0.375	0.4375	
+#id : 55
+p level : 0
+e = 2.6087e-16
+E = 2.6087e-16
+e~ = 2.57867e-16
+q = 2.57867e-16
+E~ = 2.57867e-16
+
+Elemento attivo di:
+Nodes : 0.4375	0.5	
+#id : 56
+p level : 4
+e = 7.08812e-16
+E = 7.08812e-16
+e~ = 1.60134e-14
+q = 5.20608e-16
+E~ = 5.20608e-16
+
+The mesh has 5 ACTIVE elements
+
+Interpolation error after refinement: 4.91295e-15
+Elemento attivo di:
+Nodes : 0.5	1	
+#id : 2
+p level : 32
+e = 3.94269e-15
+E = 3.94269e-15
+e~ = 0.0534966
+q = 4.66977e-16
+E~ = 4.66977e-16
+
+Elemento attivo di:
+Nodes : 0	0.25	
+#id : 51
+p level : 0
+e = 4.48336e-26
+E = 4.48336e-26
+e~ = 4.48336e-26
+q = 4.48336e-26
+E~ = 4.48336e-26
+
+Elemento attivo di:
+Nodes : 0.25	0.375	
+#id : 53
+p level : 0
+e = 5.75598e-19
+E = 5.75598e-19
+e~ = 5.75589e-19
+q = 5.75589e-19
+E~ = 5.75589e-19
+
+Elemento attivo di:
+Nodes : 0.375	0.4375	
+#id : 55
+p level : 0
+e = 2.6087e-16
+E = 2.6087e-16
+e~ = 2.57867e-16
+q = 2.57867e-16
+E~ = 2.57867e-16
+
+Elemento attivo di:
+Nodes : 0.4375	0.5	
+#id : 56
+p level : 4
+e = 7.08812e-16
+E = 7.08812e-16
+e~ = 1.60134e-14
+q = 5.20608e-16
+E~ = 5.20608e-16
+
+
+1D refining complete example ended
+Memory leak detected!
+Compile in DEBUG mode with --enable-reference-counting
+for more information

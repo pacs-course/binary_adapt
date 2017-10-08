@@ -1,11 +1,10 @@
 #It produces the plot of the plevels of the binary refined mesh
 #call it by typing in gnuplot the instruction:
-#	call "results/RENAME_ME_parsed_functor/p_levels_script_17"
+#	call "results/half_2/p_levels_script_17"
 p_0(x) = x > 0.000000 && x <= 0.500000? 0 : 1/0
 p_1(x) = x > 0.500000 && x <= 0.750000? 5 : 1/0
 p_2(x) = x > 0.750000 && x <= 0.875000? 4 : 1/0
-p_3(x) = x > 0.875000 && x <= 0.937500? 2 : 1/0
-p_4(x) = x > 0.937500 && x <= 1.000000? 2 : 1/0
+p_3(x) = x > 0.875000 && x <= 1.000000? 5 : 1/0
 set xrange [0:1]
 set yrange [-1:6]
 set xlabel "x" font "Helvetica, 20"
@@ -15,7 +14,6 @@ set x2tics ("" 0, \
 "" 0.5, \
 "" 0.75, \
 "" 0.875, \
-"" 0.9375, \
 "" 1)
 set grid noxtics noytics x2tics
 set tics font "Helvetica,16"
@@ -23,5 +21,4 @@ set key font ",20"
 plot p_0(x) lw 6, \
 p_1(x) lw 6, \
 p_2(x) lw 6, \
-p_3(x) lw 6, \
-p_4(x)lw 6
+p_3(x)lw 6

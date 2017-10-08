@@ -45,7 +45,7 @@ int main(int argc, char** argv)
 	string conf_file = main_input("conf_file", "../../binary_tree.conf");
 
 	PluginLoading::PluginLoader pl;
-	cerr << "PluginLoader costruito" << endl;
+	cout << "PluginLoader costruito" << endl;
 
 	GetPot cl(conf_file.c_str());
 	string quad_library = "binary_tree/quadrature/interval/quad_library";
@@ -72,11 +72,11 @@ int main(int argc, char** argv)
 		cerr << "Houston we have a problem: something went wrong loading plugins";
 		return 1;
 	}
-	cerr << "Plugins loaded" << endl;
+	cout << "Plugins loaded" << endl;
 
 	string iteration_number = "binary_tree/algorithm/iteration_number";
 	size_t max_iter = cl(iteration_number.c_str(), 0);
-	cerr << "Starting the algorithm with " << max_iter << " iterations" << endl;
+	cout << "Starting the algorithm with " << max_iter << " iterations" << endl;
 
 
 	unique_ptr<LibmeshBinary::BinaryRefiner<1>> binary_refiner_ptr(nullptr);
@@ -98,7 +98,7 @@ int main(int argc, char** argv)
 	try
 	{
 		binary_refiner_ptr->Init(func_name);
-		cerr << "Refiner correctly initialized with "<< func_name << endl;
+		cout << "Refiner correctly initialized with "<< func_name << endl;
 	}
 	catch(exception& ex)
 	{
@@ -121,7 +121,7 @@ int main(int argc, char** argv)
 	for (size_t n_iter = 0; n_iter <= max_iter; ++n_iter)
 	{
 #ifdef VERBOSE
-		cerr << endl << endl << "Complexity : " << n_iter << endl;
+		cout << endl << endl << "Complexity : " << n_iter << endl;
 #endif //VERBOSE
 		auto mesh_ptr = make_shared<libMesh::Mesh> (init.comm());
 

@@ -1,6 +1,6 @@
 #It produces the plot of the plevels of the binary refined mesh
 #call it by typing in gnuplot the instruction:
-#	call "results/RENAME_ME_parsed_functor/p_levels_script_03"
+#	call "results/half_2/p_levels_script_03"
 p_0(x) = x > 0.000000 && x <= 0.500000? 0 : 1/0
 p_1(x) = x > 0.500000 && x <= 1.000000? 2 : 1/0
 set xrange [0:1]

@@ -233,9 +233,9 @@ TEST_F(LoadTest, StdIntegration)
 	clog << "StdIntegration ended" << endl << endl;
 };
 
-TEST_F(LoadTest, LegendreOrthonormality)
+TEST_F(LoadTest, IntervalLegendreOrthonormality)
 {
-	clog << endl << "Starting LegendreOrthonormality" << endl;
+	clog << endl << "Starting IntervalLegendreOrthonormality" << endl;
 
 	clog << "Constructing the standard interval" << endl;
 
@@ -246,7 +246,7 @@ TEST_F(LoadTest, LegendreOrthonormality)
 	for (size_t k(0); k < order; ++k)
 		for (size_t i = k + 1; i + k <= order; ++i)
 		{
-			double I = sfic.L2prod	(
+			double I = sfic.L2Prod	(
 												[&](const Point<1>& p){ return sfic.EvaluateBasisFunction(i, p);},
 												[&](const Point<1>& p){ return sfic.EvaluateBasisFunction(k, p);}
 											);
@@ -275,11 +275,10 @@ TEST_F(LoadTest, LegendreOrthonormality)
 	//for which the exactness of the quadrature rule for the L2 norm of the function still holds
 	for (size_t i = 0; i < order/2; ++i)
 	{
-		double I = sfic.L2prod	(
-											[&](const Point<1>& p){ return sfic.EvaluateBasisFunction(i, p);},
-											[&](const Point<1>& p){ return sfic.EvaluateBasisFunction(i, p);}
+		double I = sfic.L2Norm	(
+											[&sfic, i](const Point<1>& p){ return sfic.EvaluateBasisFunction(i, p);}
 										);
-		I *= (static_cast<double>(i) + 0.5);
+		I *= I * (static_cast<double>(i) + 0.5);
 		auto err = abs(I - 1);
 
 		string s1 = "Legendre function #"
@@ -293,12 +292,21 @@ TEST_F(LoadTest, LegendreOrthonormality)
 		clog << s1 << endl;
 		EXPECT_LT(err, 1E-10) << s2;
 	}
+	//TODO: add checks on values not exactly integrated
 
+	clog << "IntervalLegendreOrthonormality ended" << endl << endl;
+
+};
+
+#ifdef ASPETTA
+TEST_F(LoadTest, SquareLegendreOrthonormality)
+{
+	clog << endl << "Starting SquareLegendreOrthonormality" << endl;
 
 	clog << "Constructing the standard square" << endl;
 
 	FiniteElements::StdFIperCube<2, FiniteElements::LegendreType> std_square;
-	order = std_square.QuadratureOrder();
+	auto order = std_square.QuadratureOrder();
 	auto exactness_size = std_square.BasisSize(order);
 
 	clog << "Checking the orthogonality on the standard square" << endl;
@@ -307,7 +315,7 @@ TEST_F(LoadTest, LegendreOrthonormality)
 	for (size_t k(0); k < iteration_end; ++k)
 		for (size_t i = k + 1; i + k <= iteration_end; ++i)
 		{
-			double I = std_square.L2prod	(
+			double I = std_square.L2Prod	(
 														[&](const Point<2>& p){ return std_square.EvaluateBasisFunction(i, p);},
 														[&](const Point<2>& p){ return std_square.EvaluateBasisFunction(k, p);}
 													);
@@ -336,11 +344,12 @@ TEST_F(LoadTest, LegendreOrthonormality)
 	//for which the exactness of the quadrature rule for the L2 norm of the function still holds
 	size_t normality_size = std_square.BasisSize(order/2);
 
-	iteration_end = (normality_size < 100) ? normality_size : 100;
+//	iteration_end = (normality_size < 100) ? normality_size : 100;
+	iteration_end = normality_size;
 
 	for (size_t i = 0; i < iteration_end; ++i)
 	{
-		double I = std_square.L2prod	(
+		double I = std_square.L2Prod	(
 													[&](const Point<2>& p){ return std_square.EvaluateBasisFunction(i, p);},
 													[&](const Point<2>& p){ return std_square.EvaluateBasisFunction(i, p);}
 												);
@@ -363,41 +372,51 @@ TEST_F(LoadTest, LegendreOrthonormality)
 
 		(k2 == deg) ? (k2 = 0, k1 = ++deg) : (--k1, ++k2);
 	}
+	//TODO: add checks on values not exactly integrated
 
-//	clog << "Constructing the standard triangle" << endl;
-//	FiniteElements::StdFElement<2, TriangleType, FiniteElements::WarpedType> std_triangle;
-//	order = std_triangle.QuadratureOrder();
-//	exactness_size = std_triangle.BasisSize(order);
+	clog << "SquareLegendreOrthonormality ended" << endl << endl;
 
-//	clog << "Checking the orthogonality on the standard triangle" << endl;
+};
 
-//	iteration_end = (exactness_size < 100) ? exactness_size : 100;
-//	for (size_t k(0); k < iteration_end; ++k)
-//		for (size_t i = k + 1; i + k <= iteration_end; ++i)
-//		{
-//			double I = std_triangle.L2prod	(
-//															[&](const Point<2>& p){ return std_triangle.EvaluateBasisFunction(i, p);},
-//															[&](const Point<2>& p){ return std_triangle.EvaluateBasisFunction(k, p);}
-//														);
+TEST_F(LoadTest, WarpedOrthonormality)
+{
+	clog << endl << "WarpedOrthonormality" << endl;
 
-//			string s1 = "Warped functions #"
-//						+ to_string(i)
-//						+ " and #"
-//						+ to_string(k)
-//						+ " L2 product = "
-//						+ to_string(I);
-//			string s2 = "Warped functions #"
-//						+ to_string(i)
-//						+ " and #"
-//						+ to_string(k)
-//						+ " are not orthogonal: L2 product = "
-//						+ to_string(I);
-//			clog << s1 << endl;
-//			EXPECT_LT(I, 1E-10) << s2;
-//		}
+	clog << "Constructing the standard triangle" << endl;
+	FiniteElements::StdFElement<2, TriangleType, FiniteElements::WarpedType> std_triangle;
+	auto order = std_triangle.QuadratureOrder();
+	auto exactness_size = std_triangle.BasisSize(order);
+
+	clog << "Checking the orthogonality on the standard triangle" << endl;
+
+	size_t iteration_end = (exactness_size < 100) ? exactness_size : 100;
+	for (size_t k(0); k < iteration_end; ++k)
+		for (size_t i = k + 1; i + k <= iteration_end; ++i)
+		{
+			double I = std_triangle.L2Prod	(
+															[&](const Point<2>& p){ return std_triangle.EvaluateBasisFunction(i, p);},
+															[&](const Point<2>& p){ return std_triangle.EvaluateBasisFunction(k, p);}
+														);
+
+			string s1 = "Warped functions #"
+						+ to_string(i)
+						+ " and #"
+						+ to_string(k)
+						+ " L2 product = "
+						+ to_string(I);
+			string s2 = "Warped functions #"
+						+ to_string(i)
+						+ " and #"
+						+ to_string(k)
+						+ " are not orthogonal: L2 product = "
+						+ to_string(I);
+			clog << s1 << endl;
+			EXPECT_LT(I, 1E-10) << s2;
+		}
 
 	//TODO: add checks on values not exactly integrated
 
-	clog << "LegendreOrthonormality ended" << endl << endl;
+	clog << "WarpedOrthonormality ended" << endl << endl;
 };
+#endif //ASPETTA
 

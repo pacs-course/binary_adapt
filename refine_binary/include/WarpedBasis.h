@@ -6,7 +6,7 @@
 
 namespace FiniteElements
 {
-	class WarpedBasis : public AbstractBasis<2>
+	class WarpedBasis : public TensorialBasis<2>
 	{
 		public:
 			WarpedBasis();

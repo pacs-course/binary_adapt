@@ -7,6 +7,8 @@
 
 #include <functional> //function
 
+#include <Eigen/Dense>
+
 #ifdef SIMMETRY_OPT
 //TODO: use numeric_limits
 #define TOLL 1E-18
@@ -38,10 +40,10 @@ namespace Geometry
 				virtual QuadWeightVec		GetQuadWeights()const = 0;
 				virtual size_t QuadratureOrder()const = 0;
 
-				double Integrate(const BinaryTree::Functor<dim>& f)
-				{
-					return Integrate([&f](const Point<dim>& p){return f(p);});
-				};
+//				double Integrate(const BinaryTree::Functor<dim>& f)
+//				{
+//					return Integrate([&f](const Point<dim>& p){return f(p);});
+//				};
 
 				double Integrate(const function<double(Point<dim>)>& f) const
 				{
@@ -99,10 +101,37 @@ namespace Geometry
 					return fval.dot(weights);
 				};
 
+				//integrating a multifunction
+				Eigen::VectorXd Integrate(const function<Eigen::VectorXd(Point<dim>)>& f) const
+				{
+					QuadWeightVec weights = GetQuadWeights();
+					QuadPointVec<dim> nodes = GetQuadPoints();
+
+					//quadrature nodes and weights must have the same length
+					if (nodes.size() != static_cast<size_t> (weights.size()) )
+						throw std::length_error("Trying to integrate with different number of nodes and weights!");
+
+					auto p_iter = nodes.begin();
+					auto first_col = f(*p_iter);
+					Eigen::MatrixXd A(first_col.size(), nodes.size());
+					size_t i = 0;
+					A.col(0) << first_col;
+					while (p_iter != nodes.end())
+						A.col(++i) << f(*(++p_iter));
+
+					return A*weights;
+				};
+
 				template <typename F1, typename F2>
-				double L2prod (const F1& f, const F2& g)const
+				double L2Prod (const F1& f, const F2& g)const
 				{
 					return Integrate([&](const Point<dim>& p){return f(p)*g(p);});
+				};
+
+				template <typename F>
+				double L2Norm (const F& f)const
+				{
+					return sqrt(L2Prod(f,f));
 				};
 
 				protected:

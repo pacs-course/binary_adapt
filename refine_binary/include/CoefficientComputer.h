@@ -54,17 +54,26 @@ namespace FiniteElements
 				//I don't recompute already stored coefficients
 				for(; cursor < s; ++cursor)
 				{
-					(*coeff_location)[cursor] = f_el.L2prod ( *interp_func,
+					(*coeff_location)[cursor] = f_el.L2Prod ( *interp_func,
 																			[&f_el, &cursor]
 																			(const Geometry::Point<dim>& p)
 																			{ return f_el.EvaluateBasisFunction(cursor, p);}
 																		 );
 //TODO: controllare se nel caso multidimensionale continua a funzionare
 
+		// DI REGOLA NON FUNZIONA: devo moltiplicare per k1 e k2 che compongono quella funzione di base
 					/* dividing by (k + 0.5)^-1 */
 					(*coeff_location)[cursor] *= (cursor + 0.5);
-				}	
+				}
 			};
+		};
+
+	template <>
+		struct CoefficientComputer<2, WarpedType>
+		{
+			static void ComputeCoefficients(	const AbstractFElement<2, WarpedType>&,
+														BinaryTree::FunctionPtr<2>,
+														vector<double>* );
 		};
 } //namespace FiniteElements
 

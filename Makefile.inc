@@ -26,8 +26,8 @@ MuParserDir			:= /usr/local/lib
 
 GlobalDefines		:= \
 							VERBOSE \
-							#DESTRUCTOR_ALERT \
-							#MYDEBUG \
+							DESTRUCTOR_ALERT \
+							MYDEBUG \
 							#BANANA \
 							#DEPRECATED
 

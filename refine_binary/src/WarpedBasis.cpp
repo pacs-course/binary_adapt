@@ -7,16 +7,18 @@ using namespace std;
 
 namespace FiniteElements
 {
-	WarpedBasis::WarpedBasis() : AbstractBasis<2>(){};
+	WarpedBasis::WarpedBasis() : TensorialBasis<2>(){};
+
 	WarpedBasis::WarpedBasis(const WarpedBasis& input_basis)
 	{
 		*this = input_basis;
 	};
+
 	WarpedBasis& WarpedBasis::operator= (const WarpedBasis& input_basis)
 	{
 		if (this != &input_basis)
 		{
-			AbstractBasis<2>::Copy(input_basis);
+			TensorialBasis<2>::Copy(input_basis);
 		}
 		return *this;
 	};
@@ -57,27 +59,26 @@ namespace FiniteElements
 
 		double x = p[0];
 		k1_evaluations = move(unique_ptr<double[]> (j_polynomial(1, degree, 0, 0, &x)));
-		double y = p[1];
 
-		unique_ptr<double[]> k1_k2_evaluations;
-		vector<double> result;
+		vector<unique_ptr<double[]>> k1_k2_evaluations;
+		double y = p[1];
 
 		for (size_t k1 = 0; k1 <= degree; ++k1)
 		{
 			size_t max_k2 = degree - k1;
-			k1_k2_evaluations = move(unique_ptr<double[]> (j_polynomial(1, max_k2, 2*k1 + 1, 0, &y)));
-
-			for (size_t k2 = 0; k2 <= max_k2; ++k2)
-			{
-				double k1_val = k1_evaluations[k1];
-				double k1_k2_val = pow(1-y, k1) * k1_k2_evaluations[k2];
-				double val = k1_val * k1_k2_val;
-				result.push_back(val);
-			}
+			auto eval = move(unique_ptr<double[]> (j_polynomial(1, max_k2, 2*k1 + 1, 0, &y)));
+			k1_k2_evaluations.push_back(move(eval));
 		}
-//		cerr << "lunghezza attesa: " << length << endl;
-//		cerr << "lunghezza risultato: " << result.size() << endl;
-//		cerr << "lunghezza teorica: " << static_cast<double>((degree + 1) * (degree + 2)) / 2 << endl;
+
+		vector<double> result;
+		for( size_t i(0); i < length; ++i)
+		{
+			size_t k1 = this->_tensorial_indexes[i][0];
+			size_t k2 = this->_tensorial_indexes[i][1];
+
+			double tot = k1_evaluations[k1] * pow(1-y, k1) * k1_k2_evaluations[k1][k2];
+			result.push_back(tot);
+		};
 
 		return result;
 	};

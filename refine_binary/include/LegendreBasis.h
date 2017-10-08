@@ -15,17 +15,17 @@ namespace FiniteElements
 	unique_ptr<double[]> ManualOneDLegendreEvaluation(size_t index, double x);
 
 	template <size_t dim>
-		class LegendreBasis : public AbstractBasis<dim>
+		class LegendreBasis : public TensorialBasis<dim>
 		{
 			public:
 				/* constructor */
-				LegendreBasis() : AbstractBasis<dim>() {};
+				LegendreBasis() : TensorialBasis<dim>() {};
 
 				LegendreBasis& operator = (const LegendreBasis& input_basis)
 				{
 					if (this != &input_basis)
 					{
-						AbstractBasis<dim>::Copy(input_basis);
+						TensorialBasis<dim>::Copy(input_basis);
 					}
 					return *this;
 				};

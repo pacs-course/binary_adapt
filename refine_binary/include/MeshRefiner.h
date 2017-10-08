@@ -152,14 +152,14 @@ namespace BinaryTree
 			while (n_iter)
 			{
 #ifdef MYDEBUG
-				std::cout << "Iterazione #" << n_iter << std::endl;
+				std::clog << "Iterazione #" << n_iter << std::endl;
 #endif //MYDEBUG
 				daddy = this->_godfather.MakeBisection();
 				
 				while(daddy)
 				{
 #ifdef MYDEBUG
-					std::cerr << "Modifico i valori dell'elemento di id # " << daddy->NodeID() << std::endl;
+					std::clog << "Modifico i valori dell'elemento di id # " << daddy->NodeID() << std::endl;
 #endif //MYDEBUG
 
 					auto val = daddy->PLevel();
@@ -169,15 +169,15 @@ namespace BinaryTree
 					auto gretel = daddy->Right();
 
 #ifdef MYDEBUG
-					std::cerr << "Daddy ha q = " << daddy->Q() << std::endl;
-					std::cerr << "Daddy ha e tilde = " << daddy->TildeError() << std::endl;
-					std::cerr << "Daddy ha e = " << daddy->ProjectionError() << std::endl;
-					std::cerr << "Hansel ha q = " << hansel->Q() << std::endl;
-					std::cerr << "Hansel ha e tilde = " << hansel->TildeError() << std::endl;
-					std::cerr << "Hansel ha e = " << hansel->ProjectionError() << std::endl;
-					std::cerr << "Gretel ha q = " << gretel->Q() << std::endl;
-					std::cerr << "Gretel ha e tilde = " << gretel->TildeError() << std::endl;
-					std::cerr << "Gretel ha e = " << gretel->ProjectionError() << std::endl;
+					std::clog << "Daddy ha q = " << daddy->Q() << std::endl;
+					std::clog << "Daddy ha e tilde = " << daddy->TildeError() << std::endl;
+					std::clog << "Daddy ha e = " << daddy->ProjectionError() << std::endl;
+					std::clog << "Hansel ha q = " << hansel->Q() << std::endl;
+					std::clog << "Hansel ha e tilde = " << hansel->TildeError() << std::endl;
+					std::clog << "Hansel ha e = " << hansel->ProjectionError() << std::endl;
+					std::clog << "Gretel ha q = " << gretel->Q() << std::endl;
+					std::clog << "Gretel ha e tilde = " << gretel->TildeError() << std::endl;
+					std::clog << "Gretel ha e = " << gretel->ProjectionError() << std::endl;
 #endif //MYDEBUG
 
 					auto new_E = std::min(	hansel->E() + gretel->E(),
@@ -189,18 +189,18 @@ namespace BinaryTree
 											 /
 											 (new_E + old_E_tilde);
 #ifdef MYDEBUG
-					std::cerr << "E" << std::endl;
-					std::cerr << "Old value: " << daddy->E() << std::endl;
+					std::clog << "E" << std::endl;
+					std::clog << "Old value: " << daddy->E() << std::endl;
 #endif //MYDEBUG
 					daddy->E(new_E);
 #ifdef MYDEBUG
-					std::cerr << "New value: " << new_E << std::endl;
+					std::clog << "New value: " << new_E << std::endl;
 #endif //MYDEBUG
 					daddy->ETilde(new_E_tilde);
 #ifdef MYDEBUG
-					std::cerr << "E tilde" << std::endl;
-					std::cerr << "Old value: " << old_E_tilde << std::endl;
-					std::cerr << "New value: " << new_E_tilde << std::endl;
+					std::clog << "E tilde" << std::endl;
+					std::clog << "Old value: " << old_E_tilde << std::endl;
+					std::clog << "New value: " << new_E_tilde << std::endl;
 #endif //MYDEBUG
 
 					BinaryNode* alfa_bro(nullptr);
@@ -209,8 +209,8 @@ namespace BinaryTree
 
 					auto new_q = std::min (alfa_bro->Q(), new_E_tilde);
 #ifdef MYDEBUG
-					std::cerr << "Il figlio alfa ha q = " << alfa_bro->Q() << std::endl;
-					std::cerr << "Il nuovo q vale: " << new_q << std::endl;
+					std::clog << "Il figlio alfa ha q = " << alfa_bro->Q() << std::endl;
+					std::clog << "Il nuovo q vale: " << new_q << std::endl;
 #endif //MYDEBUG
 					daddy->Q(new_q);
 
@@ -280,7 +280,8 @@ namespace BinaryTree
 
 			output_file << "set xrange [" << x_min << ":" << x_max << "]" << std::endl
 							<< "set yrange [-1:" << p_max + 1 << "]" << std::endl
-							<< "set xlabel \"x\" font \"Helvetica, 20\"" << std::endl
+							<< "set xlabel \"x\" font \"Helvetica, 22\"" << std::endl
+							<< "set ylabel \"p\" font \"Helvetica, 22\"" << std::endl
 							<< "set samples 1000" << std::endl
 							<< "set xtics nomirror" << std::endl
 							<< "set x2tics (";
@@ -291,8 +292,8 @@ namespace BinaryTree
 
 			output_file << "\"\" " << x_max << ")" << std::endl
 							<< "set grid noxtics noytics x2tics" << std::endl
-							<< "set tics font \"Helvetica,16\"" << std::endl
-							<< "set key font \",20\"" << std::endl
+							<< "set tics font \"Helvetica,18\"" << std::endl
+							<< "set key font \",22\"" << std::endl
 							<< "plot ";
 
 			size_t i = 0;

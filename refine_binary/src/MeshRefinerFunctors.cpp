@@ -7,17 +7,17 @@ namespace BinaryTree
 	void Counter::operator()(BinaryNode* node)
 	{
 #ifdef VERBOSE
-		cerr << "Elemento attivo di:" << endl;
+		cout << "Elemento attivo di:" << endl;
 		auto id = node->NodeID();
-		cerr << "#id : " << id << endl;
-//#ifdef MYDEBUG
-		cerr << "p level : " << node->PLevel() << endl;
-		cerr << "e = " << node->ProjectionError() << endl;
-		cerr << "E = " << node->E() << endl;
-		cerr << "e~ = " << node->TildeError() << endl;
-		cerr << "q = " << node->Q() << endl;
-		cerr << "E~ = " << node->ETilde() << endl << endl;
-//#endif //MYDEBUG
+		cout << "#id : " << id << endl;
+#ifdef MYDEBUG
+		clog << "p level : " << node->PLevel() << endl;
+		clog << "e = " << node->ProjectionError() << endl;
+		clog << "E = " << node->E() << endl;
+		clog << "e~ = " << node->TildeError() << endl;
+		clog << "q = " << node->Q() << endl;
+		clog << "E~ = " << node->ETilde() << endl << endl;
+#endif //MYDEBUG
 #endif //VERBOSE
 		++(this->_counter);
 	};
@@ -61,7 +61,7 @@ namespace BinaryTree
 	void GnuPlotPrinter::operator() (DimensionedNode<1>* node)
 	{
 #ifdef MYDEBUG
-		cerr << "Active element of id " << node->NodeID() << endl;
+		clog << "Active element of id " << node->NodeID() << endl;
 #endif //MYDEBUG
 		auto nodes = node->Nodes();
 		auto p_val = node->PLevel();

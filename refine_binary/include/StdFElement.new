@@ -1,0 +1,216 @@
+#ifndef __STD_F_ELEMENT_H
+#define __STD_F_ELEMENT_H
+
+#include "StdBananaFElement.h"
+#include "BinaryTreeHelper.h"
+#include "ConcreteFactories.h"
+
+
+namespace FiniteElements
+{
+	using namespace std;
+
+	template <size_t dim, BasisType FeType = InvalidFeType>
+		class StdFIperCube : public StdBananaFElement<dim, FeType>
+		{
+			public:
+				StdFIperCube()
+				{
+					_std_geometry = HelperFunctions::Builders<Geometry::StdIperCube<dim>>::BuildSingleton ();
+
+					auto& basis_factory (GenericFactory::BasisFactory<dim>::Instance());
+					_basis = move(basis_factory.create(FeType));
+
+					//add here other stuff the constructor is expected to do
+#ifdef DESTRUCTOR_ALERT
+					cerr << "Costruisco StdFIperCube" << endl;
+#endif //DESTRUCTOR_ALERT
+				};
+
+			public:
+				virtual ~StdFIperCube()
+				{
+					//TODO
+#ifdef DESTRUCTOR_ALERT
+					cerr << "Distruggo StdFIperCube" << endl;
+#endif //DESTRUCTOR_ALERT
+				};
+
+				virtual BasisType GetFeType()const
+				{
+					return FeType;
+				};
+
+				//TODO: optimize storing already evaluated points
+				virtual double EvaluateBasisFunction (size_t ind, const Geometry::Point<dim>& point)const
+				{
+					return this->_basis->Evaluate(ind, point);
+				};
+
+				virtual vector<double> EvaluateBasis (size_t degree, const Geometry::Point<dim>& point)const
+				{
+					return this->_basis->EvaluateBasis(degree, point);
+				};
+
+				virtual size_t BasisSize(size_t degree)const
+				{
+					return this->_basis->ComputeSize(degree);
+				};
+
+				virtual Geometry::ElementType GetType()const
+				{
+					return this->_std_geometry->GetType();
+				};
+				virtual Geometry::QuadPointVec<dim> GetQuadPoints()const
+				{
+					return this->_std_geometry->GetQuadPoints();
+				};
+				virtual Geometry::QuadWeightVec GetQuadWeights()const
+				{
+					return this->_std_geometry->GetQuadWeights();
+				};
+				virtual size_t QuadratureOrder()const
+				{
+					return this->_std_geometry->QuadratureOrder();
+				};
+
+			protected:
+				unique_ptr<AbstractBasis<dim>> _basis;
+				shared_ptr<Geometry::StdIperCube<dim> > _std_geometry;
+		};
+
+	template <size_t dim, Geometry::ElementType Type = Geometry::InvalidElementType, BasisType FeType = InvalidFeType>
+		class StdFElement : public StdBananaFElement<dim, FeType>
+		{
+			public:
+				StdFElement()
+				{	cerr << "Banana, dim = " << dim << ", FeType = " << FeType << endl;
+					_std_geometry = HelperFunctions::Builders<Geometry::StdElement<dim, Type> >::BuildSingleton ();
+					_std_cube = HelperFunctions::Builders<StdFIperCube<dim, FeType> >::BuildSingleton ();
+
+					auto& std_map_factory(GenericFactory::StdMapFactory<dim>::Instance());
+					_ipercube_map = std_map_factory.create(Type);
+
+					//add here other stuff the constructor is expected to do
+				};
+
+			public:
+				virtual ~StdFElement()
+				{
+					//TODO
+#ifdef DESTRUCTOR_ALERT
+				cout << "Distruggo StdFElement" << endl;
+#endif //DESTRUCTOR_ALERT
+				};
+				virtual BasisType GetFeType()const
+				{
+					return FeType;
+				};
+
+				//TODO: optimize storing already evaluated points
+				virtual double EvaluateBasisFunction (size_t ind, const Geometry::Point<dim>& point)const
+				{
+					//If I've not already computed the norm, I do it now
+					if (ind > this->_basis_norms.size() - 1)
+						UpdateNorms(ind);
+
+					double result = this->_std_cube->EvaluateBasisFunction(ind, MapBackward(point));
+
+					return result / (this->_basis_norms)[ind];
+				};
+
+				virtual vector<double> EvaluateBasis (size_t degree, const Geometry::Point<dim>& point)const
+				{
+					auto result = this->_std_cube->EvaluateBasis(degree, MapBackward(point));
+
+					auto max_i = result.size();
+
+					UpdateNorms(max_i);
+
+					for (size_t i = 0; i < max_i; ++i)
+						result[i] /= (this->_basis_norms)[i];
+
+					return result;
+				};
+
+
+				virtual size_t BasisSize(size_t degree)const
+				{
+					return this->_std_cube->BasisSize(degree);
+				};
+
+				virtual Geometry::ElementType GetType()const
+				{
+					return this->_std_geometry->GetType();
+				};
+				virtual Geometry::QuadPointVec<dim> GetQuadPoints()const
+				{
+					return this->_std_geometry->GetQuadPoints();
+				};
+				virtual Geometry::QuadWeightVec GetQuadWeights()const
+				{
+					return this->_std_geometry->GetQuadWeights();
+				};
+
+				virtual size_t QuadratureOrder()const
+				{
+					return this->_std_geometry->QuadratureOrder();
+				};
+
+/*
+				Public methods to use the _ipercube_map attribute
+*/
+				virtual Geometry::Point<dim> MapBackward(const Geometry::Point<dim>& p)const
+				{
+					return this->_ipercube_map->ComputeInverse(p);
+				};
+
+				virtual Geometry::Point<dim> MapForward(const Geometry::Point<dim>& p)const
+				{
+					return this->_ipercube_map->Evaluate(p);
+				};
+
+				virtual double Jacobian(const Geometry::Point<dim>& p)const
+				{
+					return this->_ipercube_map->EvaluateJacobian(p);
+				};
+
+			protected:
+				virtual void UpdateNorms(size_t ind) const
+				{
+					/* I compute only the norms not already computed */
+					if (ind > (this->_basis_norms).size() - 1)
+					{
+#ifdef TRY_IT
+						size_t degree = 0;
+						while (this->BasisSize(degree) < ind)
+							++degree;
+
+						this->_basis_norms = this->L2Norm(
+																		[degree, this]
+																		(const Geometry::Point<dim>& p)
+																		{return this->EvaluateBasis(degree, p);}
+																	);
+#endif
+						this->_basis_norms.resize(ind + 1);
+						for (auto i = (this->_basis_norms).size(); i <= ind; ++i)
+							(this->_basis_norms)[i] = this->L2Norm	(
+																					[i, this]
+																					(const Geometry::Point<dim>& p)
+																					{return this->EvaluateBasisFunction(i, p);}
+																				);
+					}
+				};
+
+			protected:
+				shared_ptr<StdFIperCube<dim, FeType>>			_std_cube;
+				shared_ptr<Geometry::StdElement<dim, Type>>	_std_geometry;
+				unique_ptr<Geometry::Map<dim>>					_ipercube_map;
+
+				/* It's for optimization purpose. It's modified within the basis evaluation process */
+				mutable vector<double>	_basis_norms;
+		};
+
+} //namespace FiniteElements
+
+#endif //__STD_F_ELEMENT_H
