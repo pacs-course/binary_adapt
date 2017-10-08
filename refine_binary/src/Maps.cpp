@@ -9,7 +9,7 @@ namespace Geometry
 		double b = vert[1][0];
 
 		this->_mat(0) = (b - a) / 2;
-		this->_trasl(0) = (a + b) / 2;
+		this->_trasl[0] = (a + b) / 2;
 		this->_jacobian = this->_mat(0);
 		this->_inverse(0) = 1 / this->_mat(0);
 	};
@@ -28,13 +28,13 @@ namespace Geometry
 		this->_mat(1,0) = (y2 - y1) / 2;
 		this->_mat(1,1) = (y3 - y1) / 2;
 
-		this->_jacobian = this->_mat.determinant();
+		this->_jacobian = this->_mat.Determinant();
 
-		this->_trasl(0) = (x2 + x3) / 2;
-		this->_trasl(1) = (y2 + y3) / 2;
+		this->_trasl[0] = (x2 + x3) / 2;
+		this->_trasl[1] = (y2 + y3) / 2;
 
 		//TODO: optimize it
-		this->_inverse = this->_mat.inverse();
+		this->_inverse = this->_mat.Inverse();
 	};
 
 	Point<2> StdTriMap::Evaluate (const Point<2>& p)const

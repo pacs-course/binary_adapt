@@ -63,7 +63,7 @@ namespace Geometry
 */
 				virtual Point<dim> Evaluate(const Point<dim>& p) const override
 				{
-					return Point<dim>(this->_mat * p + this->_trasl);
+					return this->_mat * p + this->_trasl;
 				};
 
 /*
@@ -72,7 +72,7 @@ namespace Geometry
 */
 				virtual Point<dim> ComputeInverse(const Point<dim>& p) const override
 				{
-					return Point<dim>( (this->_inverse) * (p - this->_trasl) );
+					return (this->_inverse) * (p - this->_trasl);
 				};
 
 				virtual double	EvaluateJacobian(const Point<dim>&) const
