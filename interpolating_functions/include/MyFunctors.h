@@ -43,7 +43,7 @@ namespace MyFunctions
 
 				virtual double operator() (const Geometry::Point<dim>& p) const override
 				{
-					return (this->_parser)(p.get());
+					return (this->_parser)(static_cast<array<double, dim>>(p));
 				};
 
 				virtual std::string Formula() const override
@@ -94,7 +94,7 @@ namespace MyFunctions
 				{
 					double result(1.0);
 					for(std::size_t e(0); e < exp; ++e)
-						result *= p[0];
+						result *= p;
 					
 					return result;
 				};
@@ -116,7 +116,7 @@ namespace MyFunctions
 				AdvectionDiffusionSolution(){};
 				virtual double operator() (const Geometry::Point<1>& p)const override
 				{
-					return (exp(b_mu * p[0]) - 1) / (exp(b_mu) - 1);
+					return (exp(b_mu * static_cast<double>(p)) - 1) / (exp(b_mu) - 1);
 				};
 
 				virtual std::string Formula()const override

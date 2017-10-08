@@ -5,25 +5,55 @@
 #include <stdexcept> //invalid_argument
 #include <string> //string
 #include <array> //array
-
 #include <math.h> //sqrt, abs
+
+#include <Eigen/Dense>
 
 namespace Geometry
 {
 	using namespace std;
-	// A class that holds {dim}D points, equally vectors
 
-	//TODO: derive Point class from an Eigen type instead of std::array
 	template <size_t dim>
-		class Point : public array<double,dim>
+	using EigVector = Eigen::Matrix<double, static_cast<int>(dim), 1>;
+
+	/* A class that holds {dim}D points, equally vectors
+		When used as vectors, they are meant as column vector
+		The Point class is derived from Eigen one for efficiency reasons
+	*/
+	template <size_t dim>
+		class Point : public EigVector<dim>
 		{
 			public:
-				Point(const double& value = 0.0)
+				using iterator = double*;
+				using const_iterator = const double*;
+
+				iterator begin()
 				{
-					this->fill(value);
+					return this->data();
 				};
 
-				Point(const initializer_list<double>& coor)
+				iterator end()
+				{
+					return this->data() + dim;
+				};
+
+				const_iterator begin()const
+				{
+					return this->data();
+				};
+
+				const_iterator end()const
+				{
+					return this->data() + dim;
+				};
+
+				Point(double value = 0.0) : EigVector<dim>()
+				{
+					for (size_t i = 0; i < dim; ++i)
+						(*this)[i] = value;
+				};
+
+				Point(const initializer_list<double>& coor) : EigVector<dim>()
 				{
 					auto l = coor.size();
 					if (l != dim)
@@ -38,91 +68,81 @@ namespace Geometry
 					}
 				};
 
-				Point(const array<double, dim>& coor) : array<double, dim> (coor){};
+				/* copy constructor */
+				Point (const Point& x) : EigVector<dim>(x){};
 
-				//copy constructor
-				Point (Point const& x)
+				/* copy constructor */
+				Point (const EigVector<dim>& x) : EigVector<dim>(x){};
+
+				/* assignment operator */
+				Point& operator= (const Point& x)
 				{
-					(*this) = x;
+					EigVector<dim>::operator= (x);
+					return (*this);
 				};
 
-				//for a 1D point I implement the implicit cast to double
+
+				/* for a 1D point I implement the implicit cast to double */
 				template <size_t dummy = dim, typename enable_if< (dummy == 1), int>::type = 0>
 				operator double() const
 				{
 					return (*this)[0];
 				};
 
-				//assignment operator
-				Point& operator = (Point const& x)
+				/* implicit cast to std::array */
+				explicit operator array<double, dim> () const
 				{
-					if (&x != this)
-						copy(x.begin(), x.end(), this->begin());
-					return (*this);
+					array<double, dim> result;
+					for (size_t i = 0; i < dim; ++i)
+						result[i] = (*this)[i];
+					return result;
 				};
 
-				// Returns coordinates in a array<double>.
-				array<double,dim> get() const
+				/* Product by scalar */
+				Point<dim> operator * (double alfa) const
 				{
-					return *this;
+					return Point<dim>(EigVector<dim>::operator* (alfa));
 				};
 
-				// Product by scalar
-				Point<dim> operator * (double& alfa) const
+//				/* Vector difference */
+				Point<dim> operator - (const Point<dim>& x) const
 				{
-					array<double, dim> temp;
-					size_t i(0);
-					for (const auto& iter : (*this))
-						temp[i++] = alfa * iter;
-					return Point<dim>(temp);
-				};
-
-				// Vector difference
-				Point<dim> operator - (Point<dim> const& x) const
-				{
-					array<double, dim> temp;
-					for (size_t i=0; i < dim; ++i)
-						temp[i] = (*this)[i] - x[i];
-					return Point<dim>(temp);
+					return Point<dim>(EigVector<dim>::operator- (x));
 				};
 
 				// Vector sum
-				Point<dim> operator + (Point<dim> const& x) const
+				Point<dim> operator + (const Point<dim>& x) const
 				{
-					array<double, dim> temp;
-					for (size_t i=0; i < dim; ++i)
-						temp[i] = x[i] + (*this)[i];
-					return Point<dim>(temp);
+					return Point<dim>(EigVector<dim>::operator+ (x));
 				};
+
 
 				//tensor product
 				template <size_t N>
 					Point<dim + N> Tensor (const Point<N>& p2) const
 					{
-						array<double, dim + N> coor;
-						size_t i(0);
-						for (auto val : *this)
-							coor[i++] = val;
+						Point<dim + N> result;
 
-						for (auto val2 : p2.get())
-							coor[i++] = val2;
+						for (size_t i = 0; i < dim; ++i)
+							result[i] = (*this)[i];
 
-						return coor;
+						for (size_t j = 0; j < N; ++j)
+							result[dim + j] = p2[j];
+
+						return result;
 					}
 
 				// Modulus of the vector
 				double Abs() const
 				{
-					double result(0);
-					for (const auto& iter : (*this))
-						result += iter * iter;
+					double result = this->dot(*this);
 					return sqrt(result);
 				};
 
 				// Euclidean Distance from input vector
 				double distance (Point<dim> const& x) const
 				{
-					return (*(this) - x).Abs();
+					return (Point<dim>(EigVector<dim>::operator- (x))).Abs();
 				};
 
 				//friend to enable cout << p
@@ -144,7 +164,13 @@ namespace Geometry
 		};
 
 
+	//It must be castable to Point<dim>
 	template <size_t dim>
-		using Vector = Point<dim>;
+	using VecType = Point<dim>;
+
+	template <size_t dim>
+	using MatrixType = Eigen::Matrix <double, static_cast<int>(dim), static_cast<int>(dim)>;
+
+	using ColumnVector = Eigen::Matrix <double, Eigen::Dynamic, 1>;
 }
 #endif //__POINT__HH

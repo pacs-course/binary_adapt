@@ -20,12 +20,12 @@ namespace Geometry
 				{
 					auto& quad_factory = QuadratureFactory<dim>::Instance();
 #ifdef MYDEBUG
-					cout << "Cerco nella factory QuadratureFactory<" << dim << "> la quadrature_rule con chiave " << Type << endl;
-					cout << "Indirizzo factory: " << &quad_factory << endl;
+					clog << "Cerco nella factory QuadratureFactory<" << dim << "> la quadrature_rule con chiave " << Type << endl;
+					clog << "Indirizzo factory: " << &quad_factory << endl;
 #endif //MYDEBUG
 					_quadrature_rule = move (quad_factory.create(Type));
 #ifdef MYDEBUG
-					cout << "Quadrature_rule creata correttamente" << endl;
+					clog << "Quadrature_rule creata correttamente" << endl;
 #endif //MYDEBUG
 				};
 

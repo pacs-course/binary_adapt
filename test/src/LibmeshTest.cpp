@@ -9,6 +9,7 @@ using namespace std;
 using namespace Geometry;
 using namespace FiniteElements;
 
+
 TEST_F(LibmeshTest, LibmeshVersionCompatibility)
 {
 	//TODO
@@ -51,7 +52,7 @@ TEST_F(LibmeshTest, GeneralIntegration)
 	clog << "Costruisco FElement" << endl;
 	LibmeshBinary::FElement<1, LegendreType, LibmeshBinary::LibmeshIntervalClass> interval(iter);
 
-	clog << "Inizializzo interval" << endl;
+	clog << "Initializing interval" << endl;
 
 	interval.Init();
 
@@ -99,7 +100,7 @@ TEST_F(LibmeshTest, GeneralIntegration)
 	clog << "Costruisco FElement" << endl;
 	LibmeshBinary::FElement<2, WarpedType, LibmeshBinary::LibmeshTriangleClass> triangle(iter2);
 
-	clog << "Inizializzo triangle" << endl;
+	clog << "Initializing triangle" << endl;
 
 	triangle.Init();
 
@@ -279,36 +280,36 @@ TEST_F(LibmeshTest, SquareProjectionTest)
 	clog << endl << "Starting SquareProjectionTest" << endl;
 
 	int nx = 1, ny = 1;
-	libMesh::Mesh mesh2(_mesh_init_ptr->comm());
+	libMesh::Mesh mesh(_mesh_init_ptr->comm());
 
-	libMesh::MeshRefinement mesh_refiner2(mesh2);
+	libMesh::MeshRefinement mesh_refiner(mesh);
 
 	clog << "Building a 2D mesh with " << nx * ny << " squared elements in (0,1)x(0,1)" << endl;
-	libMesh::MeshTools::Generation::build_square(mesh2, nx, ny, 0., 1., 0., 1., LibmeshSquareType);
+	libMesh::MeshTools::Generation::build_square(mesh, nx, ny, 0., 1., 0., 1., LibmeshSquareType);
 
-	auto& f_factory2(BinaryTree::FunctionsFactory<2>::Instance());
-	unique_ptr<BinaryTree::Functor<2>> smart_ptr2 = f_factory2.create("x_squared_plus_y_squared");
+	auto& f_factory(BinaryTree::FunctionsFactory<2>::Instance());
+	unique_ptr<BinaryTree::Functor<2>> smart_ptr = f_factory.create("x_squared_plus_y_squared");
 
-	auto libmesh_ptr = mesh2.elem_ptr(0);
+	auto libmesh_ptr = mesh.elem_ptr(0);
 
-	auto el2 = dynamic_cast<LibmeshBinary::LibmeshSquareClass*>(libmesh_ptr);
-	ASSERT_NE(el2, nullptr) << "Mesh element not recognized casting to LibmeshBinary::LibmeshSquareClass*";
+	auto el = dynamic_cast<LibmeshBinary::LibmeshSquareClass*>(libmesh_ptr);
+	ASSERT_NE(el, nullptr) << "Mesh element not recognized casting to LibmeshBinary::LibmeshSquareClass*";
 	
-	unique_ptr<LibmeshBinary::LibmeshSquareClass> smart_el2 (el2);
-	LibmeshBinary::FElement<2, LegendreType, LibmeshBinary::LibmeshSquareClass> f_el2(move(smart_el2));
-	f_el2.Init();
+	unique_ptr<LibmeshBinary::LibmeshSquareClass> smart_el (el);
+	LibmeshBinary::FElement<2, LegendreType, LibmeshBinary::LibmeshSquareClass> f_el(move(smart_el));
+	f_el.Init();
 
-	order = f_el2.QuadratureOrder();
-	auto exactness_size = f_el2.BasisSize(order);
+	auto order = f_el.QuadratureOrder();
+	auto exactness_size = f_el.BasisSize(order);
 
 	size_t iteration_end = (exactness_size < 100) ? exactness_size : 100;
 	clog << "Checking the basis orthogonality on the (0,1)x(0,1) square:" << endl;
 	for (size_t k(0); k < iteration_end; ++k)
 		for (size_t i = 0; i + k <= iteration_end; ++i)
 		{
-			double I = f_el2.L2Prod	(
-												[&](const Point<2>& p){ return f_el2.EvaluateBasisFunction(i, p);},
-												[&](const Point<2>& p){ return f_el2.EvaluateBasisFunction(k, p);}
+			double I = f_el.L2Prod	(
+												[&](const Point<2>& p){ return f_el.EvaluateBasisFunction(i, p);},
+												[&](const Point<2>& p){ return f_el.EvaluateBasisFunction(k, p);}
 											);
 
 			if (i != k)
@@ -340,9 +341,9 @@ TEST_F(LibmeshTest, SquareProjectionTest)
 
 	for (size_t i(0); i < iteration_end; ++i)
 	{
-		double I = f_el2.L2Prod	(
-											[&](const Point<2>& p){ return f_el2.EvaluateBasisFunction(i, p);},
-											[&](const Point<2>& p){ return f_el2.EvaluateBasisFunction(i, p);}
+		double I = f_el.L2Prod	(
+											[&](const Point<2>& p){ return f_el.EvaluateBasisFunction(i, p);},
+											[&](const Point<2>& p){ return f_el.EvaluateBasisFunction(i, p);}
 										);
 
 		double K1 = (static_cast<double>(k1) + 0.5);
@@ -366,13 +367,14 @@ TEST_F(LibmeshTest, SquareProjectionTest)
 	}
 	//TODO: add checks on values not exactly integrated
 
+	libmesh_ptr = f_el.ReleaseGeometry();
 	clog << "SquareProjectionTest ended" << endl << endl;
 }
 #endif //TRY_IT
 
-TEST_F(LibmeshTest, TriangleProjectionTest)
+TEST_F(LibmeshTest, TriangleOrthogonality)
 {
-	clog << endl << "Starting TriangleProjectionTest" << endl;
+	clog << endl << "Starting TriangleOrthogonality" << endl;
 	int nx = 1, ny = 1;
 	libMesh::Mesh mesh(_mesh_init_ptr->comm());
 
@@ -381,24 +383,21 @@ TEST_F(LibmeshTest, TriangleProjectionTest)
 	clog << "Building a 2D mesh with " << 2 * nx * ny << " triangular elements in (0,1)x(0,1)" << endl;
 	libMesh::MeshTools::Generation::build_square(mesh, nx, ny, 0., 1., 0., 1., LibmeshTriangleType);
 
-	auto& f_factory(BinaryTree::FunctionsFactory<2>::Instance());
-	unique_ptr<BinaryTree::Functor<2>> smart_ptr = f_factory.create("x_squared_plus_y_squared");
-	BinaryTree::FunctionPtr<2> f_ptr(smart_ptr.release());
+	auto libmesh_ptr = *(mesh.elements_begin());
 
-	LibmeshBinary::BinarityMap::MakeBinary<2> (mesh_refiner, f_ptr);
-	ASSERT_TRUE(LibmeshBinary::BinarityMap::CheckBinarity(mesh)) << "After MakeBinary mesh is not binary!";
-
-	auto el = dynamic_cast<LibmeshBinary::BinaryTreeElement<2, WarpedType, LibmeshBinary::LibmeshTriangleClass>*> (*(mesh.elements_begin()));
-	ASSERT_NE(el, nullptr) << "Mesh element not recognized casting to LibmeshBinary::BinaryElement";
-
-	const auto& f_el(el->GetFElement());
+	auto el = dynamic_cast<LibmeshBinary::LibmeshTriangleClass*>(libmesh_ptr);
+	ASSERT_NE(el, nullptr) << "Mesh element not recognized casting to LibmeshBinary::LibmeshTriangleClass*";	
+	
+	unique_ptr<LibmeshBinary::LibmeshTriangleClass> smart_el (el);
+	LibmeshBinary::FElement<2, WarpedType, LibmeshBinary::LibmeshTriangleClass> f_el(move(smart_el));
+	f_el.Init();
 
 	auto order = f_el.QuadratureOrder();
 	auto exactness_size = f_el.BasisSize(order);
 
 	size_t iteration_end = (exactness_size < 50) ? exactness_size : 50;
 	clog << "Checking the basis orthogonality on the triangle co{(0,0),(1,0),(0,1)}:" << endl;
-#ifdef ASPETTA
+
 	for (size_t k(0); k < iteration_end; ++k)
 		for (size_t i = 0; i + k <= iteration_end; ++i)
 		{
@@ -425,11 +424,41 @@ TEST_F(LibmeshTest, TriangleProjectionTest)
 				EXPECT_LT(I, 1E-10) << s2;
 			}
 		}
-#endif //ASPETTA
+	//TODO: add checks on values not exactly integrated
+
+	//to avoid segfault when libMesh::Mesh destructor is called
+	libmesh_ptr = f_el.ReleaseGeometry();
+	clog << "TriangleOrthogonality ended" << endl << endl;
+};
+
+#ifdef ASPETTA
+TEST_F(LibmeshTest, TriangleProjectionTest)
+{
+	clog << endl << "Starting TriangleProjectionTest" << endl;
+	int nx = 1, ny = 1;
+	libMesh::Mesh mesh(_mesh_init_ptr->comm());
+
+	libMesh::MeshRefinement mesh_refiner(mesh);
+
+	clog << "Building a 2D mesh with " << 2 * nx * ny << " triangular elements in (0,1)x(0,1)" << endl;
+	libMesh::MeshTools::Generation::build_square(mesh, nx, ny, 0., 1., 0., 1., LibmeshTriangleType);
+
+	auto& f_factory(BinaryTree::FunctionsFactory<2>::Instance());
+	unique_ptr<BinaryTree::Functor<2>> smart_ptr = f_factory.create("x_squared_plus_y_squared");
+	BinaryTree::FunctionPtr<2> f_ptr(smart_ptr.release());
+
+	LibmeshBinary::BinarityMap::MakeBinary<2> (mesh_refiner, f_ptr);
+	ASSERT_TRUE(LibmeshBinary::BinarityMap::CheckBinarity(mesh)) << "After MakeBinary mesh is not binary!";
+
+	auto el = dynamic_cast<LibmeshBinary::BinaryTreeElement<2, WarpedType, LibmeshBinary::LibmeshTriangleClass>*> (*(mesh.elements_begin()));
+	ASSERT_NE(el, nullptr) << "Mesh element not recognized casting to LibmeshBinary::BinaryElement";
+
 	clog << "Projecting x^2 + y^2 on the triangle co{(0,0),(1,0),(0,1)}" << endl;
 	EXPECT_EQ(el->PLevel(), 0) << "p level not modified yet, expected zero but it values " + to_string(el->PLevel());
 	double error = el->ProjectionError();
 	clog << "Errore di interpolazione su P" << el->PLevel() << " : " << error << endl;
+
+	auto order = (el->GetFElement()).QuadratureOrder();
 
 	// quadrature exact till order - 2 since i'm doing the L2 product with x^2 + y^2
 	for (size_t p = 1; p <= order - 2; ++p)
@@ -447,6 +476,8 @@ TEST_F(LibmeshTest, TriangleProjectionTest)
 
 	clog << "TriangleProjectionTest ended" << endl << endl;
 };
+#endif //ASPETTA
+
 
 TEST_F(LibmeshTest, LibmeshRefinement)
 {

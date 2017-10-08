@@ -68,7 +68,6 @@ namespace SandiaQuadrature
 					Init();
 				};
 
-				//for testing purposes
 				SandiaQuadratureRule(size_t order)
 				{
 					this->_order = order;

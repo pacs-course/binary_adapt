@@ -5,8 +5,6 @@
 #include "AbstractFactory.h"
 #include "TypeEnumerations.h"
 
-#include "Eigen/Dense"
-
 //TODO insert a control on library reference elements
 //		 be sure that if something changes the maps still do their job 
 
@@ -49,12 +47,6 @@ namespace Geometry
 				AffineMap(){};
 
 			public:
-				using MatrixType			= Eigen::Matrix <double, static_cast<int>(dim), static_cast<int>(dim)>;
-				using VecType				= Eigen::Matrix <double, static_cast<int>(dim), 1>;
-				using VecMapType			= Eigen::Map	 <VecType>;
-				using ConstVecMapType	= Eigen::Map	 <const VecType>;
-				using MatrixMapType		= Eigen::Map	 <MatrixType>;
-				using ConstMatrixMapType= Eigen::Map	 <const MatrixType>;
 
 				virtual void Init(const NodesVector<dim>&) = 0;
 				virtual ~AffineMap()
@@ -65,18 +57,13 @@ namespace Geometry
 #endif //DESTRUCTOR_ALERT
 				};
 
-				//TODO derive Point<dim> from Eigen type and modify consequently the evaluation
 /*
 				The Point<dim> p belongs to the reference element
 				The returned one belongs to the element which owns the map object	
 */
 				virtual Point<dim> Evaluate(const Point<dim>& p) const override
 				{
-					Point<dim> result;
-					VecMapType eig_result(result.data());
-					ConstVecMapType eig_p (p.data());
-					eig_result = this->_mat * eig_p + this->_trasl;
-					return result;
+					return Point<dim>(this->_mat * p + this->_trasl);
 				};
 
 /*
@@ -85,11 +72,7 @@ namespace Geometry
 */
 				virtual Point<dim> ComputeInverse(const Point<dim>& p) const override
 				{
-					Point<dim> result;
-					VecMapType eig_result(result.data());
-					ConstVecMapType eig_p (p.data());
-					eig_result = (this->_inverse) * (eig_p - this->_trasl);
-					return result;
+					return Point<dim>( (this->_inverse) * (p - this->_trasl) );
 				};
 
 				virtual double	EvaluateJacobian(const Point<dim>&) const
@@ -105,10 +88,10 @@ namespace Geometry
 				};
 
 			protected:
-				MatrixType	_mat;
-				MatrixType	_inverse;
-				VecType		_trasl;
-				double		_jacobian;
+				MatrixType<dim>	_mat;
+				MatrixType<dim>	_inverse;
+				VecType<dim>		_trasl;
+				double _jacobian;
 		};
 
 /*

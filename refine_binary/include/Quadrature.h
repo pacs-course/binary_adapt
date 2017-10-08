@@ -19,7 +19,7 @@ namespace Geometry
 /*
 	Type used to store quadrature weigths
 */
-	using QuadWeightVec = Eigen::Matrix <double, 1, Eigen::Dynamic>;
+	using QuadWeightVec = ColumnVector;
 
 	template <size_t dim>
 		class QuadratureRuleInterface

@@ -8,7 +8,7 @@ namespace MyFunctions
 {
 	double SqrtX::operator() (const Geometry::Point<1>& p) const
 	{
-		return sqrt(p[0]);
+		return sqrt(p);
 	};
 	string SqrtX::Formula()const
 	{
@@ -21,7 +21,7 @@ namespace MyFunctions
 
 	double HalfStep::operator() (const Geometry::Point<1>& p) const
 	{
-		double val = p[0];
+		double val = p;
 		if (val > 0.5)
 			return 1.0;
 		return 0.0;
@@ -37,7 +37,7 @@ namespace MyFunctions
 
 	double HalfX::operator() (const Geometry::Point<1>& p) const
 	{
-		double val = p[0];
+		double val = p;
 		if (val >= 0.5)
 			return val;
 		
@@ -54,7 +54,7 @@ namespace MyFunctions
 
 	double HalfSquare::operator() (const Geometry::Point<1>& p) const
 	{
-		double val = p[0];
+		double val = p;
 		if (val > 0.5)
 			return val*val;
 		
@@ -71,7 +71,7 @@ namespace MyFunctions
 
 	double HalfTwenty::operator() (const Geometry::Point<1>& p) const
 	{
-		double val = p[0];
+		double val = p;
 		if (val >= 0.5)
 			return pow(val, 20);
 		
@@ -88,7 +88,7 @@ namespace MyFunctions
 
 	double HalfSqrt::operator() (const Geometry::Point<1>& p) const
 	{
-		double val = p[0];
+		double val = p;
 		if (val > 0.5)
 			return sqrt(val);
 		return 0.0;

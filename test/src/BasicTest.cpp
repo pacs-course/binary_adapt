@@ -19,8 +19,7 @@ TEST_F(BasicTest, PointTest)
 
 	EXPECT_EQ(p1[0], 1) << "Assignment operator failed";
 
-	array<double, 2> init = {2,3};
-	Point<2> p2(init);
+	Point<2> p2({2,3});
 	EXPECT_EQ(p2[0], 2) << "2d construction by initializer list failed";
 	EXPECT_EQ(p2[1], 3) << "2d construction by initializer list failed";
 
@@ -29,9 +28,13 @@ TEST_F(BasicTest, PointTest)
 	EXPECT_EQ(p3[1], 2) << "Tensor product failed";
 	EXPECT_EQ(p3[2], 3) << "Tensor product failed";
 
-	double scalar(2);
-	Point<3> p4 = p3 * scalar;
+	Point<3> p4 = p3 ;
+	EXPECT_EQ(p4[0], 1) << "Product by scalar failed";
+	EXPECT_EQ(p4[1], 2) << "Product by scalar failed";
+	EXPECT_EQ(p4[2], 3) << "Product by scalar failed";
 
+	double scalar(2);
+	p4 *= scalar;
 	EXPECT_EQ(p4[0], 2) << "Product by scalar failed";
 	EXPECT_EQ(p4[1], 4) << "Product by scalar failed";
 	EXPECT_EQ(p4[2], 6) << "Product by scalar failed";

@@ -24,7 +24,9 @@ namespace FiniteElements
 					auto& basis_factory (GenericFactory::BasisFactory<dim>::Instance());
 					_basis = move(basis_factory.create(FeType));
 
-					//add here other stuff the constructor is expected to do
+#ifdef DESTRUCTOR_ALERT
+					clog << "Esco dal costruttore di StdFIperCube" << endl;
+#endif //DESTRUCTOR_ALERT
 				};
 
 			public:

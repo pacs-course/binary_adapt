@@ -19,24 +19,14 @@ namespace LibmeshBinary
 		class BinaryTreeElement : public LibmeshGeometry, public BinaryTree::AbstractBinaryElement<dim, FeType>
 		{
 			public:
-				BinaryTreeElement (	shared_ptr<FElement<dim, FeType, LibmeshGeometry> > fe_ptr, 
-											BinaryTree::FunctionPtr<dim> f,
-											libMesh::MeshRefinement& mesh_refinement
-										):
-										LibmeshGeometry(fe_ptr->GetGeometry()),
-										BinaryTree::AbstractBinaryElement<dim, FeType>(f, fe_ptr, mesh_refinement)
-				{};
-
 				BinaryTreeElement	(	unique_ptr<LibmeshGeometry> element_ptr,
 											BinaryTree::FunctionPtr<dim> f,
 											libMesh::MeshRefinement& mesh_refinement
 										) :
 										LibmeshGeometry(*element_ptr),
 										BinaryTree::AbstractBinaryElement<dim, FeType>	(f,
-																										 make_shared <FElement <dim,
-																																		FeType,
-																																		LibmeshGeometry>
-																														 >(move(element_ptr))
+																										 new FElement <dim, FeType,
+																															LibmeshGeometry> (move(element_ptr))
 																										),
 										_mesh_refinement(mesh_refinement)
 				{				};

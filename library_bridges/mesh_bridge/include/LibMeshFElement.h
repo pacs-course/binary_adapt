@@ -58,6 +58,7 @@ namespace LibmeshBinary
 					std::cout << "WARNING: I'm calling the LibmeshGeometry constructor without parameters" << std::endl;
 				};
 
+				//TODO: test it
 				FElement(libMesh::MeshBase::element_iterator iter) : _geom(nullptr)
 				{
 					auto& element = *iter;
@@ -66,11 +67,11 @@ namespace LibmeshBinary
 						throw std::logic_error("libMesh iterator type not congruent with FElement one");
 
 					std::unique_ptr<LibmeshGeometry> int_ptr (libmesh_interval);
-					_geom = move(int_ptr);
+					_geom = std::move(int_ptr);
 					element = nullptr;
 				};
 
-				FElement(std::unique_ptr<LibmeshGeometry> element) : _geom(move(element)){};
+				FElement(std::unique_ptr<LibmeshGeometry> element) : _geom(std::move(element)){};
 
 				~FElement(){};
 
@@ -99,6 +100,10 @@ namespace LibmeshBinary
 					return *_geom;
 				};
 
+				LibmeshGeometry* ReleaseGeometry()
+				{
+					return _geom.release();
+				};
 			private:
 /*
 				This attribute will not be used, it's present only to avoid memory leakage.

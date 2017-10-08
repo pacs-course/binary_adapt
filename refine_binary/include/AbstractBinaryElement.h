@@ -14,8 +14,14 @@ namespace BinaryTree
 		class AbstractBinaryElement : public DimensionedNode<dim> 
 		{
 			public:
+
+				using CoeffVector = vector<double>;
+//				using CoeffVector = Eigen::Vectorxd;
+
+
+				/* constructor */
 				AbstractBinaryElement(	FunctionPtr<dim> f,
-												shared_ptr<AbstractFElement<dim, FeType> > el_ptr
+												AbstractFElement<dim, FeType>* el_ptr
 											):
 												DimensionedNode<dim> (),
 												_f (f),
@@ -55,8 +61,8 @@ namespace BinaryTree
 				virtual void PrintCoefficients()
 				{
 					ComputeCoefficients();
-					for (auto& c : this->_coeff)
-						cout << c << "	";
+					for (size_t i = 0; i < this->_coeff.size(); ++i)
+						cout << (this->_coeff)[i] << "	";
 					cout << endl;
 				};
 
@@ -108,10 +114,10 @@ namespace BinaryTree
 				{
 					ComputeCoefficients();
 					double result(0);
-					vector<double> basis_evaluation = this->_f_element->EvaluateBasis(point);
+					CoeffVector basis_evaluation = this->_f_element->EvaluateBasis(point);
 
 					//TODO: optimizable: use eigen dot product
-					for (size_t i(0); i < this->_coeff.size(); ++i)
+					for (size_t i = 0; i < this->_coeff.size(); ++i)
 					{
 						result += this->_coeff[i] * basis_evaluation[i];
 					}
@@ -129,10 +135,9 @@ namespace BinaryTree
 				//function whose projection error has to be computed
 				FunctionPtr<dim> _f;
 				//coefficients of the projection
-				vector<double> _coeff;
+				CoeffVector _coeff;
 
-				//TODO: verify if unique_ptr is better
-				shared_ptr<AbstractFElement<dim, FeType> > _f_element;
+				unique_ptr<AbstractFElement<dim, FeType> > _f_element;
 
 				double _projection_error;
 				bool	 _error_updated;

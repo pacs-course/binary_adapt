@@ -298,7 +298,6 @@ TEST_F(LoadTest, IntervalLegendreOrthonormality)
 
 };
 
-#ifdef ASPETTA
 TEST_F(LoadTest, SquareLegendreOrthonormality)
 {
 	clog << endl << "Starting SquareLegendreOrthonormality" << endl;
@@ -378,9 +377,9 @@ TEST_F(LoadTest, SquareLegendreOrthonormality)
 
 };
 
-TEST_F(LoadTest, WarpedOrthonormality)
+TEST_F(LoadTest, WarpedOrthogonality)
 {
-	clog << endl << "WarpedOrthonormality" << endl;
+	clog << endl << "WarpedOrthogonality" << endl;
 
 	clog << "Constructing the standard triangle" << endl;
 	FiniteElements::StdFElement<2, TriangleType, FiniteElements::WarpedType> std_triangle;
@@ -389,7 +388,7 @@ TEST_F(LoadTest, WarpedOrthonormality)
 
 	clog << "Checking the orthogonality on the standard triangle" << endl;
 
-	size_t iteration_end = (exactness_size < 100) ? exactness_size : 100;
+	size_t iteration_end = (exactness_size < 50) ? exactness_size : 50;
 	for (size_t k(0); k < iteration_end; ++k)
 		for (size_t i = k + 1; i + k <= iteration_end; ++i)
 		{
@@ -416,7 +415,6 @@ TEST_F(LoadTest, WarpedOrthonormality)
 
 	//TODO: add checks on values not exactly integrated
 
-	clog << "WarpedOrthonormality ended" << endl << endl;
+	clog << "WarpedOrthogonality ended" << endl << endl;
 };
-#endif //ASPETTA
 

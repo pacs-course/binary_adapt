@@ -1,12 +1,12 @@
-hp finite elements, Schwabb
+hp finite elements, Schwabb	DONE
 
 visualizzare partizioni intermedie	DONE
-visualizzare funzioni interpolanti
+visualizzare funzioni interpolanti	DONE
 
 sqrt(abs(x-1/2))	DONE
 sqrt(abs(x-1/3))	DONE
 
-AbstractBasis	-> TensorBasis
+AbstractBasis	-> TensorBasis	DONE
 					-> WarpedBasis
 
 Compute the whole basis at the start basing on the iteration number
