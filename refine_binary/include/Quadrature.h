@@ -5,8 +5,6 @@
 #include "TypeEnumerations.h"
 #include "AbstractFactory.h"
 
-#include "Eigen/Dense"
-
 namespace Geometry
 {
 /*
@@ -15,7 +13,7 @@ namespace Geometry
 		//TODO: verify if it could be an optimization to store it as a Matrix
 		//			with particular focus on the mapping process
 	template <size_t dim>
-		using QuadPointVec = std::vector<Point<dim>>;
+		using QuadPointVec = VectorPoint<dim>;
 /*
 	Type used to store quadrature weigths
 */

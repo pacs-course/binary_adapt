@@ -29,8 +29,6 @@ namespace Geometry
 				virtual double		 EvaluateJacobian	(const Point<dim>&)const = 0;
 
 				virtual ~Map(){};
-			protected:
-
 		};
 
 /*
@@ -66,6 +64,10 @@ namespace Geometry
 					return this->_mat * p + this->_trasl;
 				};
 
+				virtual VectorPoint<dim> Evaluate(const VectorPoint<dim>& vec) const
+				{
+					return this->_mat * vec + this->_trasl;
+				};
 /*
 				It is the inverse function of the bijective map.
 				p belongs to the generic element, while the returned value belongs to the reference element
@@ -73,6 +75,11 @@ namespace Geometry
 				virtual Point<dim> ComputeInverse(const Point<dim>& p) const override
 				{
 					return (this->_inverse) * (p - this->_trasl);
+				};
+
+				virtual VectorPoint<dim> ComputeInverse(const VectorPoint<dim>& vec) const
+				{
+					return this->_inverse * (vec - this->_trasl);
 				};
 
 				virtual double	EvaluateJacobian(const Point<dim>&) const

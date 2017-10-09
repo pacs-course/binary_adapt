@@ -3,7 +3,7 @@
 
 
 #include "Quadrature.h" //ElementType
-#include "LibMeshHelper.h" //ConvertPoint, ConvertType
+#include "LibMeshHelper.h" //ConvertType
 #include "Maps.h" //TriMap
 
 #include <quadrature.h> //libMesh::QBase
@@ -46,9 +46,14 @@ namespace LibmeshBinary
 				virtual Geometry::QuadPointVec<dim> GetPoints() override
 				{
 					std::vector<libMesh::Point> std_points = _quadrature_rule->get_points();
-					Geometry::QuadPointVec<dim> result;
-					for (auto lp : std_points)
-						result.push_back(ConvertPoint<dim>(lp));
+					size_t length = std_points.size();
+					Geometry::QuadPointVec<dim> result(length);
+					
+					for (size_t i = 0; i < length; ++i)
+					{
+						auto p = ConvertPoint<dim>(std_points[i]);
+						result.Insert(i,p);
+					}
 
 					return result;
 				};
@@ -59,7 +64,7 @@ namespace LibmeshBinary
 					Geometry::QuadWeightVec result(std_weights.size());
 					size_t i(0);
 					for (auto w : std_weights)
-						result(i++) = static_cast<double>(w);
+						result[i++] = static_cast<double>(w);
 
 					return result;
 				};

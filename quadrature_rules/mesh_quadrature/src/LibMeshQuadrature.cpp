@@ -19,17 +19,14 @@ namespace LibmeshBinary
 	Geometry::QuadPointVec<2> ModifiedTriangleRule::GetPoints()
 	{
 		auto points = LibmeshQuadratureRule<2, Geometry::TriangleType>::GetPoints();
-		for (auto& p : points)
-			p = this->_std_map.ComputeInverse(p);
-
-		return points;
+		return this->_std_map.ComputeInverse(points);
 	};
 
 	Geometry::QuadWeightVec ModifiedTriangleRule::GetWeights()
 	{
 		auto weights = LibmeshQuadratureRule<2, Geometry::TriangleType>::GetWeights(); 
 		//The jacobian of the inverse map is 1 / J, since the map is affine
-		for (ptrdiff_t i(0); i < weights.size(); ++i)
+		for (size_t i = 0; i < weights.Size(); ++i)
 			weights[i] /= this->_std_map.Jacobian();
 
 		return weights;

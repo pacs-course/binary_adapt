@@ -16,12 +16,21 @@ namespace SandiaQuadrature
 		Geometry::QuadPointVec<dim> TensorizePoints (const Geometry::QuadPointVec<1>& one_d_p)
 		{
 			Geometry::QuadPointVec<dim-1> temp = TensorizePoints<dim-1> (one_d_p);
-			Geometry::QuadPointVec<dim> result;
-			for (const auto& p1 : temp)
-				for(const auto& p2 : one_d_p)
-					result.push_back(p1.Tensor(p2));
+
+			size_t l1 = temp.Size();
+			size_t l2 = one_d_p.Size();
+			Geometry::QuadPointVec<dim> result(l1*l2);
+
+			size_t cont = 0;
+			for (size_t i = 0; i < l1; ++i)
+				for(size_t j = 0; j < l2; ++j)
+				{
+					auto p = temp[i].Tensor(one_d_p[j]);
+					result.Insert(cont++, p);
+				}
 			return result;
 		};
+
 	template <>
 		Geometry::QuadPointVec<1> TensorizePoints<1> (const Geometry::QuadPointVec<1>& one_d_p);
 
@@ -29,15 +38,15 @@ namespace SandiaQuadrature
 		Geometry::QuadWeightVec TensorizeWeights (const Geometry::QuadWeightVec& one_d_w)
 		{
 			Geometry::QuadWeightVec temp = TensorizeWeights<dim-1>(one_d_w);
-			auto length1 = temp.size();
-			auto length2 = one_d_w.size();
+			auto length1 = temp.Size();
+			auto length2 = one_d_w.Size();
 
 			Geometry::QuadWeightVec result(length1*length2);
 
 			auto k = 0;
-			for (auto i = 0; i < length1; ++i)
-				for(auto j = 0; j < length2; ++j)
-					result(k++) = temp(i)*one_d_w(j);
+			for (size_t i = 0; i < length1; ++i)
+				for(size_t j = 0; j < length2; ++j)
+					result[k++] = temp[i]*one_d_w[j];
 			return result;
 		};
 	template <>
@@ -96,12 +105,13 @@ namespace SandiaQuadrature
 					webbur::jacobi_compute (_n, 0.0, 0.0, x, w);
 
 					//I convert x and w to my type
-					Geometry::QuadPointVec<1> one_d_points;
-					Geometry::QuadWeightVec one_d_weights(_n);
-					for (size_t i = 0; i < _n; ++i)
+					Geometry::QuadPointVec<1> one_d_points(this->_n);
+					Geometry::QuadWeightVec one_d_weights(this->_n);
+
+					for (size_t i = 0; i < this->_n; ++i)
 					{
-						one_d_points.push_back(Geometry::Point<1>(x[i]));
-						one_d_weights(i) = w[i];
+						one_d_points.Insert(i, x[i]);
+						one_d_weights[i] = w[i];
 					}
 
 					//I tensorize to get a dim-dimensional quadrature rule

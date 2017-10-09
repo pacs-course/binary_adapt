@@ -77,12 +77,9 @@ namespace FiniteElements
 				{
 					CheckInitialization();
 
-					Geometry::QuadPointVec<dim> points = _ref_felement->GetQuadPoints();
+					auto points = _ref_felement->GetQuadPoints();
 
-					for (auto& p : points)
-						p = _map->Evaluate(p);
-
-					return points;
+					return _map->Evaluate(points);
 				};
 
 				virtual Geometry::QuadWeightVec GetQuadWeights()const
@@ -94,7 +91,7 @@ namespace FiniteElements
 					I'm taking advantage from the fact that _map is affine, so it has an evaluateJacobian() method
 					not dependent on the point of evaluation
 */
-					for (ptrdiff_t i(0); i < weights.size(); ++i)
+					for (size_t i = 0; i < weights.Size(); ++i)
 						weights[i] *= _map->Jacobian();
 
 					return weights;

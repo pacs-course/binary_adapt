@@ -8,10 +8,10 @@ namespace Geometry
 		double a = vert[0][0];
 		double b = vert[1][0];
 
-		this->_mat(0) = (b - a) / 2;
+		this->_mat(0,0) = (b - a) / 2;
 		this->_trasl[0] = (a + b) / 2;
-		this->_jacobian = this->_mat(0);
-		this->_inverse(0) = 1 / this->_mat(0);
+		this->_jacobian = this->_mat(0,0);
+		this->_inverse(0,0) = 1 / this->_mat(0,0);
 	};
 
 	void TriMap::Init(const NodesVector<2>& vert)

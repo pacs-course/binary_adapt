@@ -7,8 +7,6 @@
 
 #include <functional> //function
 
-#include <Eigen/Dense>
-
 #ifdef SIMMETRY_OPT
 //TODO: use numeric_limits
 #define TOLL 1E-18
@@ -40,87 +38,48 @@ namespace Geometry
 				virtual QuadWeightVec		GetQuadWeights()const = 0;
 				virtual size_t QuadratureOrder()const = 0;
 
-//				double Integrate(const BinaryTree::Functor<dim>& f)
-//				{
-//					return Integrate([&f](const Point<dim>& p){return f(p);});
-//				};
 
 				double Integrate(const function<double(Point<dim>)>& f) const
 				{
 					QuadWeightVec weights = GetQuadWeights();
-					QuadWeightVec fval(weights.size());
+					QuadWeightVec fval(weights.Size());
 					QuadPointVec<dim> nodes = GetQuadPoints();
 
 					//quadrature nodes and weights must have the same length
-					if (nodes.size() != static_cast<size_t> (weights.size()) )
+					if (nodes.Size() != weights.Size() )
 						throw std::length_error("Trying to integrate with different number of nodes and weights!");
 
-//TODO: to be tested
-#ifdef SIMMETRY_OPT
-					bool simmetric = CheckSimmetry(weights);
+//TODO: can be optimized using weights simmetry
 
-					if (simmetric)
-					{
-						int length = weights.size();
-						int add_if_odd = length % 2;
-						int new_length = length / 2 + add_if_odd;
-
-//						cout << "Pesi prima" << endl;
-//						for (int i = 0; i < length; ++i)
-//							cout << weights(i) << " ";
-//						cout << endl;
-
-						weights.conservativeResize (new_length);
-//						cout << "Pesi dopo" << endl;
-//						for (int i = 0; i < new_length; ++i)
-//							cout << weights(i) << " ";
-//						cout << endl;
-
-						fval.resize (new_length);
-
-						auto left_iter = nodes.begin();
-						auto right_iter = nodes.rbegin();
-						int cont(0);
-						for (; cont < length / 2; ++cont)
+						//TODO to be optimized
+						for (size_t i = 0; i < nodes.Size(); ++i)
 						{
-							double val = f(*(left_iter++)) + f(*(right_iter++));
-							fval(cont) = (/*val < TOLL ? 0.0 : */val);
+							auto p = nodes[i];
+							fval[i] = f(p);
 						}
 
-						if(add_if_odd)
-							fval(cont) = f(nodes[cont]);
-					}
-					else
-#endif //SIMMETRY_OPT
-					{
-						size_t cont(0);
-						for (auto p : nodes)
-							fval(cont++) = f(p);
-					}
-
-					return fval.dot(weights);
+					return fval.Dot(weights);
 				};
 
-				//integrating a multifunction
-				Eigen::VectorXd Integrate(const function<Eigen::VectorXd(Point<dim>)>& f) const
-				{
-					QuadWeightVec weights = GetQuadWeights();
-					QuadPointVec<dim> nodes = GetQuadPoints();
+				/* integrating a multifunction */
+//				ColumnVector Integrate(const function<ColumnVector(Point<dim>)>& f) const
+//				{
+//					QuadWeightVec weights = GetQuadWeights();
+//					QuadPointVec<dim> nodes = GetQuadPoints();
 
-					//quadrature nodes and weights must have the same length
-					if (nodes.size() != static_cast<size_t> (weights.size()) )
-						throw std::length_error("Trying to integrate with different number of nodes and weights!");
+//					//quadrature nodes and weights must have the same length
+//					if (nodes.Size() != weights.Size() )
+//						throw std::length_error("Trying to integrate with different number of nodes and weights!");
 
-					auto p_iter = nodes.begin();
-					auto first_col = f(*p_iter);
-					Eigen::MatrixXd A(first_col.size(), nodes.size());
-					size_t i = 0;
-					A.col(0) << first_col;
-					while (p_iter != nodes.end())
-						A.col(++i) << f(*(++p_iter));
+//					auto first_p = nodes[0];
+//					auto first_col = f(first_p);
+//					Eigen::MatrixXd A(first_col.Size(), nodes.Size());
+//					A.col(0) = first_col;
+//					for(size_t i = i; i < nodes.Size(); ++i)
+//						A.col(i) = f(nodes[i]);
 
-					return A*weights;
-				};
+//					return A*weights;
+//				};
 
 				template <typename F1, typename F2>
 				double L2Prod (const F1& f, const F2& g)const
@@ -138,7 +97,7 @@ namespace Geometry
 #ifdef SIMMETRY_OPT
 					bool CheckSimmetry(const QuadWeightVec& vec) const
 					{
-						int length = vec.size();
+						int length = vec.Size();
 						int i = 0, j = length - 1;
 						for(; i < length / 2; ++i, --j)
 							if ( abs(vec(i) - vec(j)) > TOLL )

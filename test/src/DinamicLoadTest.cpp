@@ -26,42 +26,44 @@ TEST_F(LoadTest, StdIntegration)
 
 	clog << "I check the simmetry of the quadrature nodes" << endl;
 	auto points = std_interval.GetQuadPoints();
-	auto right_begin = points.rbegin();
-	for(auto point : points)
+
+	size_t L = points.Size();
+	for(size_t i = 0; i < L; ++i)
 	{
-		auto err = point[0] + (*right_begin)[0];
+		auto point = points[i];
+		auto r_point = points[L - i - 1];
+
+		double err = point + r_point;
 
 		string s1 = "Point "
-					+ to_string(point[0])
+					+ to_string(point)
 					+ " simmetry: error = "
 					+ to_string(err);
 		string s2 = "The point "
-					+ to_string(point[0])
+					+ to_string(point)
 					+ " is not symmetric: error = "
 					+ to_string(err);
 		clog << s1 << endl;
 		EXPECT_LT(err, 1E-4) << s2;
-
-		++right_begin;
 	}
 
 	clog << "I check the simmetry of the quadrature weights" << endl;
 	auto weights = std_interval.GetQuadWeights();
-	int i = 0, j = weights.size() - 1;
-	for(; i < weights.size(); ++i)
+	size_t j = weights.Size() - 1;
+	for(size_t i = 0; i < weights.Size(); ++i)
 	{
-		auto err = weights(i) - weights(j);
+		auto err = weights[i] - weights[j];
 
 		string s1 = "Weight #"
 					+ to_string(i)
 					+ " valued "
-					+ to_string(weights(i))
+					+ to_string(weights[i])
 					+ " simmetry: error = "
 					+ to_string(err);
 		string s2 = "The weight #"
 					+ to_string(i)
 					+ " valued "
-					+ to_string(weights(i))
+					+ to_string(weights[i])
 					+ " is not symmetric: error = "
 					+ to_string(err);
 		clog << s1 << endl;
