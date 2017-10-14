@@ -60,22 +60,22 @@ namespace LibmeshBinary
 							dad->replace_child(el_ptr, index);
 
 						if (el_ptr->has_children())
-							for (int i(0); i < static_cast<int> (el_ptr->n_children()); ++i)
+							for (size_t i = 0; i < el_ptr->n_children(); ++i)
 								el_ptr->child(i)->set_parent(el_ptr);
 
-#ifdef NEIGHBOR_REPLACEMENT
-						bool neighbor_exist = true;
-						while (neighbor_exist)
+					//I have to replace the binarized element in neighbors address list
+					//TODO: the first neighbor should be the father; maybe previous replacement could be avoided
+						for (size_t i = 0; i < el_ptr->n_neighbors(); ++i)
 						{
-							size_t i = 0;
-							auto neigh = el_ptr->neighbor(i);
-							if (!neigh)
-								neighbor_exist = false;
-							else
-								//TODO:
-							++i;
+							auto friend_ptr = el_ptr->neighbor_ptr(i);
+							if (friend_ptr)
+								for (size_t j = 0; j < friend_ptr->n_neighbors(); ++j)
+								{
+									auto friend_of_my_friend = friend_ptr->neighbor_ptr(j);
+									if (friend_of_my_friend == el_ptr)
+										friend_ptr->set_neighbor(j, el_ptr);
+								}
 						}
-#endif //NEIGHBOR_REPLACEMENT
 					}
 				}
 

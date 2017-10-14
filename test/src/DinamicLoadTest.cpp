@@ -5,6 +5,7 @@
 using namespace std;
 using namespace Geometry;
 
+#ifdef ASPETTA
 TEST_F(LoadTest, IsRegistered)
 {
 	clog << endl << "Starting IsRegistered" << endl;
@@ -312,7 +313,7 @@ TEST_F(LoadTest, SquareLegendreOrthonormality)
 
 	clog << "Checking the orthogonality on the standard square" << endl;
 
-	size_t iteration_end = (exactness_size < 100) ? exactness_size : 100;
+	size_t iteration_end = (exactness_size < 50) ? exactness_size : 50;
 	for (size_t k(0); k < iteration_end; ++k)
 		for (size_t i = k + 1; i + k <= iteration_end; ++i)
 		{
@@ -420,3 +421,4 @@ TEST_F(LoadTest, WarpedOrthogonality)
 	clog << "WarpedOrthogonality ended" << endl << endl;
 };
 
+#endif //ASPETTA

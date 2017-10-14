@@ -7,7 +7,7 @@ namespace BinaryTree
 	void Counter::operator()(BinaryNode* node)
 	{
 #ifdef VERBOSE
-		cout << "Elemento attivo di:" << endl;
+		cout << "Active element with:" << endl;
 		auto id = node->NodeID();
 		cout << "#id : " << id << endl;
 #ifdef MYDEBUG
@@ -32,7 +32,6 @@ namespace BinaryTree
 	void ErrorComputer::operator()(BinaryNode* node)
 	{
 		(this->_error_variable) += node->ProjectionError();
-//		(this->_error_variable) += node->ETilde();
 	};
 
 	void ErrorComputer::ResetError()

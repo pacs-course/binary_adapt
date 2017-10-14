@@ -64,7 +64,7 @@ namespace Geometry
 				/* integrating a multifunction */
 //				ColumnVector Integrate(const function<ColumnVector(Point<dim>)>& f) const
 //				{
-//					QuadWeightVec weights = GetQuadWeights();
+//					ColumnVector weights = GetQuadWeights();
 //					QuadPointVec<dim> nodes = GetQuadPoints();
 
 //					//quadrature nodes and weights must have the same length
@@ -73,12 +73,12 @@ namespace Geometry
 
 //					auto first_p = nodes[0];
 //					auto first_col = f(first_p);
-//					Eigen::MatrixXd A(first_col.Size(), nodes.Size());
-//					A.col(0) = first_col;
+//					DynamicMatrix A(first_col.Size(), nodes.Size());
+//					A.SetCol(0, first_col);
 //					for(size_t i = i; i < nodes.Size(); ++i)
-//						A.col(i) = f(nodes[i]);
+//						A.SetCol(i, f(nodes[i]));
 
-//					return A*weights;
+//					return A *weights;
 //				};
 
 				template <typename F1, typename F2>

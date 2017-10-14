@@ -22,6 +22,7 @@ namespace Geometry
 	template <size_t dim>
 	using EigSemiDynamicMat = Eigen::Matrix <double, static_cast<int>(dim), Eigen::Dynamic>;
 
+	using EigDynamicMat = Eigen::MatrixXd;
 	using EigDynamicVec = Eigen::VectorXd;
 
 
@@ -35,6 +36,7 @@ namespace Geometry
 		class VectorPoint;
 
 	class DynamicVector;
+	class DynamicMatrix;
 
 
 	template <size_t dim>
@@ -45,7 +47,6 @@ namespace Geometry
 
 	using ColumnVector = DynamicVector;
 
-
 	class DynamicVector
 	{
 		public:
@@ -53,21 +54,46 @@ namespace Geometry
 			DynamicVector();
 			/* constructor with vector length */
 			DynamicVector(size_t);
+			DynamicVector(const vector<double>&);
 
 			DynamicVector(const DynamicVector&);
 			DynamicVector& operator= (const DynamicVector&);
+
 
 			double& operator[] (size_t);
 			const double& operator[] (size_t) const;
 
 			double Dot(const DynamicVector&) const;
-			size_t Size() const;
+			size_t Size() const;	
+			void Resize(size_t);
+
+			friend DynamicVector operator* (const DynamicMatrix&, const DynamicVector&);
+
+			friend class DynamicMatrix;
+		protected:
+			DynamicVector(const EigDynamicVec& v);
 
 		protected:
 			EigDynamicVec _vec;
 	};
 
-	
+	class DynamicMatrix
+	{
+		public:
+			/* default constructor */
+			DynamicMatrix();
+			/* constructor with vector length */
+			DynamicMatrix(size_t, size_t);
+
+			void SetCol(size_t, const DynamicVector&);
+
+			friend DynamicVector operator* (const DynamicMatrix&, const DynamicVector&);
+
+		protected:
+			EigDynamicMat _mat;
+	};
+
+	DynamicVector operator* (const DynamicMatrix&, const DynamicVector&);
 
 	/* A class that holds {dim}D points, equally vectors
 		When used as vectors, they are meant as column vector

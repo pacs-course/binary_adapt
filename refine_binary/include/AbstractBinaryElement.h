@@ -15,8 +15,7 @@ namespace BinaryTree
 		{
 			public:
 
-				using CoeffVector = vector<double>;
-//				using CoeffVector = Eigen::Vectorxd;
+				using CoeffVector = Geometry::ColumnVector;
 
 
 				/* constructor */
@@ -61,7 +60,7 @@ namespace BinaryTree
 				virtual void PrintCoefficients()
 				{
 					ComputeCoefficients();
-					for (size_t i = 0; i < this->_coeff.size(); ++i)
+					for (size_t i = 0; i < this->_coeff.Size(); ++i)
 						cout << (this->_coeff)[i] << "	";
 					cout << endl;
 				};
@@ -113,22 +112,17 @@ namespace BinaryTree
 				virtual double Projection(const Geometry::Point<dim>& point)
 				{
 					ComputeCoefficients();
-					double result(0);
+
 					CoeffVector basis_evaluation = this->_f_element->EvaluateBasis(point);
 
-					//TODO: optimizable: use eigen dot product
-					for (size_t i = 0; i < this->_coeff.size(); ++i)
-					{
-						result += this->_coeff[i] * basis_evaluation[i];
-					}
-					return result;
+					return (this->_coeff).Dot(basis_evaluation);
 				};
 
 				void ComputeCoefficients()
 				{
 					FiniteElements::CoefficientComputer<dim, FeType>::ComputeCoefficients(*(this->_f_element),
 																												 this->_f,
-																												 &(this->_coeff));
+																												 this->_coeff);
 				};
 
 			protected:

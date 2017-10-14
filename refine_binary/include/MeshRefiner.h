@@ -60,8 +60,19 @@ namespace BinaryTree
 //				void ExportProjection(const std::string& output_filename, const std::string& points_file);
 
 				/*	n_iter is the called complexity of the algorithm,
-					which corresponds to the number of iterations of the algorithm */
-				virtual void Refine(std::size_t n_iter);
+					which corresponds to the number of iterations of the algorithm
+					toll is the tolerance on the error
+					algorithm stopping criterion:  n > n_iter or err < toll
+					the variadic template parameter are functor which are called
+					at every iteration of the algorithm;
+					Purpose for them being created is to store partial info of the algorithm execution
+				*/
+				template <typename... Args>
+				void Refine(std::size_t n_iter, double toll, Args... funcs);
+
+				/* simply executes the algorithm as described in Binev paper
+					just iteration number stopping criterion */
+				void Refine(std::size_t n_iter);
 
 				double GlobalError();
 
@@ -71,6 +82,11 @@ namespace BinaryTree
 
 				const Functor<dim>& GetFunctor() const;
 
+			protected:
+				/*	Called by refine method
+					It performs the p refinement along the parents of input parameter
+					until an element without father is reached */
+				void ClimbUp(BinaryNode* dad);
 			protected:
 				virtual void DerivedInitialization(int argc, char** argv) = 0;
 
@@ -143,90 +159,141 @@ namespace BinaryTree
 			this->_error_updated = true;
 		};
 
-	template <std::size_t dim>
-		void MeshRefiner<dim>::Refine(std::size_t n_iter)
+
+	/* If no variadic argument is passed */
+	template <typename... Args>
+		void Execute(){};
+
+	/* End of the recursion */
+	template <typename T>
+		void Execute(T f)
 		{
-			BinaryNode* daddy(nullptr);
-			BinaryNode* previous_daddy(nullptr);
+			f();
+		};
 
-			while (n_iter)
+	/* Function which simply calls in sequence the functors passed by arguments
+		It will be called by MeshRefiner<dim>::Refine at each step of the algo */
+	template <typename... Args>
+		void Execute (std::function<void()> f, Args... funcs)
+		{
+			f();
+			Execute(funcs...);
+		};
+
+
+	template <std::size_t dim>
+		template <typename... Args>
+		void MeshRefiner<dim>::Refine(std::size_t n_iter, double toll, Args... funcs)
+		{
+			double total_error = this->GlobalError();
+			Execute(funcs...);
+			while (n_iter && total_error > toll)
 			{
-#ifdef MYDEBUG
-				std::clog << "Iterazione #" << n_iter << std::endl;
-#endif //MYDEBUG
-				daddy = this->_godfather.MakeBisection();
+#ifdef VERBOSE
+				std::cout << std::endl << "Complexity : " << n_iter << std::endl;
+#endif //VERBOSE
+				BinaryNode* daddy = this->_godfather.MakeBisection();
 				
-				while(daddy)
-				{
-#ifdef MYDEBUG
-					std::clog << "Modifico i valori dell'elemento di id # " << daddy->NodeID() << std::endl;
-#endif //MYDEBUG
+				ClimbUp(daddy);
 
-					auto val = daddy->PLevel();
-					daddy->PLevel(val + 1);
+				(this->_godfather).SelectActiveNodes();
+				this->_error_updated = false;
 
-					auto hansel = daddy->Left ();
-					auto gretel = daddy->Right();
+				total_error = this->GlobalError();
 
-#ifdef MYDEBUG
-					std::clog << "Daddy ha q = " << daddy->Q() << std::endl;
-					std::clog << "Daddy ha e tilde = " << daddy->TildeError() << std::endl;
-					std::clog << "Daddy ha e = " << daddy->ProjectionError() << std::endl;
-					std::clog << "Hansel ha q = " << hansel->Q() << std::endl;
-					std::clog << "Hansel ha e tilde = " << hansel->TildeError() << std::endl;
-					std::clog << "Hansel ha e = " << hansel->ProjectionError() << std::endl;
-					std::clog << "Gretel ha q = " << gretel->Q() << std::endl;
-					std::clog << "Gretel ha e tilde = " << gretel->TildeError() << std::endl;
-					std::clog << "Gretel ha e = " << gretel->ProjectionError() << std::endl;
-#endif //MYDEBUG
-
-					auto new_E = std::min(	hansel->E() + gretel->E(),
-													daddy->ProjectionError()
-												);
-
-					auto old_E_tilde = daddy->ETilde();
-					auto new_E_tilde = new_E * old_E_tilde
-											 /
-											 (new_E + old_E_tilde);
-#ifdef MYDEBUG
-					std::clog << "E" << std::endl;
-					std::clog << "Old value: " << daddy->E() << std::endl;
-#endif //MYDEBUG
-					daddy->E(new_E);
-#ifdef MYDEBUG
-					std::clog << "New value: " << new_E << std::endl;
-#endif //MYDEBUG
-					daddy->ETilde(new_E_tilde);
-#ifdef MYDEBUG
-					std::clog << "E tilde" << std::endl;
-					std::clog << "Old value: " << old_E_tilde << std::endl;
-					std::clog << "New value: " << new_E_tilde << std::endl;
-#endif //MYDEBUG
-
-					BinaryNode* alfa_bro(nullptr);
-
-					hansel->Q() > gretel->Q() ? alfa_bro = hansel : alfa_bro = gretel;
-
-					auto new_q = std::min (alfa_bro->Q(), new_E_tilde);
-#ifdef MYDEBUG
-					std::clog << "Il figlio alfa ha q = " << alfa_bro->Q() << std::endl;
-					std::clog << "Il nuovo q vale: " << new_q << std::endl;
-#endif //MYDEBUG
-					daddy->Q(new_q);
-
-					daddy->S(alfa_bro->S());
-
-					previous_daddy = daddy;									 
-					daddy = previous_daddy->Dad();
-				} //while(daddy)
-
+				Execute(funcs...);
 				--n_iter;
 			} //while(n_iter)
+		}; //Refine()
+
+	template <size_t dim>
+		void MeshRefiner<dim>::Refine(std::size_t n_iter)
+		{
+			while(n_iter)
+			{
+#ifdef VERBOSE
+				std::cout << std::endl << "Complexity : " << n_iter << std::endl;
+#endif //VERBOSE
+				BinaryNode* daddy = this->_godfather.MakeBisection();
+				
+				ClimbUp(daddy);
+
+				--n_iter;
+			}
 
 			(this->_godfather).SelectActiveNodes();
 			this->_error_updated = false;
-		}; //Refine()
+		};
 
+	template <size_t dim>
+		void MeshRefiner<dim>::ClimbUp(BinaryNode* daddy)
+		{
+			BinaryNode* previous_daddy(nullptr);
+
+			while(daddy)
+			{
+	#ifdef MYDEBUG
+				std::clog << "Modifico i valori dell'elemento di id # " << daddy->NodeID() << std::endl;
+	#endif //MYDEBUG
+
+				auto val = daddy->PLevel();
+				daddy->PLevel(val + 1);
+
+				auto hansel = daddy->Left ();
+				auto gretel = daddy->Right();
+
+	#ifdef MYDEBUG
+				std::clog << "Daddy ha q = " << daddy->Q() << std::endl;
+				std::clog << "Daddy ha e tilde = " << daddy->TildeError() << std::endl;
+				std::clog << "Daddy ha e = " << daddy->ProjectionError() << std::endl;
+				std::clog << "Hansel ha q = " << hansel->Q() << std::endl;
+				std::clog << "Hansel ha e tilde = " << hansel->TildeError() << std::endl;
+				std::clog << "Hansel ha e = " << hansel->ProjectionError() << std::endl;
+				std::clog << "Gretel ha q = " << gretel->Q() << std::endl;
+				std::clog << "Gretel ha e tilde = " << gretel->TildeError() << std::endl;
+				std::clog << "Gretel ha e = " << gretel->ProjectionError() << std::endl;
+	#endif //MYDEBUG
+
+				auto new_E = std::min(	hansel->E() + gretel->E(),
+												daddy->ProjectionError()
+											);
+
+				auto old_E_tilde = daddy->ETilde();
+				auto new_E_tilde = new_E * old_E_tilde
+										 /
+										 (new_E + old_E_tilde);
+	#ifdef MYDEBUG
+				std::clog << "E" << std::endl;
+				std::clog << "Old value: " << daddy->E() << std::endl;
+	#endif //MYDEBUG
+				daddy->E(new_E);
+	#ifdef MYDEBUG
+				std::clog << "New value: " << new_E << std::endl;
+	#endif //MYDEBUG
+				daddy->ETilde(new_E_tilde);
+	#ifdef MYDEBUG
+				std::clog << "E tilde" << std::endl;
+				std::clog << "Old value: " << old_E_tilde << std::endl;
+				std::clog << "New value: " << new_E_tilde << std::endl;
+	#endif //MYDEBUG
+
+				BinaryNode* alfa_bro(nullptr);
+
+				hansel->Q() > gretel->Q() ? alfa_bro = hansel : alfa_bro = gretel;
+
+				auto new_q = std::min (alfa_bro->Q(), new_E_tilde);
+	#ifdef MYDEBUG
+				std::clog << "Il figlio alfa ha q = " << alfa_bro->Q() << std::endl;
+				std::clog << "Il nuovo q vale: " << new_q << std::endl;
+	#endif //MYDEBUG
+				daddy->Q(new_q);
+
+				daddy->S(alfa_bro->S());
+
+				previous_daddy = daddy;									 
+				daddy = previous_daddy->Dad();
+			} //while(daddy)
+		};
 
 	template <std::size_t dim>
 		double MeshRefiner<dim>::GlobalError()

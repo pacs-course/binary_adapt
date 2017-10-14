@@ -68,16 +68,18 @@ namespace LibmeshBinary
 					{
 						auto current_ptr = nodes[i];
 						size_t j(0);
+						cout << "(";
 						while (j < dim - 1)
 							cout << (*current_ptr)(j++) << ",";
-						cout << (*current_ptr)(j) << "	";
+						cout << (*current_ptr)(j) << ") ";
 						++i;
 					}
 					auto current_ptr = nodes[i];
 					size_t j(0);
+					cout << "(";
 					while (j < dim - 1)
 						cout << (*current_ptr)(j++) << ",";
-					cout << (*current_ptr)(j) << endl;
+					cout << (*current_ptr)(j) << ")" << endl;
 #endif //VERBOSE
 					return static_cast<size_t>(this->id());
 				};
@@ -99,7 +101,6 @@ namespace LibmeshBinary
 					clog << "L'indirizzo del primo figlio e' : " << this->child(0) << endl;
 					clog << "L'indirizzo del secondo figlio e' : " << this->child(1) << endl;
 #endif //MYDEBUG
-					//TODO: optimize this step, it recomputes all the mesh elements, not only the two new children
 					BinarityMap::MakeBinary<dim>(this->_mesh_refinement, this->_f);
 #ifdef MYDEBUG
 					clog << "Binarizzati i nuovi elementi" << endl;
@@ -114,6 +115,14 @@ namespace LibmeshBinary
 						if ((*iter)->refinement_flag() == libMesh::Elem::INACTIVE)
 							--cont;
 					clog << "After refinement mesh has " << mesh.n_elem() << " elements, " << cont << " of them are ACTIVE" << endl;
+					clog << "After refinement mesh has " << mesh.n_nodes() << " nodes" << endl;
+					for (size_t i = 0; i < mesh.n_nodes(); ++i)
+					{
+						cerr << "(";
+						for (size_t j = 0; j < dim-1; ++j)
+							cerr << mesh.node(i)(j) << ",";
+						cerr << mesh.node(i)(dim-1) << ")" << endl;
+					}
 #endif //MYDEBUG
 				};
 
@@ -140,6 +149,7 @@ namespace LibmeshBinary
 	//TODO: use GetPot to select FElement BasisType at runtime	
 	using Interval = BinaryTreeElement<1, FiniteElements::LegendreType, LibmeshIntervalClass>;
 
+//#ifdef TRY_IT
 	//It must be modified the way libMesh elements divides theirselves
 	//The info about the procreation should be stored in the elem.embedding_matrix() method
 	class Triangle : public BinaryTreeElement<2, FiniteElements::WarpedType, LibmeshTriangleClass>
@@ -151,17 +161,20 @@ namespace LibmeshBinary
 
 			virtual ~Triangle(){};
 
-			virtual float	embedding_matrix (const unsigned int child_num,
-														const unsigned int child_node_num,
-														const unsigned int parent_node_num) const override
-			{
-				return _binary_embedding_matrices[this->_longest_side][child_num][child_node_num][parent_node_num];
-			};
+			virtual float	embedding_matrix (const unsigned int,
+														const unsigned int,
+														const unsigned int) const override;
+			virtual unsigned int embedding_matrix_version () const override;
 
-			virtual unsigned int n_children () const override
-			{
-				return 2;
-			};
+			virtual unsigned int n_children () const override;
+
+			//TODO
+//			virtual unsigned int as_parent_node (unsigned int, unsigned int) const override;
+//			const std::vector< std::pair< dof_id_type, dof_id_type >> bracketing_nodes(unsigned int c,
+//																												unsigned int n) const override;
+
+//			const std::vector< std::pair< unsigned char, unsigned char >>& parent_bracketing_nodes(unsigned int c,
+//																																unsigned int n) const override;
 
 		protected:
 			/*
@@ -172,7 +185,7 @@ namespace LibmeshBinary
 			// the index of the longest side
 			size_t _longest_side;
 	};
-
+//#endif //TRY_IT
 
 }; //namespace LibmeshBinary
 

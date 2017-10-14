@@ -4,6 +4,7 @@ using namespace std;
 
 namespace LibmeshBinary
 {
+//#ifdef TRY_IT
 	/* initializing the static attribute
 		I have to create the new node at the half of the longest side of the triangle
 
@@ -88,7 +89,8 @@ namespace LibmeshBinary
 								BinaryTree::FunctionPtr<2> f,
 								libMesh::MeshRefinement& mesh_refinement) :
 
-								BinaryTreeElement<2, FiniteElements::WarpedType, LibmeshTriangleClass>(move(el_ptr), f, mesh_refinement )
+								BinaryTreeElement<2, FiniteElements::WarpedType, LibmeshTriangleClass>(move(el_ptr), f, mesh_refinement ),
+								_longest_side(0)
 	{
 		auto nodes = this->_f_element->GetNodes();
 		vector<double> side_lengths(3,0);
@@ -97,12 +99,43 @@ namespace LibmeshBinary
 		side_lengths[1] = nodes[2].distance(nodes[1]);
 		side_lengths[2] = nodes[0].distance(nodes[2]);
 
-		double longest_length(0);
-		for (size_t i = 0; i < side_lengths.size(); ++i)
+#ifdef MYDEBUG
+		cerr << "Lato 0: l = " << side_lengths[0] << endl;
+		cerr << "Lato 1: l = " << side_lengths[1] << endl;
+		cerr << "Lato 2: l = " << side_lengths[2] << endl;
+#endif //MYDEBUG
+
+		double longest_length = side_lengths[0];
+
+		for (size_t i = 1; i < side_lengths.size(); ++i)
 		{
 			if (side_lengths[i] > longest_length)
+			{
+				longest_length = side_lengths[i];
 				this->_longest_side = i;
+			}
 		}
+#ifdef MYDEBUG
+		cerr << "longest_length = " << longest_length << endl;
+		cerr << "_longest_side = " << _longest_side << endl;
+#endif //MYDEBUG
 	};
 
+	float	Triangle::embedding_matrix(const unsigned int child_num,
+												const unsigned int child_node_num,
+												const unsigned int parent_node_num) const
+	{
+		return _binary_embedding_matrices[this->_longest_side][child_num][child_node_num][parent_node_num];
+	};
+
+	unsigned int Triangle::embedding_matrix_version () const
+	{
+		return this->_longest_side;
+	};
+
+	unsigned int Triangle::n_children () const
+	{
+		return 2;
+	};
+//#endif //TRY_IT
 };

@@ -63,8 +63,8 @@ namespace BinaryTree
 	{
 		if(node)
 		{
-#ifdef MYDEBUG
-			cerr << "Disattivo l'elemento di " << endl;
+//#ifdef MYDEBUG
+			cerr << "Deactivating element with " << endl;
 			auto id = node->NodeID();
 			cerr << "#id : " << id << endl;
 			cerr << "p level : " << node->PLevel() << endl;
@@ -73,7 +73,7 @@ namespace BinaryTree
 			cerr << "e~ " << node->TildeError() << endl;
 			cerr << "q = " << node->Q() << endl;
 			cerr << "E~ = " << node->ETilde() << endl << endl;
-#endif //MYDEBUG
+//#endif //MYDEBUG
 			node->Deactivate();
 			DeactivateSubTree(node->Left());
 			DeactivateSubTree(node->Right());

@@ -8,12 +8,18 @@ A = importdata(filename,delimiterIn,headerlinesIn);
 figure;
 errors = A.data(:,2);
 semilogy(A.data(:,1), errors, 'linewidth', 3);
+%plot(A.data(:,1), log(errors), 'linewidth', 3);
 xlabel ('# iterations', 'Fontsize', 22);
 ylabel ('L^{2} error', 'Fontsize', 22);
 title ('Error vs Complexity', 'Fontsize', 28);
 ylim([1E-16 1])
 set(gca, 'Fontsize', 18)
-
+%%
+hold on
+b = 1.7;
+y = exp(-b*sqrt(A.data(:,1)));
+plot(A.data(:,1), y, '-r')
+%%
 [garbage, expr] = strtok(A.textdata, ' ');
 temp = strcat('@(x)', expr);
 temp_2 = cell2mat(strrep(temp, '^', '.^'));

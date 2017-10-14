@@ -18,7 +18,7 @@ namespace PluginLoading
 			~PluginLoader()
 			{
 #ifdef DESTRUCTOR_ALERT
-				std::cerr << "Distruggo PluginLoader" << std::endl;
+				std::clog << "Distruggo PluginLoader" << std::endl;
 #endif
 			};
 			void Add(std::string, const std::string&, int mode = RTLD_LAZY);

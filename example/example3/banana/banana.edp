@@ -1,0 +1,10 @@
+int n = 1;
+border a(t = 0, -1){x = 0; y = t; label = 1;};
+border b(t = 0, 1){x = t; y = -1; label = 2;};
+border c(t = -1, 1){x = 1; y = t; label = 3;};
+border d(t = 1, -1){x = t; y = 1; label = 4;};
+border e(t = 1, 0){x = -1; y = t; label = 5;};
+border f(t = -1, 0){x = t; y = 0; label = 6;};
+
+mesh Th = buildmesh(a(n) + b(n) + c(2*n) + d(2*n) + e(n) + f(n));
+plot (Th);

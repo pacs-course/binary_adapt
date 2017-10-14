@@ -13,6 +13,13 @@ namespace Geometry
 		*this = v;
 	};
 
+	DynamicVector::DynamicVector(const EigDynamicVec& v) : _vec(v){};
+	DynamicVector::DynamicVector(const vector<double>& v) : _vec(v.size())
+	{
+		for (size_t i = 0; i < v.size(); ++i)
+			_vec(i) = v[i];
+	};
+
 	DynamicVector& DynamicVector::operator= (const DynamicVector& v)
 	{
 		if (&v != this)
@@ -40,6 +47,25 @@ namespace Geometry
 	size_t DynamicVector::Size() const
 	{
 		return this->_vec.size();
+	};
+
+	void DynamicVector::Resize(size_t L)
+	{
+		this->_vec.conservativeResize(L);
+	};
+
+	DynamicMatrix::DynamicMatrix() : _mat(){};
+
+	DynamicMatrix::DynamicMatrix(size_t i, size_t j) : _mat(i,j){};
+
+	void DynamicMatrix::SetCol(size_t i, const DynamicVector& v)
+	{
+		this->_mat.col(i) = v._vec;
+	};
+
+	DynamicVector operator* (const DynamicMatrix& A, const DynamicVector& b)
+	{
+		return DynamicVector(A * b);
 	};
 
 } //namespace Geometry

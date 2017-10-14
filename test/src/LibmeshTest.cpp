@@ -372,6 +372,7 @@ TEST_F(LibmeshTest, SquareProjectionTest)
 }
 #endif //TRY_IT
 
+#ifdef ASPETTA
 TEST_F(LibmeshTest, TriangleOrthogonality)
 {
 	clog << endl << "Starting TriangleOrthogonality" << endl;
@@ -431,7 +432,6 @@ TEST_F(LibmeshTest, TriangleOrthogonality)
 	clog << "TriangleOrthogonality ended" << endl << endl;
 };
 
-#ifdef ASPETTA
 TEST_F(LibmeshTest, TriangleProjectionTest)
 {
 	clog << endl << "Starting TriangleProjectionTest" << endl;
@@ -477,7 +477,6 @@ TEST_F(LibmeshTest, TriangleProjectionTest)
 	clog << "TriangleProjectionTest ended" << endl << endl;
 };
 #endif //ASPETTA
-
 
 TEST_F(LibmeshTest, LibmeshRefinement)
 {
@@ -557,6 +556,142 @@ TEST_F(LibmeshTest, LibmeshRefinement)
 
 	clog << "LibmeshRefinement ended" << endl << endl;
 };
+
+//#ifdef TRY_IT
+TEST_F(LibmeshTest, TriangleBisection)
+{
+	clog << endl << "Starting TriangleBisection" << endl;
+
+	int nx = 1, ny = 1;
+	libMesh::Mesh mesh(_mesh_init_ptr->comm());
+
+	libMesh::MeshRefinement mesh_refiner(mesh);
+
+	clog << "Building a 2D mesh with " << 2 * nx * ny << " triangular elements in (0,1)x(0,1)" << endl;
+	libMesh::MeshTools::Generation::build_square(mesh, nx, ny, 0., 1., 0., 1., LibmeshTriangleType);
+
+	auto& f_factory(BinaryTree::FunctionsFactory<2>::Instance());
+	unique_ptr<BinaryTree::Functor<2>> smart_ptr = f_factory.create("x_squared_plus_y_squared");
+	BinaryTree::FunctionPtr<2> f_ptr(smart_ptr.release());
+
+	LibmeshBinary::BinarityMap::MakeBinary<2> (mesh_refiner, f_ptr);
+	ASSERT_TRUE(LibmeshBinary::BinarityMap::CheckBinarity(mesh)) << "After MakeBinary mesh is not binary!";
+
+	LibmeshBinary::Triangle* el = nullptr;
+	LibmeshBinary::Triangle* hansel = nullptr;
+	LibmeshBinary::Triangle* gretel = nullptr;
+	vector<Point<2>> nodes;
+
+	auto iter = mesh.elements_begin();
+	auto first_el_ptr = *iter;
+	++iter;
+	auto second_el_ptr = *iter;
+
+	el = dynamic_cast<LibmeshBinary::Triangle*> (second_el_ptr);
+	ASSERT_NE(el, nullptr) << "Mesh element not recognized casting to LibmeshBinary::BinaryElement";
+
+	clog << "I bisect the second element" << endl;
+	el->Bisect();
+	clog << "Bisected element has " << el->n_children() << " children" << endl;
+	EXPECT_EQ(el->n_children(), 2) << "The expected triangular binary element has " << el->n_children() << " children instead of 2" << endl;
+	nodes = el->Nodes();
+	clog << "Initial element nodes:" << endl;
+	for (auto n : nodes)
+		clog << n;
+	clog << endl;
+
+	EXPECT_LT(abs(nodes[0][0]), 1E-14);
+	EXPECT_LT(abs(nodes[0][1]), 1E-14);
+	EXPECT_LT(abs(nodes[1][0]) - 1, 1E-14);
+	EXPECT_LT(abs(nodes[1][1]) - 1, 1E-14);
+	EXPECT_LT(abs(nodes[2][0]), 1E-14);
+	EXPECT_LT(abs(nodes[2][1]) - 1, 1E-14);
+
+	hansel = dynamic_cast<LibmeshBinary::Triangle*>(el->Left());
+	gretel = dynamic_cast<LibmeshBinary::Triangle*>(el->Right());
+	ASSERT_NE(hansel, nullptr) << "Left child of bisected element is a nullptr";
+	ASSERT_NE(gretel, nullptr) << "Right child of bisected element is a nullptr";
+
+	nodes = hansel->Nodes();
+	clog << "Left child nodes:" << endl;
+	for (auto n : nodes)
+		clog << n;
+	clog << endl;
+
+	EXPECT_LT(abs(nodes[0][0]), 1E-14);
+	EXPECT_LT(abs(nodes[0][1]), 1E-14);
+	EXPECT_LT(abs(nodes[1][0]) - 0.5, 1E-14);
+	EXPECT_LT(abs(nodes[1][1]) - 0.5, 1E-14);
+	EXPECT_LT(abs(nodes[2][0]), 1E-14);
+	EXPECT_LT(abs(nodes[2][1]) - 1, 1E-14);
+
+	nodes = gretel->Nodes();
+	clog << "Right child nodes:" << endl;
+	for (auto n : nodes)
+		clog << n;
+	clog << endl;
+
+	EXPECT_LT(abs(nodes[0][0]) - 0.5, 1E-14);
+	EXPECT_LT(abs(nodes[0][1]) - 0.5, 1E-14);
+	EXPECT_LT(abs(nodes[1][0]) - 1, 1E-14);
+	EXPECT_LT(abs(nodes[1][1]) - 1, 1E-14);
+	EXPECT_LT(abs(nodes[2][0]), 1E-14);
+	EXPECT_LT(abs(nodes[2][1]) - 1, 1E-14);
+
+	el = dynamic_cast<LibmeshBinary::Triangle*> (first_el_ptr);
+	ASSERT_NE(el, nullptr) << "Mesh element not recognized casting to LibmeshBinary::BinaryElement";
+
+	clog << "I bisect the first element" << endl;
+	el->Bisect();
+	clog << "Bisected element has " << el->n_children() << " children" << endl;
+	EXPECT_EQ(el->n_children(), 2) << "The expected triangular binary element has " << el->n_children() << " children instead of 2" << endl;
+	nodes = el->Nodes();
+	clog << "Initial element nodes:" << endl;
+	for (auto n : nodes)
+		clog << n;
+	clog << endl;
+
+	EXPECT_LT(abs(nodes[0][0]), 1E-14);
+	EXPECT_LT(abs(nodes[0][1]), 1E-14);
+	EXPECT_LT(abs(nodes[1][0]) - 1, 1E-14);
+	EXPECT_LT(abs(nodes[1][1]), 1E-14);
+	EXPECT_LT(abs(nodes[2][0]) - 1, 1E-14);
+	EXPECT_LT(abs(nodes[2][1]) - 1, 1E-14);
+
+	hansel = dynamic_cast<LibmeshBinary::Triangle*>(el->Left());
+	gretel = dynamic_cast<LibmeshBinary::Triangle*>(el->Right());
+	ASSERT_NE(hansel, nullptr) << "Left child of bisected element is a nullptr";
+	ASSERT_NE(gretel, nullptr) << "Right child of bisected element is a nullptr";
+
+	nodes = hansel->Nodes();
+	clog << "Left child nodes:" << endl;
+	for (auto n : nodes)
+		clog << n;
+	clog << endl;
+
+	EXPECT_LT(abs(nodes[0][0]), 1E-14);
+	EXPECT_LT(abs(nodes[0][1]), 1E-14);
+	EXPECT_LT(abs(nodes[1][0]) - 1, 1E-14);
+	EXPECT_LT(abs(nodes[1][1]), 1E-14);
+	EXPECT_LT(abs(nodes[2][0]) - 0.5, 1E-14);
+	EXPECT_LT(abs(nodes[2][1]) - 0.5, 1E-14);
+
+	nodes = gretel->Nodes();
+	clog << "Right child nodes:" << endl;
+	for (auto n : nodes)
+		clog << n;
+	clog << endl;
+
+	EXPECT_LT(abs(nodes[0][0]) - 0.5, 1E-14);
+	EXPECT_LT(abs(nodes[0][1]) - 0.5, 1E-14);
+	EXPECT_LT(abs(nodes[1][0]) - 1, 1E-14);
+	EXPECT_LT(abs(nodes[1][1]), 1E-14);
+	EXPECT_LT(abs(nodes[2][0]) - 1, 1E-14);
+	EXPECT_LT(abs(nodes[2][1]) - 1, 1E-14);
+  
+	clog << "TriangleBisection ended" << endl << endl;
+};
+//#endif //TRY_IT
 
 TEST_F(LibmeshTest, ManualBinaryRefinement)
 {
