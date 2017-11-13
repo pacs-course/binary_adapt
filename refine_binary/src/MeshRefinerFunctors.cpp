@@ -4,21 +4,8 @@ using namespace std;
 
 namespace BinaryTree
 {
-	void Counter::operator()(BinaryNode* node)
+	void Counter::operator()(BinaryNode*)
 	{
-#ifdef VERBOSE
-		cout << "Active element with:" << endl;
-		auto id = node->NodeID();
-		cout << "#id : " << id << endl;
-#ifdef MYDEBUG
-		clog << "p level : " << node->PLevel() << endl;
-		clog << "e = " << node->ProjectionError() << endl;
-		clog << "E = " << node->E() << endl;
-		clog << "e~ = " << node->TildeError() << endl;
-		clog << "q = " << node->Q() << endl;
-		clog << "E~ = " << node->ETilde() << endl << endl;
-#endif //MYDEBUG
-#endif //VERBOSE
 		++(this->_counter);
 	};
 

@@ -49,37 +49,15 @@ namespace Geometry
 					if (nodes.Size() != weights.Size() )
 						throw std::length_error("Trying to integrate with different number of nodes and weights!");
 
-//TODO: can be optimized using weights simmetry
-
-						//TODO to be optimized
-						for (size_t i = 0; i < nodes.Size(); ++i)
-						{
-							auto p = nodes[i];
-							fval[i] = f(p);
-						}
+					//TODO: can be optimized using weights simmetry
+					for (size_t i = 0; i < nodes.Size(); ++i)
+					{
+						auto p = nodes[i];
+						fval[i] = f(p);
+					}
 
 					return fval.Dot(weights);
 				};
-
-				/* integrating a multifunction */
-//				ColumnVector Integrate(const function<ColumnVector(Point<dim>)>& f) const
-//				{
-//					ColumnVector weights = GetQuadWeights();
-//					QuadPointVec<dim> nodes = GetQuadPoints();
-
-//					//quadrature nodes and weights must have the same length
-//					if (nodes.Size() != weights.Size() )
-//						throw std::length_error("Trying to integrate with different number of nodes and weights!");
-
-//					auto first_p = nodes[0];
-//					auto first_col = f(first_p);
-//					DynamicMatrix A(first_col.Size(), nodes.Size());
-//					A.SetCol(0, first_col);
-//					for(size_t i = i; i < nodes.Size(); ++i)
-//						A.SetCol(i, f(nodes[i]));
-
-//					return A *weights;
-//				};
 
 				template <typename F1, typename F2>
 				double L2Prod (const F1& f, const F2& g)const

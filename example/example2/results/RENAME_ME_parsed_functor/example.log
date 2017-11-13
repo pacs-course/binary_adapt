@@ -1,0 +1,206 @@
+WARNING: OneDEvaluation method in LegendreBasis is deprecated because of inefficiency
+
+Complexity : 0
+1 active elements with p refinement levels: 
+1 
+Interpolation error: 0.100658
+
+Complexity : 1
+1 active elements with p refinement levels: 
+2 
+Interpolation error: 0.0889537
+
+Complexity : 2
+2 active elements with p refinement levels: 
+0 2 
+Interpolation error: 0.0704905
+
+Complexity : 3
+3 active elements with p refinement levels: 
+0 0 2 
+Interpolation error: 0.0434077
+
+Complexity : 4
+4 active elements with p refinement levels: 
+0 0 0 2 
+Interpolation error: 0.0173414
+
+Complexity : 5
+4 active elements with p refinement levels: 
+0 0 0 3 
+Interpolation error: 0.00524369
+
+Complexity : 6
+4 active elements with p refinement levels: 
+0 0 0 4 
+Interpolation error: 0.0015087
+
+Complexity : 7
+4 active elements with p refinement levels: 
+0 0 0 5 
+Interpolation error: 0.000612978
+
+Complexity : 8
+3 active elements with p refinement levels: 
+0 0 7 
+Interpolation error: 0.000263936
+
+Complexity : 9
+3 active elements with p refinement levels: 
+0 0 8 
+Interpolation error: 6.26782e-05
+
+Complexity : 10
+3 active elements with p refinement levels: 
+0 0 9 
+Interpolation error: 1.37249e-05
+
+Complexity : 11
+3 active elements with p refinement levels: 
+0 0 10 
+Interpolation error: 3.2643e-06
+
+Complexity : 12
+3 active elements with p refinement levels: 
+0 0 11 
+Interpolation error: 1.28602e-06
+
+Complexity : 13
+3 active elements with p refinement levels: 
+0 1 11 
+Interpolation error: 1.10001e-06
+
+Complexity : 14
+3 active elements with p refinement levels: 
+0 2 11 
+Interpolation error: 8.73716e-07
+
+Complexity : 15
+2 active elements with p refinement levels: 
+0 15 
+Interpolation error: 4.51881e-07
+
+Complexity : 16
+2 active elements with p refinement levels: 
+0 16 
+Interpolation error: 9.57764e-08
+
+Complexity : 17
+2 active elements with p refinement levels: 
+0 17 
+Interpolation error: 1.85953e-08
+
+Complexity : 18
+2 active elements with p refinement levels: 
+0 18 
+Interpolation error: 3.30621e-09
+
+Complexity : 19
+2 active elements with p refinement levels: 
+0 19 
+Interpolation error: 5.38054e-10
+
+Complexity : 20
+2 active elements with p refinement levels: 
+0 20 
+Interpolation error: 8.00798e-11
+
+Complexity : 21
+1 active elements with p refinement levels: 
+22 
+Interpolation error: 2.79376e-15
+
+Complexity : 22
+1 active elements with p refinement levels: 
+23 
+Interpolation error: 2.78553e-15
+
+Complexity : 23
+2 active elements with p refinement levels: 
+1 22 
+Interpolation error: 6.5706e-14
+
+Complexity : 24
+2 active elements with p refinement levels: 
+2 22 
+Interpolation error: 5.81788e-14
+
+Complexity : 25
+3 active elements with p refinement levels: 
+22 0 2 
+Interpolation error: 4.63049e-14
+
+Complexity : 26
+4 active elements with p refinement levels: 
+22 0 0 2 
+Interpolation error: 2.88877e-14
+
+Complexity : 27
+5 active elements with p refinement levels: 
+22 0 0 0 2 
+Interpolation error: 1.21242e-14
+
+Complexity : 28
+5 active elements with p refinement levels: 
+22 0 0 0 3 
+Interpolation error: 4.34405e-15
+
+Complexity : 29
+5 active elements with p refinement levels: 
+22 0 0 0 4 
+Interpolation error: 1.94203e-15
+
+Complexity : 30
+5 active elements with p refinement levels: 
+23 0 0 0 4 
+Interpolation error: 1.94079e-15
+
+Complexity : 31
+5 active elements with p refinement levels: 
+23 0 0 0 5 
+Interpolation error: 1.36475e-15
+
+Complexity : 32
+5 active elements with p refinement levels: 
+24 0 0 0 5 
+Interpolation error: 1.06472e-11
+
+Complexity : 33
+5 active elements with p refinement levels: 
+25 0 0 0 5 
+Interpolation error: 8.00231e-11
+
+Complexity : 34
+6 active elements with p refinement levels: 
+10 15 0 0 0 5 
+Interpolation error: 2.86631e-10
+
+Complexity : 35
+6 active elements with p refinement levels: 
+11 15 0 0 0 5 
+Interpolation error: 1.42398e-10
+
+Complexity : 36
+6 active elements with p refinement levels: 
+11 16 0 0 0 5 
+Interpolation error: 5.11819e-11
+
+Complexity : 37
+6 active elements with p refinement levels: 
+12 16 0 0 0 5 
+Interpolation error: 1.82467e-11
+
+Complexity : 38
+6 active elements with p refinement levels: 
+12 17 0 0 0 5 
+Interpolation error: 9.15028e-12
+
+Complexity : 39
+6 active elements with p refinement levels: 
+13 17 0 0 0 5 
+Interpolation error: 2.39174e-12
+
+Complexity : 40
+6 active elements with p refinement levels: 
+14 17 0 0 0 5 
+Interpolation error: 1.14134e-12

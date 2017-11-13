@@ -1,3 +1,7 @@
+Compute the whole basis at the start basing on the iteration number
+
+CoefficientComputer calls OneDEvaluation, which is unefficient
+
 rimuovere i template da coefficientcomputer, sostituirli con il polimorfismo. Verificare se FeType e' necessario come parametro del template
 
 rendere il codice indipendente dalla libreria che calcola jacobi

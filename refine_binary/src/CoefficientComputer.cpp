@@ -13,7 +13,7 @@ namespace FiniteElements
 		//New number of coefficients
 		size_t s = f_el.BasisSize();
 
-		if (cursor == s)
+		if (cursor >= s)
 			//Coefficients already computed
 			return;
 
@@ -28,7 +28,8 @@ namespace FiniteElements
 																(const Geometry::Point<2>& p)
 																{ return f_el.EvaluateBasisFunction(cursor, p);}
 															 );
-			double norm_2 = f_el.L2Prod	(
+
+			double norm_2 = f_el.L2Prod(
 													[&f_el, &cursor]
 													(const Geometry::Point<2>& p)
 													{ return f_el.EvaluateBasisFunction(cursor, p);},
@@ -36,6 +37,7 @@ namespace FiniteElements
 													(const Geometry::Point<2>& p)
 													{ return f_el.EvaluateBasisFunction(cursor, p);}
 												);
+
 			coeff_location[cursor] /= norm_2;
 		}
 	};

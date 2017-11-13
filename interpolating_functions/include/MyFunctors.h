@@ -3,6 +3,7 @@
 
 #include "Functor.h"
 #include "MuParserInterface.h"
+#include "BinaryTreeHelper.h"
 
 //#include <GetPot>
 #include "getpot.h"
@@ -85,6 +86,7 @@ namespace MyFunctions
 				MuParserInterface<dim> _parser;
 		};
 
+
 	template <int exp>
 		class XExpBeta : public BinaryTree::Functor<1>
 		{
@@ -92,11 +94,7 @@ namespace MyFunctions
 				XExpBeta(){};
 				virtual double operator() (const Geometry::Point<1>& p)const override
 				{
-					double result(1.0);
-					for(std::size_t e(0); e < exp; ++e)
-						result *= p;
-					
-					return result;
+					return HelperFunctions::Power<exp>(p);
 				};
 
 				virtual std::string Formula()const override

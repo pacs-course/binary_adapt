@@ -50,6 +50,8 @@ namespace Geometry
 	class DynamicVector
 	{
 		public:
+			using BlockType = EigDynamicVec::ConstSegmentReturnType;
+
 			/* default constructor */
 			DynamicVector();
 			/* constructor with vector length */
@@ -64,8 +66,12 @@ namespace Geometry
 			const double& operator[] (size_t) const;
 
 			double Dot(const DynamicVector&) const;
+			double Dot(const BlockType&) const;
+
 			size_t Size() const;	
 			void Resize(size_t);
+
+			BlockType Head(size_t) const;
 
 			friend DynamicVector operator* (const DynamicMatrix&, const DynamicVector&);
 

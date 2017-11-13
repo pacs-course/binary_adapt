@@ -96,18 +96,19 @@ namespace BinaryTree
 /*
 					L2 norm of the interpolation error
 */
-					double err = sqrt	(_f_element->Integrate
-												(
-													[&](const Geometry::Point<dim>& p)	{
-																										double val = (*(this->_f))(p) - Projection(p);
-																										return val*val;
-																									}
-												)
-											);
+					double err = _f_element->L2Norm	(
+																	[&](const Geometry::Point<dim>& p)
+																	{return (*(this->_f))(p) - Projection(p);}
+																);
 
 					this->ProjectionError(err);
 					this->_error_updated = true;
 				};
+
+//				virtual CoeffVector ProjectionOverQuadraturePoints()
+//				{
+//					return this->_values;
+//				};
 
 				virtual double Projection(const Geometry::Point<dim>& point)
 				{
@@ -115,7 +116,12 @@ namespace BinaryTree
 
 					CoeffVector basis_evaluation = this->_f_element->EvaluateBasis(point);
 
-					return (this->_coeff).Dot(basis_evaluation);
+					size_t basis_size = basis_evaluation.Size();
+					//It may happen that I've stored more coefficients than needed
+					//so I take the "head" of the coeff vector
+					//i.e. the first basis_size coefficients  
+					auto needed_coeff = (this->_coeff).Head(basis_size);
+					return basis_evaluation.Dot(needed_coeff);
 				};
 
 				void ComputeCoefficients()
@@ -126,9 +132,20 @@ namespace BinaryTree
 				};
 
 			protected:
-				//function whose projection error has to be computed
+/*
+				The functor whose projection error has to be computed
+*/
 				FunctionPtr<dim> _f;
-				//coefficients of the projection
+
+/*
+				attribute created with optimization purpose
+				it stores the coefficients of the projection, so they are not recomputed every time
+				during the object construction all the coefficients that will be needed during the algorithm are computed,
+				since adding other values when p_level gets higher implies the recomputing of the (already computed and stored)
+				lower p_levels  coefficients (this because of how the evaluation of the legendre basis works,
+				see "LegendreBasis.h" and/or "WarpedBasis.h").
+				When evaluating the Projection, only the first BasisSize(p_level) coefficients will be used  
+*/
 				CoeffVector _coeff;
 
 				unique_ptr<AbstractFElement<dim, FeType> > _f_element;

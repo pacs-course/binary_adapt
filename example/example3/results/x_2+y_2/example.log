@@ -1,0 +1,208 @@
+Building a 2D mesh with 2 triangular elements in (0,1)x(0,1)
+WARNING: Evaluate method in WarpedBasis is deprecated because of inefficiency
+Starting the algorithm with 40 iterations and tolerance of 0
+
+Complexity : 0
+2 active elements with p refinement levels: 
+1 0 
+Interpolation error: 0.364809
+
+Complexity : 1
+2 active elements with p refinement levels: 
+1 1 
+Interpolation error: 0.133333
+
+Complexity : 2
+2 active elements with p refinement levels: 
+1 2 
+Interpolation error: 0.0666667
+
+Complexity : 3
+2 active elements with p refinement levels: 
+2 2 
+Interpolation error: 3.28171e-16
+
+Complexity : 4
+2 active elements with p refinement levels: 
+3 2 
+Interpolation error: 3.938e-16
+
+Complexity : 5
+2 active elements with p refinement levels: 
+3 3 
+Interpolation error: 4.36696e-16
+
+Complexity : 6
+2 active elements with p refinement levels: 
+3 4 
+Interpolation error: 4.87118e-16
+
+Complexity : 7
+2 active elements with p refinement levels: 
+4 4 
+Interpolation error: 5.57483e-16
+
+Complexity : 8
+3 active elements with p refinement levels: 
+4 2 2 
+Interpolation error: 4.33458e-16
+
+Complexity : 9
+3 active elements with p refinement levels: 
+4 2 3 
+Interpolation error: 4.66431e-16
+
+Complexity : 10
+4 active elements with p refinement levels: 
+2 3 2 2 
+Interpolation error: 4.06956e-16
+
+Complexity : 11
+4 active elements with p refinement levels: 
+2 3 2 3 
+Interpolation error: 4.21758e-16
+
+Complexity : 12
+4 active elements with p refinement levels: 
+2 4 2 3 
+Interpolation error: 4.80171e-16
+
+Complexity : 13
+4 active elements with p refinement levels: 
+3 4 2 3 
+Interpolation error: 4.96566e-16
+
+Complexity : 14
+4 active elements with p refinement levels: 
+3 4 2 4 
+Interpolation error: 5.39044e-16
+
+Complexity : 15
+5 active elements with p refinement levels: 
+3 2 4 2 2 
+Interpolation error: 4.6755e-16
+
+Complexity : 16
+5 active elements with p refinement levels: 
+3 2 4 2 3 
+Interpolation error: 4.94154e-16
+
+Complexity : 17
+5 active elements with p refinement levels: 
+3 2 5 2 3 
+Interpolation error: 5.56396e-16
+
+Complexity : 18
+5 active elements with p refinement levels: 
+3 2 6 2 3 
+Interpolation error: 6.09964e-16
+
+Complexity : 19
+5 active elements with p refinement levels: 
+4 2 6 2 3 
+Interpolation error: 6.26991e-16
+
+Complexity : 20
+5 active elements with p refinement levels: 
+4 2 6 3 3 
+Interpolation error: 6.47095e-16
+
+Complexity : 21
+5 active elements with p refinement levels: 
+4 2 7 3 3 
+Interpolation error: 6.62605e-16
+
+Complexity : 22
+5 active elements with p refinement levels: 
+4 3 7 3 3 
+Interpolation error: 7.0702e-16
+
+Complexity : 23
+5 active elements with p refinement levels: 
+4 3 8 3 3 
+Interpolation error: 7.3526e-16
+
+Complexity : 24
+7 active elements with p refinement levels: 
+4 3 3 3 3 2 2 
+Interpolation error: 7.18094e-16
+
+Complexity : 25
+8 active elements with p refinement levels: 
+3 3 3 3 2 2 2 2 
+Interpolation error: 7.11526e-16
+
+Complexity : 26
+8 active elements with p refinement levels: 
+3 3 3 4 2 2 2 2 
+Interpolation error: 7.88637e-16
+
+Complexity : 27
+8 active elements with p refinement levels: 
+3 3 3 5 2 2 2 2 
+Interpolation error: 8.51474e-16
+
+Complexity : 28
+8 active elements with p refinement levels: 
+3 3 3 6 2 2 2 2 
+Interpolation error: 8.83195e-16
+
+Complexity : 29
+8 active elements with p refinement levels: 
+3 3 4 6 2 2 2 2 
+Interpolation error: 9.25351e-16
+
+Complexity : 30
+8 active elements with p refinement levels: 
+3 3 4 6 2 3 2 2 
+Interpolation error: 9.30605e-16
+
+Complexity : 31
+8 active elements with p refinement levels: 
+3 3 4 6 2 3 2 3 
+Interpolation error: 9.61591e-16
+
+Complexity : 32
+8 active elements with p refinement levels: 
+3 4 4 6 2 3 2 3 
+Interpolation error: 9.78081e-16
+
+Complexity : 33
+8 active elements with p refinement levels: 
+3 4 4 7 2 3 2 3 
+Interpolation error: 1.02011e-15
+
+Complexity : 34
+8 active elements with p refinement levels: 
+3 4 4 7 2 3 2 4 
+Interpolation error: 1.04657e-15
+
+Complexity : 35
+8 active elements with p refinement levels: 
+4 4 4 7 2 3 2 4 
+Interpolation error: 1.07892e-15
+
+Complexity : 36
+8 active elements with p refinement levels: 
+4 4 4 7 2 3 3 4 
+Interpolation error: 1.09133e-15
+
+Complexity : 37
+9 active elements with p refinement levels: 
+4 4 7 2 3 3 4 2 2 
+Interpolation error: 1.10328e-15
+
+Complexity : 38
+11 active elements with p refinement levels: 
+4 4 2 3 3 4 2 2 2 2 2 
+Interpolation error: 9.42286e-16
+
+Complexity : 39
+11 active elements with p refinement levels: 
+4 5 2 3 3 4 2 2 2 2 2 
+Interpolation error: 9.86701e-16
+
+Complexity : 40
+11 active elements with p refinement levels: 
+4 5 2 4 3 4 2 2 2 2 2 
+Interpolation error: 9.98074e-16

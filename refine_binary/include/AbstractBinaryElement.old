@@ -1,0 +1,154 @@
+#ifndef __ABSTRACT_BINARY_ELEMENT_H
+#define __ABSTRACT_BINARY_ELEMENT_H
+
+#include "BinaryNode.h"
+#include "CoefficientComputer.h"
+
+#include <limits> //numeric_limits::max()
+
+namespace BinaryTree
+{
+	using namespace FiniteElements;
+
+	template <size_t dim, BasisType FeType = InvalidFeType>
+		class AbstractBinaryElement : public DimensionedNode<dim> 
+		{
+			public:
+
+				using CoeffVector = vector<double>;
+
+
+				/* constructor */
+				AbstractBinaryElement(	FunctionPtr<dim> f,
+												AbstractFElement<dim, FeType>* el_ptr
+											):
+												DimensionedNode<dim> (),
+												_f (f),
+												_coeff (),
+												_f_element (el_ptr),
+												_projection_error (numeric_limits<double>::max()),
+												_error_updated (false)
+				{};
+
+				virtual void Init()
+				{
+#ifdef MYDEBUG
+					cerr << "Inizializzo AbstractBinaryElement" << endl;
+#endif //MYDEBUG
+					_f_element->Init();
+
+					UpdateProjectionError();
+					
+					BinaryNode* daddy = this->Dad();
+					daddy == nullptr ?	this->_tilde_error = this->_projection_error :
+												this->_tilde_error = this->_projection_error * daddy->TildeError()
+																			/
+																			(this->_projection_error + daddy->TildeError());
+					this->_E			= this->_projection_error;
+					this->_E_tilde	= this->_tilde_error;
+					this->_q			= this->_tilde_error;
+				};
+
+				virtual double ProjectionError()
+				{
+					if (! _error_updated)
+						UpdateProjectionError();
+
+					return this->_projection_error;
+				};
+				
+				virtual void PrintCoefficients()
+				{
+					ComputeCoefficients();
+					for (size_t i = 0; i < this->_coeff.size(); ++i)
+						cout << (this->_coeff)[i] << "	";
+					cout << endl;
+				};
+
+				virtual void PLevel(size_t val)
+				{
+					this->_f_element->PLevel(val);
+					this->_error_updated = false;
+				};
+				virtual size_t PLevel() const
+				{
+					return this->_f_element->PLevel();
+				};
+
+				AbstractFElement<dim, FeType>& GetFElement()const
+				{
+					return *(this->_f_element);
+				};
+
+				virtual Geometry::NodesVector<dim> Nodes() override
+				{
+					return this->_f_element->GetNodes();
+				};
+			protected:
+				virtual void ProjectionError(const double& val)
+				{
+					this->_projection_error = val;
+				};
+
+				virtual void UpdateProjectionError() override
+				{
+					//TODO: let the error norm to be modifiable, maybe to be choosable at runtime 
+/*
+					L2 norm of the interpolation error
+*/
+					double err = _f_element->L2Norm	(
+																	[&](const Geometry::Point<dim>& p)
+																	{return (*(this->_f))(p) - Projection(p);}
+																);
+
+					this->ProjectionError(err);
+					this->_error_updated = true;
+				};
+
+				virtual double Projection(const Geometry::Point<dim>& point)
+				{
+					PrintCoefficients();
+					ComputeCoefficients();
+					double result(0);
+					CoeffVector basis_evaluation = this->_f_element->EvaluateBasis(point);
+
+					//TODO: optimizable: use eigen dot product
+					for (size_t i = 0; i < this->_coeff.size(); ++i)
+					{
+						result += this->_coeff[i] * basis_evaluation[i];
+					}
+					return result;
+				};
+
+				void ComputeCoefficients()
+				{
+					FiniteElements::CoefficientComputer<dim, FeType>::ComputeCoefficients(*(this->_f_element),
+																												 this->_f,
+																												 this->_coeff);
+				};
+
+			protected:
+/*
+				The functor whose projection error has to be computed
+*/
+				FunctionPtr<dim> _f;
+
+/*
+				attribute created with optimization purpose
+				it stores the coefficients of the projection, so they are not recomputed every time
+				during the object construction all the coefficients that will be needed during the algorithm are computed,
+				since adding other values when p_level gets higher implies the recomputing of the (already computed and stored)
+				lower p_levels  coefficients (this because of how the evaluation of the legendre basis works,
+				see "LegendreBasis.h" and/or "WarpedBasis.h").
+				When evaluating the Projection, only the first BasisSize(p_level) coefficients will be used  
+*/
+				CoeffVector _coeff;
+
+				unique_ptr<AbstractFElement<dim, FeType> > _f_element;
+
+				double _projection_error;
+				bool	 _error_updated;
+		};
+} //namespace BinaryTree
+
+#endif //__ABSTRACT_BINARY_ELEMENT_H

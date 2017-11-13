@@ -44,7 +44,7 @@ namespace FiniteElements
 				//New number of coefficients
 				size_t s = f_el.BasisSize();
 
-				if (cursor == s)
+				if (cursor >= s)
 					//Coefficients already computed
 					return;
 
@@ -59,11 +59,21 @@ namespace FiniteElements
 																		(const Geometry::Point<dim>& p)
 																		{ return f_el.EvaluateBasisFunction(cursor, p);}
 																	 );
-//TODO: controllare se nel caso multidimensionale continua a funzionare
 
-		// DI REGOLA NON FUNZIONA: devo moltiplicare per k1 e k2 che compongono quella funzione di base
-					/* dividing by (k + 0.5)^-1 */
-					coeff_location[cursor] *= (cursor + 0.5);
+					if (dim == 1)
+						/* dividing by (k + 0.5)^-1 */
+						coeff_location[cursor] *= (cursor + 0.5);
+					else
+					{
+						//TODO: UNEFFICIENT! I know a priori the value of norm_2 as in the 1D case!
+						double norm_2 = f_el.L2Norm(
+																[&f_el, &cursor]
+																(const Geometry::Point<dim>& p)
+																{ return f_el.EvaluateBasisFunction(cursor, p);}
+															);
+
+						coeff_location[cursor] /= norm_2;
+					}
 				}
 			};
 		};

@@ -254,21 +254,29 @@ TEST_F(LibmeshTest, IntervalProjectionTest)
 
 	clog << "Projecting x^2 on (0,1)" << endl;
 	EXPECT_EQ(el->PLevel(), 0) << "p level not modified yet, expected zero but it values " + to_string(el->PLevel());
-	double error = el->ProjectionError();
-	clog << "Errore di interpolazione su P" << el->PLevel() << " : " << error << endl;
 
 	// quadrature exact till order - 2 since i'm doing the L2 product with x^2
-	for (size_t p = 1; p <= order - 2; ++p)
+	for (size_t p = order - 2; p >= 2; --p)
 	{
 		el->PLevel(p);
 		EXPECT_EQ(el->PLevel(), p) << "Element p level: expected " + to_string(p) + " is " + to_string(el->PLevel());
-		error = el->ProjectionError();
+		double error = el->ProjectionError();
 		
-		if (p >= 2) //x^2 expected to be exactly integrated
-			EXPECT_LT(error, 1E-10) << "x^2 wrongly projected on P" + to_string(p) + " : interpolation error = " + to_string(error);
+		// p >= 2, x^2 expected to be exactly integrated
+		EXPECT_LT(error, 1E-10) << "x^2 wrongly projected on P" + to_string(p) + " : interpolation error = " + to_string(error);
 		clog << "Errore di interpolazione su P" << el->PLevel() << " : " << error << endl;
 	}
-	//TODO: add checks on values not exactly integrated
+
+	//TODO: add checks on these values
+	el->PLevel(1);
+	EXPECT_EQ(el->PLevel(), 1) << "Element p level: expected 1 is " + to_string(el->PLevel());
+	double error = el->ProjectionError();
+	clog << "Errore di interpolazione su P" << el->PLevel() << " : " << error << endl;
+
+	el->PLevel(0);
+	EXPECT_EQ(el->PLevel(), 0) << "Element p level: expected 0 is " + to_string(el->PLevel());
+	error = el->ProjectionError();
+	clog << "Errore di interpolazione su P" << el->PLevel() << " : " << error << endl;
 
 	clog << "IntervalProjectionTest ended" << endl << endl;
 }
@@ -372,7 +380,6 @@ TEST_F(LibmeshTest, SquareProjectionTest)
 }
 #endif //TRY_IT
 
-#ifdef ASPETTA
 TEST_F(LibmeshTest, TriangleOrthogonality)
 {
 	clog << endl << "Starting TriangleOrthogonality" << endl;
@@ -455,28 +462,35 @@ TEST_F(LibmeshTest, TriangleProjectionTest)
 
 	clog << "Projecting x^2 + y^2 on the triangle co{(0,0),(1,0),(0,1)}" << endl;
 	EXPECT_EQ(el->PLevel(), 0) << "p level not modified yet, expected zero but it values " + to_string(el->PLevel());
-	double error = el->ProjectionError();
-	clog << "Errore di interpolazione su P" << el->PLevel() << " : " << error << endl;
 
 	auto order = (el->GetFElement()).QuadratureOrder();
 
 	// quadrature exact till order - 2 since i'm doing the L2 product with x^2 + y^2
-	for (size_t p = 1; p <= order - 2; ++p)
+	for (size_t p = order - 2; p >= 2; --p)
 	{
 		el->PLevel(p);
 		EXPECT_EQ(el->PLevel(), p) << "Element p level: expected " + to_string(p) + " is " + to_string(el->PLevel());
-		error = el->ProjectionError();
+		double error = el->ProjectionError();
 		
-		if (p >= 2) //x^2 + y^2 expected to be exactly integrated
-			EXPECT_LT(error, 1E-10) << "x^2 wrongly projected on P" + to_string(p) + " : interpolation error = " + to_string(error);
+		//p >= 2, so x^2 + y^2 expected to be exactly integrated
+		EXPECT_LT(error, 1E-10) << "x^2 wrongly projected on P" + to_string(p) + " : interpolation error = " + to_string(error);
 		clog << "Errore di interpolazione su P" << el->PLevel() << " : " << error << endl;
 	}
+
+		el->PLevel(1);
+		EXPECT_EQ(el->PLevel(), 1) << "Element p level: expected 1 is " + to_string(el->PLevel());
+		double error = el->ProjectionError();
+		clog << "Errore di interpolazione su P" << el->PLevel() << " : " << error << endl;
+
+		el->PLevel(0);
+		EXPECT_EQ(el->PLevel(), 0) << "Element p level: expected 0 is " + to_string(el->PLevel());
+		error = el->ProjectionError();
+		clog << "Errore di interpolazione su P" << el->PLevel() << " : " << error << endl;
 
 //	//TODO: add checks on values not exactly integrated
 
 	clog << "TriangleProjectionTest ended" << endl << endl;
 };
-#endif //ASPETTA
 
 TEST_F(LibmeshTest, LibmeshRefinement)
 {
@@ -557,7 +571,6 @@ TEST_F(LibmeshTest, LibmeshRefinement)
 	clog << "LibmeshRefinement ended" << endl << endl;
 };
 
-//#ifdef TRY_IT
 TEST_F(LibmeshTest, TriangleBisection)
 {
 	clog << endl << "Starting TriangleBisection" << endl;
@@ -691,7 +704,6 @@ TEST_F(LibmeshTest, TriangleBisection)
   
 	clog << "TriangleBisection ended" << endl << endl;
 };
-//#endif //TRY_IT
 
 TEST_F(LibmeshTest, ManualBinaryRefinement)
 {
@@ -824,7 +836,10 @@ TEST_F(LibmeshTest, IOTest)
 	clog << "libMesh file IO test ended" << endl << endl;
 };
 
-////TODO: perche' il primo polinomio non integrato esattamente ha norma nulla?
+//TODO:	WATCH OUT! The first polinomial not exactly integrated has zero norm,
+//			since I'm integrating Jacobi polinomial over Gauss Lobatto quadrature nodes,
+//			which are by definition the roots of the the over mentioned polinomial.
+
 //TEST_F(LibmeshTest, FirstNotExactElement)
 //{
 //	clog << endl << "Starting FirstNotExactElement" << endl;

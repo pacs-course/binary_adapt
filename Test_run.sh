@@ -1,3 +1,3 @@
 #!/bin/sh
-clear ;make
+clear ;make tests;
 ./Test_check.sh;

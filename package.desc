@@ -3,6 +3,7 @@ Makefile
 Makefile.inc
 src/*.cpp
 include/*.h
+Doxyfile
 Example_debug.sh
 Example_gdb.sh
 Example_run.sh

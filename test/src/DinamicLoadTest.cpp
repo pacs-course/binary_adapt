@@ -5,7 +5,6 @@
 using namespace std;
 using namespace Geometry;
 
-#ifdef ASPETTA
 TEST_F(LoadTest, IsRegistered)
 {
 	clog << endl << "Starting IsRegistered" << endl;
@@ -421,4 +420,3 @@ TEST_F(LoadTest, WarpedOrthogonality)
 	clog << "WarpedOrthogonality ended" << endl << endl;
 };
 
-#endif //ASPETTA

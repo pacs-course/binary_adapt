@@ -44,6 +44,11 @@ namespace Geometry
 		return (this->_vec).dot(v._vec);
 	};
 
+	double DynamicVector::Dot(const BlockType& v) const
+	{
+		return (this->_vec).dot(v);
+	};
+
 	size_t DynamicVector::Size() const
 	{
 		return this->_vec.size();
@@ -51,7 +56,16 @@ namespace Geometry
 
 	void DynamicVector::Resize(size_t L)
 	{
+#ifdef VERBOSE
+		clog << "Warning: resizing the DynamicVector" << endl;
+#endif //VERBOSE
+
 		this->_vec.conservativeResize(L);
+	};
+
+	DynamicVector::BlockType DynamicVector::Head(size_t size) const
+	{
+		return (this->_vec).head(size);
 	};
 
 	DynamicMatrix::DynamicMatrix() : _mat(){};

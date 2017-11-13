@@ -1,4 +1,5 @@
 #include "WarpedBasis.h"
+#include "BinaryTreeHelper.h"
 
 //jacobi_polynomial.hpp need the "using namespace std" before the include
 //I'm in a header file, I don't want to put "using namespace std" outside the namespace FiniteElements
@@ -49,7 +50,7 @@ namespace FiniteElements
 		return full_evaluation[ind];
 	};
 
-	//Thanks to the jacobi_polynomial working principle I can optimize this method 
+	/* Thanks to the jacobi_polynomial working principle I can optimize this method */ 
 	vector<double> WarpedBasis::EvaluateBasis(size_t degree, const Geometry::Point<2>& p)
 	{
 		size_t length = this->ComputeSize(degree);
@@ -76,7 +77,11 @@ namespace FiniteElements
 			size_t k1 = this->_tensorial_indexes[i][0];
 			size_t k2 = this->_tensorial_indexes[i][1];
 
-			double tot = k1_evaluations[k1] * pow(1-y, k1) * k1_k2_evaluations[k1][k2];
+			//optimized computation of (1-y)^k1
+			double basis = 1-y;
+			double power = HelperFunctions::IntPower(basis, k1);
+
+			double tot = k1_evaluations[k1] * power * k1_k2_evaluations[k1][k2];
 			result.push_back(tot);
 		};
 

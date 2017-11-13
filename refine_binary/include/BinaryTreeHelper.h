@@ -38,6 +38,34 @@ namespace HelperFunctions
 	std::string BasisTypeConverter(FiniteElements::BasisType const & id);
 	std::string ElementTypeConverter(Geometry::ElementType const & id);
 
+	/**
+		An optimized function to compute powers when the exponent is an unsigned integer
+		and it is known at runtime
+	**/
+	double IntPower (double b, size_t e);
+
+	/**
+		An optimized function to compute powers when the exponent is an unsigned integer
+		and it is known at compile time
+	**/
+	template <size_t exp>
+		double Power (double basis)
+		{
+			double result = 
+			exp % 2 ? basis * Power<exp/2> (basis*basis) : Power<exp/2> (basis*basis);
+			return result;
+		};
+
+	template <>
+		double Power<0> (double);
+
+	template <>
+		double Power<1> (double);
+
+	template <>
+		double Power<2> (double);
+	
+
 } //namespace HelperFunctions
 
 #endif //__BINARY_TREE_HELPER_H

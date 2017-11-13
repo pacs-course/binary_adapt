@@ -41,7 +41,7 @@ namespace BinaryTree
 				SelectActiveNodesRecursively(hansel);
 				SelectActiveNodesRecursively(gretel);
 
-//#ifdef MYDEBUG
+#ifdef MYDEBUG
 				cerr << "Deactivating element with " << endl;
 				auto id = node->NodeID();
 				cerr << "#id : " << id << endl;
@@ -51,7 +51,7 @@ namespace BinaryTree
 				cerr << "e~ " << node->TildeError() << endl;
 				cerr << "q = " << node->Q() << endl;
 				cerr << "E~ = " << node->ETilde() << endl << endl;
-//#endif //MYDEBUG
+#endif //MYDEBUG
 
 				node->Deactivate();
 			}
@@ -63,7 +63,7 @@ namespace BinaryTree
 	{
 		if(node)
 		{
-//#ifdef MYDEBUG
+#ifdef MYDEBUG
 			cerr << "Deactivating element with " << endl;
 			auto id = node->NodeID();
 			cerr << "#id : " << id << endl;
@@ -73,7 +73,7 @@ namespace BinaryTree
 			cerr << "e~ " << node->TildeError() << endl;
 			cerr << "q = " << node->Q() << endl;
 			cerr << "E~ = " << node->ETilde() << endl << endl;
-//#endif //MYDEBUG
+#endif //MYDEBUG
 			node->Deactivate();
 			DeactivateSubTree(node->Left());
 			DeactivateSubTree(node->Right());

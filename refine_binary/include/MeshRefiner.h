@@ -183,11 +183,12 @@ namespace BinaryTree
 
 	template <std::size_t dim>
 		template <typename... Args>
-		void MeshRefiner<dim>::Refine(std::size_t n_iter, double toll, Args... funcs)
+		void MeshRefiner<dim>::Refine(std::size_t max_iter, double toll, Args... funcs)
 		{
 			double total_error = this->GlobalError();
 			Execute(funcs...);
-			while (n_iter && total_error > toll)
+			size_t n_iter = 0;
+			while (n_iter <= max_iter && total_error > toll)
 			{
 #ifdef VERBOSE
 				std::cout << std::endl << "Complexity : " << n_iter << std::endl;
@@ -200,25 +201,31 @@ namespace BinaryTree
 				this->_error_updated = false;
 
 				total_error = this->GlobalError();
+#ifdef VERBOSE
+				std::vector<size_t> p_levels = ExtractPLevels();
+				std::cout << ActiveNodesNumber() << " active elements with p refinement levels: " << std::endl;
+				for (auto l : p_levels)
+					std::cout << l << " ";
+				std::cout << std::endl;
+				std::cout << "Interpolation error: " << GlobalError() << std::endl;
+#endif //VERBOSE
 
 				Execute(funcs...);
-				--n_iter;
-			} //while(n_iter)
-		}; //Refine()
+				++n_iter;
+			}
+		};
 
 	template <size_t dim>
-		void MeshRefiner<dim>::Refine(std::size_t n_iter)
+		void MeshRefiner<dim>::Refine(std::size_t max_iter)
 		{
-			while(n_iter)
+			std::size_t n_iter = 0;
+			while(n_iter <= max_iter)
 			{
-#ifdef VERBOSE
-				std::cout << std::endl << "Complexity : " << n_iter << std::endl;
-#endif //VERBOSE
-				BinaryNode* daddy = this->_godfather.MakeBisection();
+				BinaryNode* leaf_dad = this->_godfather.MakeBisection();
 				
-				ClimbUp(daddy);
+				ClimbUp(leaf_dad);
 
-				--n_iter;
+				++n_iter;
 			}
 
 			(this->_godfather).SelectActiveNodes();
@@ -226,15 +233,16 @@ namespace BinaryTree
 		};
 
 	template <size_t dim>
-		void MeshRefiner<dim>::ClimbUp(BinaryNode* daddy)
+		void MeshRefiner<dim>::ClimbUp(BinaryNode* leaf_dad)
 		{
-			BinaryNode* previous_daddy(nullptr);
+			BinaryNode* daddy = leaf_dad;
+			BinaryNode* previous_daddy = nullptr;
 
 			while(daddy)
 			{
-	#ifdef MYDEBUG
+#ifdef MYDEBUG
 				std::clog << "Modifico i valori dell'elemento di id # " << daddy->NodeID() << std::endl;
-	#endif //MYDEBUG
+#endif //MYDEBUG
 
 				auto val = daddy->PLevel();
 				daddy->PLevel(val + 1);
@@ -242,7 +250,7 @@ namespace BinaryTree
 				auto hansel = daddy->Left ();
 				auto gretel = daddy->Right();
 
-	#ifdef MYDEBUG
+#ifdef MYDEBUG
 				std::clog << "Daddy ha q = " << daddy->Q() << std::endl;
 				std::clog << "Daddy ha e tilde = " << daddy->TildeError() << std::endl;
 				std::clog << "Daddy ha e = " << daddy->ProjectionError() << std::endl;
@@ -252,7 +260,7 @@ namespace BinaryTree
 				std::clog << "Gretel ha q = " << gretel->Q() << std::endl;
 				std::clog << "Gretel ha e tilde = " << gretel->TildeError() << std::endl;
 				std::clog << "Gretel ha e = " << gretel->ProjectionError() << std::endl;
-	#endif //MYDEBUG
+#endif //MYDEBUG
 
 				auto new_E = std::min(	hansel->E() + gretel->E(),
 												daddy->ProjectionError()

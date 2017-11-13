@@ -1,5 +1,5 @@
 #!/bin/sh
-clear ;make;
+clear ;make tests;
 cd ./test;
 gdb ./bin/test_Debug;
 cd ..;

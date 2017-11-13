@@ -20,12 +20,12 @@ lib_refine_binary					:= ./refine_binary
 example	:= $(examples_path)/example1 \
 				$(examples_path)/example2 \
 				$(examples_path)/example3
-test		:= ./test
+test := ./test
 
 lib_sub_dirs := $(bridges_libs_path) \
 					 $(quadrature_libs_path)
 
-libraries	:= $(lib_interpolating_functions) \
+libraries	:=	$(lib_interpolating_functions) \
 					$(lib_mesh_bridge) \
 					$(lib_plugin_loader) \
 					$(lib_mesh_quadrature) \
@@ -35,17 +35,27 @@ libraries	:= $(lib_interpolating_functions) \
 binaries	:= $(example) \
 				$(test)
 
+docdir := ./doc
 
 .PHONY: all $(binaries) $(libraries)
-all: $(libraries) $(binaries)
+all: navigate doc
+
+.PHONY: navigate
+navigate: $(libraries) $(binaries)
+
+.PHONY: examples
+examples : $(example)
+
+.PHONY: tests
+tests: $(test)
 
 $(binaries): $(libraries)
 	$(MAKE) --directory=$@ init
-	$(MAKE) -j4 --directory=$@ $(TARGET)
+	$(MAKE) -j3 --directory=$@ $(TARGET)
 
 $(libraries):
 	$(MAKE) --directory=$@ init
-	$(MAKE) -j4 --directory=$@ $(TARGET)
+	$(MAKE) -j3 --directory=$@ $(TARGET)
 
 #inserire qui eventuali dipendenze fra le librerie
 
@@ -55,15 +65,21 @@ check:
 
 .PHONY: install
 install:
-	$(MAKE) TARGET=install
+	$(MAKE) navigate TARGET=install
 
 .PHONY: uninstall
 uninstall:
-	$(MAKE) TARGET=uninstall
+	$(MAKE) navigate TARGET=uninstall
 
 .PHONY: clean
 clean:
-	$(MAKE) TARGET=clean
+	$(MAKE) navigate TARGET=clean
+	rm -f -r $(docdir)/*
+
+.PHONY: doc
+doc:
+	@mkdir -p $(docdir)
+	doxygen Doxyfile
 
 .PHONY: tree
 tree: $(subst .,$(Whoami),$(libraries))

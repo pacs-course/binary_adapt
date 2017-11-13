@@ -1,7 +1,13 @@
 #include <array>
 #include <utility> //std::move
-#include <cstdlib> //system
 #include <iomanip> //std::setfill, std::setw
+
+#ifdef SYSTEM
+#include <cstdlib> //system
+#else //SYSTEM
+#include <sys/stat.h> //mkdir, stat
+#include <stdio.h> //remove
+#endif //SYSTEM
 
 #include "PluginLoader.h"
 #include "BinaryTreeHelper.h"
@@ -137,16 +143,34 @@ int main(int argc, char** argv)
 	string function_name = binary_refiner_ptr->GetFunctor().Formula();
 
 	string results_dir = "results/" + identifier;
+
+#ifdef SYSTEM
 	string instruction = "mkdir -p " + results_dir;
-	if (system (instruction.c_str()))
+	if ( system(instruction.c_str()) )
 		return 1;
+#else //SYSTEM
+	struct stat st;
+
+	if (stat(results_dir.c_str(), &st) == -1 && mkdir(results_dir.c_str(), 0777) != 0)
+	{
+		cerr << "Failed while constructing " << results_dir << " directory" << endl;
+		return 1;
+	}
+#endif //SYSTEM
 
 	string log_filename = results_dir + "/example.log";
-	string removing_instruction	= "rm -f "
-											+ log_filename;
 
-	if (system(removing_instruction.c_str()))
+#ifdef SYSTEM
+	string remove_instruction = "rm -f " + log_filename;
+	if ( system(remove_instruction.c_str()) )
 		return 1;
+#else //SYSTEM
+	if (stat(log_filename.c_str(), &st) != -1 && remove(log_filename.c_str()) != 0)
+	{
+		cerr << "Error removing " << log_filename << endl;
+		return 1;
+	}
+#endif //SYSTEM
 
 	//I redirect the standard buffers to file
 	Logfile logfile(log_filename);
@@ -158,20 +182,6 @@ int main(int argc, char** argv)
 	libMesh::MeshTools::Generation::build_square(*mesh_ptr, nx, ny, 0., 1., 0., 1., LibmeshTriangleType);
 
 	binary_refiner_ptr->SetMesh(mesh_ptr);
-
-	function<void()> p_levels_printer = [&binary_refiner_ptr]()
-	{
-#ifdef VERBOSE
-		vector<size_t> p_levels = binary_refiner_ptr->ExtractPLevels();
-		cout << "Livelli di p refinement : " << endl;
-		for (auto l : p_levels)
-			cout << l << " ";
-		cout << endl;
-		cout << "The mesh has " << binary_refiner_ptr->ActiveNodesNumber() << " ACTIVE elements" << endl;
-
-		cout << endl << "Interpolation error after refinement: " << binary_refiner_ptr->GlobalError() << endl;
-#endif //VERBOSE
-	};
 
 	//I take from getpot configuration file the maximum number of iteration
 	string iteration_number = "binary_tree/algorithm/iteration_number";
@@ -207,8 +217,7 @@ int main(int argc, char** argv)
 	binary_refiner_ptr->Refine(max_iter,
 										toll,
 										error_extractor,
-										gmsh_printer,
-										p_levels_printer);
+										gmsh_printer);
 
 	//I print to file the error data
 	string error_name	 = results_dir + "/error_data";

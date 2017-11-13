@@ -78,7 +78,7 @@ Includes := $(IncludeDir) \
 				$(patsubst %,%/include,$(LinkedLibraries))
 
 # Search Path For Include Files (InclPaths is included before mode specific InclPaths_MODE)
-InclPaths		:=	$(Includes) $(GetPotInclude)
+InclPaths		:=	$(Includes) $(LibMeshInclude)
 InclPaths_Debug:=
 InclPaths_Opt	:=
 # Defined values used by CPP preprocessor (Defines is included before mode specific Defines_MODE)
@@ -96,12 +96,12 @@ LFlags_Debug	:=
 LFlags_Opt		:= 
 
 # List of Library Names (Libs is included before mode specific Libs_MODE)
-Libs			:=
-Libs_Debug	:=
-Libs_Opt		:=
+Libs			:= pthread
+Libs_Debug	:= mesh_dbg
+Libs_Opt		:= mesh_opt
 
 # Search Paths for Libraries (LibPaths is included before mode specific LibPaths_MODE)
-LibPaths			:=
+LibPaths			:= $(LibMeshDir)
 LibPaths_Debug	:=
 LibPaths_Opt	:=
 

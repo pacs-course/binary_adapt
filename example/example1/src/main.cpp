@@ -1,12 +1,12 @@
 #include "PluginLoader.h"
 #include "MeshRefiner.h"
-#include "Functor.h"
 
 #include <iostream>
 #include <memory> //std::unique_ptr
 #include <utility> //std::move
 
-#include <GetPot>
+//#include <GetPot>
+#include "getpot.h"
 
 using namespace std;
 
@@ -32,13 +32,13 @@ int main(int argc, char ** argv)
 	string conf_file = main_input("conf_file", "../../binary_tree.conf");
 
 	GetPot cl(conf_file.c_str());
-	string quad_library = "binary_tree/quadrature/interval/quad_library";
+	string quad_library = "binary_tree/quadrature/triangle/quad_library";
 	string func_library = "binary_tree/functions/func_library";
 	string mesh_library = "binary_tree/mesh/mesh_library";
 
-	string quad_so_file = "lib" + cl(quad_library.c_str(), "mesh_quadrature");
-	string func_so_file = "lib" + cl(func_library.c_str(), "interpolating_functions");
-	string mesh_so_file = "lib" + cl(mesh_library.c_str(), "mesh_library");
+	string quad_so_file = "lib" + string(cl(quad_library.c_str(), "mesh_quadrature"));
+	string func_so_file = "lib" + string(cl(func_library.c_str(), "interpolating_functions"));
+	string mesh_so_file = "lib" + string(cl(mesh_library.c_str(), "mesh_library"));
 
 #ifdef DEBUG
 	quad_so_file += "_Debug";
@@ -64,18 +64,9 @@ int main(int argc, char ** argv)
 	}
 	cerr << "Plugins loaded" << endl;
 
-	auto& mrf(BinaryTree::MeshRefinerFactory<1>::Instance());
+	auto& mrf(BinaryTree::MeshRefinerFactory<2>::Instance());
 
-#ifdef MYDEBUG
-	cerr << "Indirizzo della factory 1D di refiner : " << &mrf << endl;
-#endif //MYDEBUG
-
-#ifdef MYDEBUG
-	auto& funfac(BinaryTree::FunctionsFactory<1>::Instance());
-	cerr << "Indirizzo della factory 1D di funzioni : " << &funfac << endl;
-#endif //MYDEBUG
-
-	unique_ptr<BinaryTree::MeshRefiner<1>> refiner = nullptr;
+	unique_ptr<BinaryTree::MeshRefiner<2>> refiner = nullptr;
 	try
 	{
 		refiner = move(mrf.create("libmesh"));
@@ -107,12 +98,25 @@ int main(int argc, char ** argv)
 
 	string input_mesh = "binary_tree/algorithm/input_mesh";
 	string mesh_filename = cl(input_mesh.c_str(), "");
-//	refiner->LoadMesh(mesh_filename);
+	if (mesh_filename == "")
+	{
+		cerr << "Missing mesh file name in configuration file" << endl;
+		return 1;
+	}
+	refiner->LoadMesh(mesh_filename);
 
 	string iteration_number = "binary_tree/algorithm/iteration_number";
 	size_t n_iter = cl(iteration_number.c_str(), 0);
 
-//	refiner->Refine(n_iter);
+	string s_toll = "binary_tree/algorithm/tolerance";
+	double toll = cl(s_toll.c_str(), 0.0);
+
+	refiner->Refine(n_iter, toll);
+
+	string output_mesh = "binary_tree/algorithm/output_mesh";
+	string output_filename = cl(output_mesh.c_str(), "");
+
+	refiner->ExportMesh(output_filename);
 
 	cerr << "Example 1 ended" << endl;
 

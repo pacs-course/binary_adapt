@@ -91,8 +91,9 @@ namespace FiniteElements
 					I'm taking advantage from the fact that _map is affine, so it has an evaluateJacobian() method
 					not dependent on the point of evaluation
 */
+					auto jac = _map->Jacobian();
 					for (size_t i = 0; i < weights.Size(); ++i)
-						weights[i] *= _map->Jacobian();
+						weights[i] *= jac;
 
 					return weights;
 				};
@@ -117,11 +118,12 @@ namespace FiniteElements
 				virtual vector<double> EvaluateBasis (const Geometry::Point<dim>& point)const
 				{
 					CheckInitialization();
-					auto result = this->_ref_felement->EvaluateBasis(this->_p_level,_map->ComputeInverse(point));
+					auto result = this->_ref_felement->EvaluateBasis(this->_p_level, _map->ComputeInverse(point));
 
 					/* to normalize the basis I divide by the constant jacobian^1/2 of the map */
+					auto rescale = sqrt(_map->Jacobian());
 					for (auto& iter : result)
-						iter /= sqrt(_map->Jacobian());
+						iter /= rescale;
 
 					return result;
 				};
