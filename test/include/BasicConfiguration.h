@@ -3,35 +3,39 @@
 
 #include "gtest/gtest.h"
 
-#include <fstream>
-#include <iostream>
-#include <string>
+#include "BinaryTreeHelper.h" //Logfile
 
-//class which redirects buffers on file
-class Logfile
-{
-	public:
-		Logfile(const std::string&);
-		~Logfile();
+/**
+	Configuration class redirecting buffers.
+	This configuration class just redirects the buffers to "test.log",
+	in order to have clear output when running the testing framework.
 
-	private:
-		std::ofstream _ofs;
-		std::basic_streambuf<char>* _out_buf;
-		std::basic_streambuf<char>* _log_buf;
-		std::basic_streambuf<char>* _err_buf;
-};
+	It is the basic configuration class, tests which do not need anything else
+	will be written as TEST_F(BasicTest, TestName){...};
 
-//This configuration just redirects the buffers to "test.log"
+	Tests which need more configuration instructions
+	will use configuration classes derived from BasicTest
+**/
 class BasicTest : public ::testing::Test
 {
 	protected:
+/**
+		constructor.
+		It simply initialize the _out attribute with "test.log" filename 
+**/
 		BasicTest();
-		virtual void SetUp()override;
+/**
+		destructor.
+		Destroying _out attribute buffers are redirected to std ones
+**/
 		virtual ~BasicTest();
+
+		virtual void SetUp()override;
 		virtual void TearDown()override;
 
-		Logfile _out;
+		Helpers::Logfile _out;
 };
 
+//TODO The first test run, whatever it is, print always part of the output to std::cout. Fix it
 
 #endif //__TEST_CONFIGURATION_H

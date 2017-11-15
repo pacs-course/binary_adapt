@@ -31,56 +31,56 @@ namespace MyFunctions
 #endif //MYDEBUG
 
 			f_one_d_factory.add ("mu_parser_expr",
-										&HelperFunctions::Builders <ParserFunctor<1>,
+										&Helpers::Builders <ParserFunctor<1>,
 																			 BinaryTree::Functor<1>
 																			>::BuildObject);
 			f_one_d_factory.add ("x_squared",
-										&HelperFunctions::Builders <XSquared,
+										&Helpers::Builders <XSquared,
 																			 BinaryTree::Functor<1>
 																			>::BuildObject);
 			f_one_d_factory.add ("x_exp_beta<40>",
-										&HelperFunctions::Builders <XExpBeta<40>,
+										&Helpers::Builders <XExpBeta<40>,
 																			 BinaryTree::Functor<1>
 																			>::BuildObject);
 			f_one_d_factory.add ("sqrt_x",
-										&HelperFunctions::Builders <SqrtX,
+										&Helpers::Builders <SqrtX,
 																			 BinaryTree::Functor<1>
 																			>::BuildObject);
 			f_one_d_factory.add ("half_step",
-										&HelperFunctions::Builders <HalfStep,
+										&Helpers::Builders <HalfStep,
 																			 BinaryTree::Functor<1>
 																			>::BuildObject);
 			f_one_d_factory.add ("half_sqrt_x",
-										&HelperFunctions::Builders <HalfSqrt,
+										&Helpers::Builders <HalfSqrt,
 																			 BinaryTree::Functor<1>
 																			>::BuildObject);
 			f_one_d_factory.add ("half_x",
-										&HelperFunctions::Builders <HalfX,
+										&Helpers::Builders <HalfX,
 																			 BinaryTree::Functor<1>
 																			>::BuildObject);
 			f_one_d_factory.add ("half_square",
-										&HelperFunctions::Builders <HalfSquare,
+										&Helpers::Builders <HalfSquare,
 																			 BinaryTree::Functor<1>
 																			>::BuildObject);
 			f_one_d_factory.add ("half_twenty",
-										&HelperFunctions::Builders <HalfTwenty,
+										&Helpers::Builders <HalfTwenty,
 																			 BinaryTree::Functor<1>
 																			>::BuildObject);
 			f_one_d_factory.add ("advection_diffusion_solution<100>",
-										&HelperFunctions::Builders <AdvectionDiffusionSolution<100>,
+										&Helpers::Builders <AdvectionDiffusionSolution<100>,
 																			 BinaryTree::Functor<1>
 																			>::BuildObject);
 			f_one_d_factory.add ("advection_diffusion_solution<-100>",
-										&HelperFunctions::Builders <AdvectionDiffusionSolution<-100>,
+										&Helpers::Builders <AdvectionDiffusionSolution<-100>,
 																			 BinaryTree::Functor<1>
 																			>::BuildObject);
 
 			f_two_d_factory.add ("mu_parser_expr",
-										&HelperFunctions::Builders <ParserFunctor<2>,
+										&Helpers::Builders <ParserFunctor<2>,
 																			 BinaryTree::Functor<2>
 																			>::BuildObject);
 			f_two_d_factory.add ("x_squared_plus_y_squared",
-										&HelperFunctions::Builders <X2PlusY2,
+										&Helpers::Builders <X2PlusY2,
 																			 BinaryTree::Functor<2>
 																			>::BuildObject);
 		};

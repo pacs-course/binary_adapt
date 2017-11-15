@@ -29,11 +29,11 @@ namespace SandiaQuadrature
 #endif //MYDEBUG
 
 		q_one_d_factory.add (Geometry::IntervalType,
-									&HelperFunctions::Builders <SandiaQuadratureRule<1>,
+									&Helpers::Builders <SandiaQuadratureRule<1>,
 																		 Geometry::QuadratureRuleInterface<1>
 																		>::BuildObject);
 		q_two_d_factory.add (Geometry::SquareType,
-									&HelperFunctions::Builders <SandiaQuadratureRule<2>,
+									&Helpers::Builders <SandiaQuadratureRule<2>,
 																		 Geometry::QuadratureRuleInterface<2>
 																		>::BuildObject);
 	};

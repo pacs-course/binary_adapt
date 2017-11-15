@@ -33,12 +33,12 @@ namespace LibmeshBinary
 #endif //MYDEBUG
 
 			r_one_d_factory.add ("libmesh",
-										&HelperFunctions::Builders <BinaryRefiner<1>,
+										&Helpers::Builders <LibmeshRefiner<1>,
 																			 BinaryTree::MeshRefiner<1>
 																			>::BuildObject);
 
 			r_two_d_factory.add ("libmesh",
-										&HelperFunctions::Builders <BinaryRefiner<2>,
+										&Helpers::Builders <LibmeshRefiner<2>,
 																			 BinaryTree::MeshRefiner<2>
 																			>::BuildObject);
 		};

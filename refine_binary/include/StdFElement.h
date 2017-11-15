@@ -19,7 +19,8 @@ namespace FiniteElements
 #ifdef DESTRUCTOR_ALERT
 					clog << "Costruisco StdFIperCube" << endl;
 #endif //DESTRUCTOR_ALERT
-					_std_geometry = HelperFunctions::Builders<Geometry::StdIperCube<dim>>::BuildSingleton ();
+
+					_std_geometry = Helpers::Builders<Geometry::StdIperCube<dim>>::BuildSingleton ();
 
 					auto& basis_factory (GenericFactory::BasisFactory<dim>::Instance());
 					_basis = move(basis_factory.create(FeType));
@@ -86,8 +87,8 @@ namespace FiniteElements
 			public:
 				StdFElement()
 				{
-					_std_geometry = HelperFunctions::Builders<Geometry::StdElement<dim, Type> >::BuildSingleton ();
-					_std_cube = HelperFunctions::Builders<StdFIperCube<dim, FeType> >::BuildSingleton ();
+					_std_geometry = Helpers::Builders<Geometry::StdElement<dim, Type> >::BuildSingleton ();
+					_std_cube = Helpers::Builders<StdFIperCube<dim, FeType> >::BuildSingleton ();
 
 					auto& std_map_factory(GenericFactory::StdMapFactory<dim>::Instance());
 					_ipercube_map = std_map_factory.create(Type);

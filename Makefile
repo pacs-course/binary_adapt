@@ -19,7 +19,9 @@ lib_refine_binary					:= ./refine_binary
 
 example	:= $(examples_path)/example1 \
 				$(examples_path)/example2 \
-				$(examples_path)/example3
+				$(examples_path)/example3 \
+				$(examples_path)/example4
+
 test := ./test
 
 lib_sub_dirs := $(bridges_libs_path) \

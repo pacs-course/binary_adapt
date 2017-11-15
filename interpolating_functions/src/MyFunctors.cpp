@@ -73,7 +73,7 @@ namespace MyFunctions
 	{
 		double val = p;
 		if (val >= 0.5)
-			return HelperFunctions::Power<20>(val);
+			return Helpers::Power<20>(val);
 		
 		return 0.0;
 	};

@@ -34,7 +34,7 @@ LibmeshTest::LibmeshTest() : LoadTest(), _libmesh_out("test.log"), _mesh_init_pt
 
 	string exe_name = "test";
 	const char* trivialargv[] = {exe_name.c_str()};
-	_mesh_init_ptr = HelperFunctions::MakeUnique<libMesh::LibMeshInit>(1, trivialargv);
+	_mesh_init_ptr = Helpers::MakeUnique<libMesh::LibMeshInit>(1, trivialargv);
 };
 
 LibmeshTest::~LibmeshTest()

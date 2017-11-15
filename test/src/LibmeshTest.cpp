@@ -791,7 +791,7 @@ TEST_F(LibmeshTest, BinaryRefinement)
 
 	int n = 2;
 	libMesh::MeshTools::Generation::build_line(*mesh_ptr, n, 0, 1, LibmeshIntervalType);
-	LibmeshBinary::BinaryRefiner<1> binary_refiner;
+	LibmeshBinary::LibmeshRefiner<1> binary_refiner;
 	binary_refiner.Init("x_squared");
 	binary_refiner.SetMesh(mesh_ptr);
 	EXPECT_EQ(mesh_ptr, binary_refiner.GetMesh());

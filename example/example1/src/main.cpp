@@ -5,8 +5,11 @@
 #include <memory> //std::unique_ptr
 #include <utility> //std::move
 
-//#include <GetPot>
+#ifdef LIBMESH_BUG_FIXED
+#include <GetPot>
+#else
 #include "getpot.h"
+#endif
 
 using namespace std;
 

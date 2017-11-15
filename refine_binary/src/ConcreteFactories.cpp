@@ -16,7 +16,7 @@ namespace GenericFactory
 					unique_ptr<AffineMap<1>> >::Factory()
 		{
 			add(	IntervalType,
-					&HelperFunctions::Builders <IntervalMap,
+					&Helpers::Builders <IntervalMap,
 														 AffineMap<1>
 														>::BuildObject
 				);
@@ -28,7 +28,7 @@ namespace GenericFactory
 					unique_ptr<AffineMap<2>> >::Factory()
 		{
 			add(	TriangleType,
-					&HelperFunctions::Builders <TriMap,
+					&Helpers::Builders <TriMap,
 														 AffineMap<2>
 														>::BuildObject
 				);
@@ -40,7 +40,7 @@ namespace GenericFactory
 					unique_ptr<Map<2>> >::Factory()
 		{
 			add(	TriangleType,
-					&HelperFunctions::Builders <StdTriMap,
+					&Helpers::Builders <StdTriMap,
 														 Map<2>
 														>::BuildObject
 				);
@@ -52,7 +52,7 @@ namespace GenericFactory
 					unique_ptr<AbstractBasis<1>> >::Factory()
 		{
 			add(	LegendreType,
-					&HelperFunctions::Builders	<LegendreBasis<1>,
+					&Helpers::Builders	<LegendreBasis<1>,
 														 AbstractBasis<1>
 														>::BuildObject
 				);
@@ -64,13 +64,13 @@ namespace GenericFactory
 					unique_ptr<AbstractBasis<2>> >::Factory()
 		{
 			add(	LegendreType,
-					&HelperFunctions::Builders	<LegendreBasis<2>,
+					&Helpers::Builders	<LegendreBasis<2>,
 														 AbstractBasis<2>
 														>::BuildObject
 				);
 
 			add(	WarpedType,
-					&HelperFunctions::Builders	<WarpedBasis,
+					&Helpers::Builders	<WarpedBasis,
 														 AbstractBasis<2>
 														>::BuildObject
 				);
@@ -82,7 +82,7 @@ namespace GenericFactory
 					shared_ptr<StdBananaFElement<1, LegendreType>> >::Factory()
 		{
 			add(	IntervalType,
-					&HelperFunctions::Builders	<StdFIperCube<1, LegendreType>,
+					&Helpers::Builders	<StdFIperCube<1, LegendreType>,
 														 StdBananaFElement<1, LegendreType>
 														>::BuildSingleton
 				);
@@ -98,7 +98,7 @@ namespace GenericFactory
 					shared_ptr<StdBananaFElement<2, LegendreType>> >::Factory()
 		{
 			add(	SquareType,
-					&HelperFunctions::Builders <StdFIperCube<2, LegendreType>,
+					&Helpers::Builders <StdFIperCube<2, LegendreType>,
 														 StdBananaFElement<2, LegendreType>
 														>::BuildSingleton
 				);
@@ -110,7 +110,7 @@ namespace GenericFactory
 					shared_ptr<StdBananaFElement<2, WarpedType>> >::Factory()
 		{
 			add(	TriangleType,
-					&HelperFunctions::Builders <StdFElement<2, TriangleType, WarpedType>,
+					&Helpers::Builders <StdFElement<2, TriangleType, WarpedType>,
 														 StdBananaFElement<2, WarpedType>
 														>::BuildSingleton
 				);

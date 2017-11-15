@@ -29,7 +29,7 @@ namespace LibmeshBinary
 #endif //MYDEBUG
 
 		q_one_d_factory.add (Geometry::IntervalType,
-									&HelperFunctions::Builders <LibmeshQuadratureRule<1, Geometry::IntervalType>,
+									&Helpers::Builders <LibmeshQuadratureRule<1, Geometry::IntervalType>,
 																		 Geometry::QuadratureRuleInterface<1>
 																		>::BuildObject);
 #ifdef MYDEBUG
@@ -38,11 +38,11 @@ namespace LibmeshBinary
 #endif //MYDEBUG
 
 		q_two_d_factory.add (Geometry::SquareType,
-									&HelperFunctions::Builders <LibmeshQuadratureRule<2, Geometry::SquareType>,
+									&Helpers::Builders <LibmeshQuadratureRule<2, Geometry::SquareType>,
 																		 Geometry::QuadratureRuleInterface<2>
 																		>::BuildObject);
 		q_two_d_factory.add (Geometry::TriangleType,
-									&HelperFunctions::Builders <ModifiedTriangleRule,
+									&Helpers::Builders <ModifiedTriangleRule,
 															 			 Geometry::QuadratureRuleInterface<2>
 																		>::BuildObject);
 

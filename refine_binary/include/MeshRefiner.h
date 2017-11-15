@@ -19,35 +19,58 @@ namespace BinaryTree
 		class MeshRefiner
 		{
 			public:
-				/* constructor */
+/**
+				constructor.
+				Default constructor, the initialization of the attribute must be done through the Init method
+**/
 				MeshRefiner() : _objective_function(nullptr),
 									 _godfather(),
 									 _global_error(std::numeric_limits<double>::max()),
 									 _error_updated(false)
 				{};
 
-/*
-				functor is the identifier to be passed to FunctionsFactory
-				from the resultant object will be initialized the _objective_function attribute
-*/
+/**
+				destructor.
+**/
+				virtual ~MeshRefiner(){};
+
+/**
+				Initialize the element.
+				To be called after the construction.
+				Init method performs the search of the identifier in the FunctionsFactory,
+				whose output is passed to the protected overload of the Init method;
+				then the pure virtual DerivedInitialization method is called.
+				First string parameter is the identifier of the functor to be projected;
+				the main parameters are passed as input, in case the DerivedInitialization method needs them.
+
+**/
 				void Init(std::string, int, char**);
 
+/**
+				Load mesh from file.
+				It depends on the underlying mesh implementation, defined in derived classes.
+**/
 				virtual void LoadMesh(std::string input) = 0;
+/**
+				Export refined mesh to file.
+				It depends on the underlying mesh implementation, defined in derived classes.
+**/
 				virtual void ExportMesh(std::string output) = 0;
 
-/*
-				It produces a gnuplot script which plots the mesh with the plevel associated to each element
-				The string parameter is the name of the output file
-				It is available only for 1D meshes, other dim values have to be implemented
-*/
+/**
+				It produces a gnuplot script which plots the mesh with the p level associated to each element.
+				The string parameter is the name of the output file.
+				It is available only for 1D meshes, other dim values have to be implemented.
+**/
 				template <std::size_t dummy = dim, typename std::enable_if< (dummy == 1), size_t>::type = 0>
 				void ExportGnuPlot(const std::string&);
 
-/*
-				It produces a file with the values of the interpolated function produced by the algorithm
-				The first parameter is the name of the output file, the second one the x-sampling length
+/**
+				It produces a file with the values of the interpolated function.
+				Method needed to export the function projected over the underlying mesh.
+				The first parameter is the name of the output file, the second one the x-sampling length.
 				It is available only for 1D meshes, other dim values have to be implemented
-*/
+**/
 				template <std::size_t dummy = dim, typename std::enable_if< (dummy == 1), size_t>::type = 0>
 				void ExportProjection(const std::string&, double);
 
@@ -59,74 +82,144 @@ namespace BinaryTree
 //				template <std::size_t dummy = dim, typename std::enable_if< (dummy == 1), size_t>::type = 0>
 //				void ExportProjection(const std::string& output_filename, const std::string& points_file);
 
-				/*	n_iter is the called complexity of the algorithm,
-					which corresponds to the number of iterations of the algorithm
-					toll is the tolerance on the error
-					algorithm stopping criterion:  n > n_iter or err < toll
-					the variadic template parameter are functor which are called
-					at every iteration of the algorithm;
-					Purpose for them being created is to store partial info of the algorithm execution
-				*/
+/**
+				Method implementing the refining algorithm.
+				n_iter is the called complexity of the algorithm,
+				which corresponds to the number of iterations of the algorithm;
+				toll is the tolerance on the error;
+				algorithm stopping criterion:  n > n_iter or err < toll;
+				the variadic template parameters are functors which are called
+				at every iteration of the algorithm;
+				Purpose for them being created is to store partial info of the algorithm execution
+**/
 				template <typename... Args>
 				void Refine(std::size_t n_iter, double toll, Args... funcs);
 
-				/* simply executes the algorithm as described in Binev paper
-					just iteration number stopping criterion */
+/**
+				As in the template version, but it simply executes the algorithm as described in Binev paper.
+				the only stopping criterion is on the iteration number;
+				it is more efficient than the templated version, since it does not store partial info,
+				so some computation can be avoided during the execution of the algorithm,
+				i.e. trim of the tree at every iteration is not needed in this case
+**/
 				void Refine(std::size_t n_iter);
 
+/**
+				Extract the projection error on refined mesh.
+				It returns the projection error in L2 norm of the _objective_function attribute over the underlying mesh.
+				The error is computed as the sum of projection errors over any active element.
+**/
 				double GlobalError();
 
+/**
+				Extract the values of the p levels of active elements.
+**/
 				std::vector<size_t> ExtractPLevels();
 
+/**
+				The number of active elements.
+**/
 				size_t ActiveNodesNumber();
 
+/**
+				Reference to _objective_function attribute.
+**/
 				const Functor<dim>& GetFunctor() const;
 
+/**
+				Iterate on the activated nodes of the mesh.
+				For each node n it calls the functor NodeOperator(n);
+				using this virtual method to navigate the mesh I'm taking advantage
+				from the fact that the underlying mesh in concrete refiner classes
+				implements an iterator structure to iterate only active elements.
+				This pattern could be used also to implement other kinds of iterator.
+				The iteration is defined in protected pure virtual IterateActive method,
+				which will be implemented in concrete derived classes.
+**/
+				void IterateActiveNodes(NodeOperator& func)
+				{
+					IterateActive(func);
+					this->_error_updated = false;
+				};
+/**
+				Overloaded method for DimOperator<dim> input.
+				It has the same behaviour of the NodeOperator input method.
+**/
+				void IterateActiveNodes(DimOperator<dim>& func)
+				{
+					IterateActive(func);
+					this->_error_updated = false;
+				};
+
+/**
+				const version of IterateActiveNodes.
+				In the const version I don't need to update the error since I'm sure
+				that the functor has not modified the mesh.
+**/
+				virtual void IterateActiveNodes(NodeOperator&) const = 0;
+/**
+				Overloaded method for DimOperator<dim> input.
+				It has the same behaviour of the NodeOperator input const method.
+**/
+				virtual void IterateActiveNodes(DimOperator<dim>&) const = 0;
+
 			protected:
-				/*	Called by refine method
-					It performs the p refinement along the parents of input parameter
-					until an element without father is reached */
+				virtual void IterateActive(NodeOperator&) = 0;
+				virtual void IterateActive(DimOperator<dim>&) = 0;
+
+/**
+				Needed by Refine method.
+				It performs the p refinement along the parents of input parameter
+				until an element without father is reached
+**/
 				void ClimbUp(BinaryNode* dad);
+
 			protected:
+/**
+				Called by Init method.
+				It implements the initialization needed by classes derived from this one. 
+**/
 				virtual void DerivedInitialization(int argc, char** argv) = 0;
 
-				/*
-					Method to update the _global_error attribute
-					It uses the IterateActiveNodes pure virtual method to iterate the mesh
-					An ErrorComputer functor is used to sum the local errors on active elements
-				*/
+/**
+				Method to update the _global_error attribute.
+				It uses the IterateActiveNodes pure virtual method to iterate the mesh.
+				An ErrorComputer functor is used to sum the local errors on active elements.
+**/
 				virtual void UpdateGlobalError();
 
-				/* Iterate the activated nodes of the mesh
-					for each node n it calls the functor NodeOperator(n);
-					using this virtual method to navigate the mesh I'm taking advantage
-					from tha fact that the underlying mesh in concrete refiner classes
-					implements an iterator structure to iterate only active elements
-					This pattern could be used also to implement other kinds of iterator
-				*/
-				virtual void IterateActiveNodes(NodeOperator&) = 0;
-				virtual void IterateActiveNodes(DimOperator<dim>&) = 0;
-
+/**
+				Initialize the _godfather attribute.
+				Implemented in derived classes, it sets the _godfather attribute as the father of every element
+				of the underlying mesh to be refined. 
+**/
 				virtual void InitializeGodfather() = 0;
 
 			protected:
+/**
+				It initialize the _objective_function attribute
+**/
 				void Init(std::unique_ptr<Functor<dim>> f_ptr);
 
 			protected:
-/*
-	The objective function based on which the interpolation error will be computed during the refinement algorithm
-*/
+/**
+				The objective function based on which the interpolation error will be computed during the refinement algorithm.
+**/
 				FunctionPtr<dim> _objective_function;
+/**
+				
+**/
 				DimensionedGodFather<dim> _godfather;
+
 				double _global_error;
 				bool _error_updated;
 		};
 
-/*
-	Factory for MeshRefiner elements
-	The key is a string which identifies the underlying library of the concrete object
-	The registration is done at loading time by the dynamic library implementing concrete object
-*/
+/**
+	Factory for MeshRefiner elements.
+	The key is a string which identifies the underlying library of the concrete object.
+	The registration is done at loading time by the dynamic library implementing concrete object.
+**/
 	template <size_t dim>
 		using MeshRefinerFactory = GenericFactory::ObjectFactory <MeshRefiner<dim>, std::string>;
 

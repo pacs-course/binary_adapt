@@ -79,7 +79,7 @@ namespace FiniteElements
 
 			//optimized computation of (1-y)^k1
 			double basis = 1-y;
-			double power = HelperFunctions::IntPower(basis, k1);
+			double power = Helpers::IntPower(basis, k1);
 
 			double tot = k1_evaluations[k1] * power * k1_k2_evaluations[k1][k2];
 			result.push_back(tot);

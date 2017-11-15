@@ -16,23 +16,25 @@ namespace FiniteElements
 			public:
 				StdFIperCube()
 				{
-					_std_geometry = HelperFunctions::Builders<Geometry::StdIperCube<dim>>::BuildSingleton ();
+#ifdef DESTRUCTOR_ALERT
+					clog << "Costruisco StdFIperCube" << endl;
+#endif //DESTRUCTOR_ALERT
+
+					_std_geometry = Helpers::Builders<Geometry::StdIperCube<dim>>::BuildSingleton ();
 
 					auto& basis_factory (GenericFactory::BasisFactory<dim>::Instance());
 					_basis = move(basis_factory.create(FeType));
 
-					//add here other stuff the constructor is expected to do
 #ifdef DESTRUCTOR_ALERT
-					cerr << "Costruisco StdFIperCube" << endl;
+					clog << "Esco dal costruttore di StdFIperCube" << endl;
 #endif //DESTRUCTOR_ALERT
 				};
 
 			public:
 				virtual ~StdFIperCube()
 				{
-					//TODO
 #ifdef DESTRUCTOR_ALERT
-					cerr << "Distruggo StdFIperCube" << endl;
+					clog << "Distruggo StdFIperCube" << endl;
 #endif //DESTRUCTOR_ALERT
 				};
 
@@ -84,9 +86,9 @@ namespace FiniteElements
 		{
 			public:
 				StdFElement()
-				{	cerr << "Banana, dim = " << dim << ", FeType = " << FeType << endl;
-					_std_geometry = HelperFunctions::Builders<Geometry::StdElement<dim, Type> >::BuildSingleton ();
-					_std_cube = HelperFunctions::Builders<StdFIperCube<dim, FeType> >::BuildSingleton ();
+				{
+					_std_geometry = Helpers::Builders<Geometry::StdElement<dim, Type> >::BuildSingleton ();
+					_std_cube = Helpers::Builders<StdFIperCube<dim, FeType> >::BuildSingleton ();
 
 					auto& std_map_factory(GenericFactory::StdMapFactory<dim>::Instance());
 					_ipercube_map = std_map_factory.create(Type);
@@ -97,11 +99,11 @@ namespace FiniteElements
 			public:
 				virtual ~StdFElement()
 				{
-					//TODO
 #ifdef DESTRUCTOR_ALERT
-				cout << "Distruggo StdFElement" << endl;
+					clog << "Distruggo StdFElement" << endl;
 #endif //DESTRUCTOR_ALERT
 				};
+
 				virtual BasisType GetFeType()const
 				{
 					return FeType;

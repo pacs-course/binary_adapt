@@ -5,8 +5,12 @@
 #include "MuParserInterface.h"
 #include "BinaryTreeHelper.h"
 
-//#include <GetPot>
+#ifdef LIBMESH_BUG_FIXED
+#include <GetPot>
+#else
 #include "getpot.h"
+#endif
+
 namespace MyFunctions
 {	
 	using namespace std;
@@ -94,7 +98,7 @@ namespace MyFunctions
 				XExpBeta(){};
 				virtual double operator() (const Geometry::Point<1>& p)const override
 				{
-					return HelperFunctions::Power<exp>(p);
+					return Helpers::Power<exp>(p);
 				};
 
 				virtual std::string Formula()const override

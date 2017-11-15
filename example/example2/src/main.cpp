@@ -25,38 +25,6 @@ using namespace BinaryTree;
 using namespace FiniteElements;
 using namespace LibmeshBinary;
 
-class Logfile
-{
-	public:
-		Logfile(const std::string& filename): _ofs(filename, ios_base::app)
-														,_out_buf(cout.rdbuf(_ofs.rdbuf()))
-														,_log_buf(clog.rdbuf(_ofs.rdbuf()))
-														,_err_buf(cerr.rdbuf(_ofs.rdbuf()))
-		{
-		#ifdef MYDEBUG
-			clog << "I buffer sono su file" << endl;
-		#endif //MYDEBUG
-		};
-		~Logfile()
-		{
-#ifdef MYDEBUG
-			clog << "Redirigo i buffer sullo standard" << endl;
-#endif //MYDEBUG
-			clog.rdbuf(_log_buf);
-			cout.rdbuf(_out_buf);
-			cerr.rdbuf(_err_buf);
-#ifdef MYDEBUG
-			cerr << "Buffer rediretti" << endl;
-#endif //MYDEBUG
-		};
-
-	private:
-		std::ofstream _ofs;
-		std::basic_streambuf<char>* _out_buf;
-		std::basic_streambuf<char>* _log_buf;
-		std::basic_streambuf<char>* _err_buf;
-};
-
 
 void PrintHelp()
 {
@@ -117,10 +85,10 @@ int main(int argc, char** argv)
 	cout << "Starting the algorithm with " << max_iter << " iterations and tolerance of " << toll << endl;
 
 
-	unique_ptr<LibmeshBinary::BinaryRefiner<1>> binary_refiner_ptr(nullptr);
+	unique_ptr<LibmeshBinary::LibmeshRefiner<1>> binary_refiner_ptr(nullptr);
 	try
 	{
-		auto ptr = HelperFunctions::MakeUnique<LibmeshBinary::BinaryRefiner<1>>();
+		auto ptr = Helpers::MakeUnique<LibmeshBinary::LibmeshRefiner<1>>();
 		binary_refiner_ptr = move(ptr);
 	}
 	catch(exception& ex)
@@ -178,7 +146,7 @@ int main(int argc, char** argv)
 #endif //SYSTEM
 
 	//I redirect the standard buffers to file
-	Logfile logfile(log_filename);
+	Helpers::Logfile logfile(log_filename);
 
 	auto mesh_ptr = make_shared<libMesh::Mesh> (init.comm());
 

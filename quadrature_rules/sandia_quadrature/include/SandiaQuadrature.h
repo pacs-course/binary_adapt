@@ -5,8 +5,11 @@
 
 #include "Quadrature.h" //ElementType
 
-//#include <GetPot>
+#ifdef LIBMESH_BUG_FIXED
+#include <GetPot>
+#else
 #include "getpot.h"
+#endif
 
 namespace SandiaQuadrature
 {

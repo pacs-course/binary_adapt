@@ -2,8 +2,32 @@
 
 using namespace std;
 
-namespace HelperFunctions
+namespace Helpers
 {
+
+	Logfile::Logfile(const string& filename) : _ofs(filename, ios_base::app)
+															,_out_buf(cout.rdbuf(_ofs.rdbuf()))
+															,_log_buf(clog.rdbuf(_ofs.rdbuf()))
+															,_err_buf(cerr.rdbuf(_ofs.rdbuf()))
+	{
+#ifdef MYDEBUG
+		clog << "I buffer sono su file" << endl;
+#endif //MYDEBUG
+	};
+
+	Logfile::~Logfile()
+	{
+#ifdef MYDEBUG
+		clog << "Redirigo i buffer sullo standard" << endl;
+#endif //MYDEBUG
+		clog.rdbuf(_log_buf);
+		cout.rdbuf(_out_buf);
+		cerr.rdbuf(_err_buf);
+#ifdef MYDEBUG
+		cerr << "Buffer rediretti" << endl;
+#endif //MYDEBUG
+	};
+
 	string BasisTypeConverter(FiniteElements::BasisType const & id)
 	{
 		switch(id)
@@ -32,44 +56,6 @@ namespace HelperFunctions
 	};
 
 
-	double IntPower (double basis, size_t exp)
-	{
-#ifdef BASIC
-		double power = 1;
-		if (exp)
-		{
-			power = basis;
-			for (size_t j = 1; j < exp; ++j)
-				power *= basis;
-		}
-		return power;
-#else //BASIC
-
-		if (exp == 0)
-			return 1.0;
-		if (exp == 1)
-			return basis;
-#ifndef RECURSIVE
-		double power = basis;
-		size_t cur_exp = 2;
-		for (; cur_exp <= exp; cur_exp *= 2)
-			power *= power;
-
-		for (cur_exp /= 2; cur_exp < exp; ++cur_exp)
-			power *= basis;
-		return power;
-#else //RECURSIVE
-
-		if (exp == 2)
-			return basis * basis;
-
-		double half_exp_result = IntPower(basis * basis, exp/2);
-		return exp % 2 ? basis * half_exp_result : half_exp_result;
-#endif //RECURSIVE
-
-#endif //BASIC
-	};
-
 	template <>
 		double Power<0> (double)
 		{
@@ -88,4 +74,4 @@ namespace HelperFunctions
 			return basis * basis;
 		};
 
-} //namespace HelperFunctions
+} //namespace Helpers

@@ -5,12 +5,12 @@ namespace GenericFactory
 	template<>
 		string identifierAsString<Geometry::ElementType>(Geometry::ElementType const & id)
 		{
-			return HelperFunctions::ElementTypeConverter(id);
+			return Helpers::ElementTypeConverter(id);
 		};
 	template<>
 		string identifierAsString<FiniteElements::BasisType>(FiniteElements::BasisType const & id)
 		{
-			return HelperFunctions::BasisTypeConverter(id);
+			return Helpers::BasisTypeConverter(id);
 		};
 } //namespace GenericFactory
 

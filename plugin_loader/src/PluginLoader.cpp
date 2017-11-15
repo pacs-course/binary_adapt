@@ -1,4 +1,8 @@
 #include "PluginLoader.h"
+
+//TODO:	this is the only include from refine_binary library
+//			if MakeUnique is re-written in this file, the plugin_loader library
+//			can be made independent on refine_binary
 #include "BinaryTreeHelper.h"
 
 #include <dirent.h>
@@ -26,7 +30,7 @@ namespace PluginLoading
 	{
 		//TODO: add the check that this plugin has not already been added;
 
-		_plugins.push_back(HelperFunctions::MakeUnique<Plugin>(full_path_so_file, mode));
+		_plugins.push_back(Helpers::MakeUnique<Plugin>(full_path_so_file, mode));
 
 #ifdef VERBOSE
 		clog << "Added plugin : " << full_path_so_file << endl;
