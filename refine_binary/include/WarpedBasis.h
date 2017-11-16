@@ -15,7 +15,7 @@ namespace FiniteElements
 
 			virtual double OneDEvaluation(size_t, double)const override;
 			virtual double Evaluate(size_t, const Geometry::Point<2>&) override;
-			virtual vector<double> EvaluateBasis(size_t, const Geometry::Point<2>&) override;
+			virtual Geometry::Vector EvaluateBasis(size_t, const Geometry::Point<2>&) override;
 	};
 
 }//namespace FiniteElements

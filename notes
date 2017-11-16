@@ -1,6 +1,12 @@
+Istruzioni installazione:	-fixare il problema con libmesh ed mpi
+									-dopo la patch a libmesh per GetPot i plugin che non ne hanno bisogno
+									 devono rimuovere dal makefile l'include di libmesh
+
+Test non puo' dipendere dai file di configurazione
+
 Compute the whole basis at the start basing on the iteration number
 
-CoefficientComputer calls OneDEvaluation, which is unefficient
+ComputeCoefficients calls OneDEvaluation, which is unefficient
 
 rimuovere i template da coefficientcomputer, sostituirli con il polimorfismo. Verificare se FeType e' necessario come parametro del template
 

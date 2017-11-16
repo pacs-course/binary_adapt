@@ -6,7 +6,7 @@
 
 #include "AbstractFactory.h"
 #include "TypeEnumerations.h"
-#include "Point.h"
+#include "LinearAlgebra.h"
 
 
 namespace FiniteElements
@@ -40,7 +40,7 @@ namespace FiniteElements
 
 			public:
 				virtual double Evaluate(size_t ind, const Geometry::Point<dim>& p) = 0;
-				virtual vector<double> EvaluateBasis(size_t degree, const Geometry::Point<dim>& p) = 0;
+				virtual Geometry::Vector EvaluateBasis(size_t degree, const Geometry::Point<dim>& p) = 0;
 
 				/* Size is (degree + dim)! / degree! dim! */
 				virtual size_t ComputeSize (const size_t& degree);
@@ -60,12 +60,15 @@ namespace FiniteElements
 			public:
 				/* This function implements the tensorization */
 				virtual double Evaluate(size_t ind, const Geometry::Point<dim>& p) override;
-				virtual vector<double> EvaluateBasis(size_t degree, const Geometry::Point<dim>& p) override;
+				virtual Geometry::Vector EvaluateBasis(size_t degree, const Geometry::Point<dim>& p) override;
+
+				array<size_t, dim> GetIndexes(size_t);
 
 			protected:
 				virtual double OneDEvaluation(size_t index, double x)const = 0;
 
 				virtual void UpdateSize(size_t);
+
 				virtual void InitializeIndexes(size_t* index, size_t degree, size_t d = dim);
 				void PrintIndexes();
 
@@ -145,13 +148,13 @@ namespace FiniteElements
 		};
 
 	template <size_t dim>
-		vector<double> TensorialBasis<dim>::EvaluateBasis(size_t degree, const Geometry::Point<dim>& p)
+		Geometry::Vector TensorialBasis<dim>::EvaluateBasis(size_t degree, const Geometry::Point<dim>& p)
 		{
 			auto size = this->ComputeSize(degree);
 			UpdateSize(size);
-			vector<double> result;
-			for (size_t i(0); i < size; ++i)
-				result.push_back(Evaluate(i, p));
+			Geometry::Vector result(size);
+			for (size_t i = 0; i < size; ++i)
+				result[i] = Evaluate(i, p);
 
 			return result;
 		};
@@ -240,6 +243,14 @@ namespace FiniteElements
 					cout << ind << " ";
 				cout << endl;
 			}			
+		};
+
+	template <size_t dim>
+		array<size_t, dim> TensorialBasis<dim>::GetIndexes(size_t ind)
+		{
+			UpdateSize(ind + 1);
+
+			return (this->_tensorial_indexes)[ind];
 		};
 
 };//namespace FiniteElements

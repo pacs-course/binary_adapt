@@ -196,7 +196,7 @@ TEST_F(LibmeshTest, IntervalProjectionTest)
 	auto el = dynamic_cast<LibmeshBinary::BinaryTreeElement<1, LegendreType, LibmeshBinary::LibmeshIntervalClass>*> (mesh.elem_ptr(0));
 	ASSERT_NE(el, nullptr) << "Mesh element not recognized casting to LibmeshBinary::BinaryElement";
 
-	const auto& f_el(el->GetFElement());
+	auto& f_el(el->GetFElement());
 
 	size_t order = f_el.QuadratureOrder();
 
@@ -234,10 +234,13 @@ TEST_F(LibmeshTest, IntervalProjectionTest)
 	clog << "Checking the basis normality on the (0, 1) interval :" << endl;
 	for (size_t i(0); i < order/2; ++i)
 	{
-		double I = f_el.L2Norm	(
-											[&](const Point<1>& p){ return f_el.EvaluateBasisFunction(i, p);}
-										);
-		I *= I * (static_cast<double>(i) + 0.5);
+		double I = f_el.BasisNormSquared(i);
+
+		// I divide the integral by the manually computed value of L2 norm for legendre functions on (0,1) interval
+		// so I should obtain 1
+		double inverse_std_norm_squared = static_cast<double>(i) + 0.5;
+		I *= 2*inverse_std_norm_squared;
+
 		auto err = abs(I - 1);
 
 		string s1 = "Legendre function #"
@@ -756,11 +759,12 @@ TEST_F(LibmeshTest, ManualBinaryRefinement)
 
 	EXPECT_TRUE(hansel->active());
 	EXPECT_TRUE(gretel->active());	
-	EXPECT_FALSE(I->active());	
-//	hansel->Activate();
-//	gretel->Activate();
-//	I->Deactivate();
-
+	EXPECT_FALSE(I->active());
+#ifdef TRY_IT
+	hansel->Activate();
+	gretel->Activate();
+	I->Deactivate();
+#endif //TRY_IT
 	mesh.prepare_for_use(/*skip_renumber =*/ false);
 
 	size_t cont = 0;
@@ -840,33 +844,34 @@ TEST_F(LibmeshTest, IOTest)
 //			since I'm integrating Jacobi polinomial over Gauss Lobatto quadrature nodes,
 //			which are by definition the roots of the the over mentioned polinomial.
 
-//TEST_F(LibmeshTest, FirstNotExactElement)
-//{
-//	clog << endl << "Starting FirstNotExactElement" << endl;
+#ifdef TRY_IT
+TEST_F(LibmeshTest, FirstNotExactElement)
+{
+	clog << endl << "Starting FirstNotExactElement" << endl;
 
-//	int n = 1;
+	int n = 1;
 
-//	libMesh::Mesh mesh1(_mesh_init_ptr->comm());
-//	libMesh::MeshTools::Generation::build_line(mesh1, n, 0., 1., LibmeshIntervalType);
+	libMesh::Mesh mesh1(_mesh_init_ptr->comm());
+	libMesh::MeshTools::Generation::build_line(mesh1, n, 0., 1., LibmeshIntervalType);
 
-//	auto iter = mesh1.elements_begin();
-//	LibmeshBinary::FElement<1, LegendreType, LibmeshBinary::LibmeshIntervalClass> f_el(iter);
-//	
-//	f_el.Init();
+	auto iter = mesh1.elements_begin();
+	LibmeshBinary::FElement<1, LegendreType, LibmeshBinary::LibmeshIntervalClass> f_el(iter);
+	
+	f_el.Init();
 
-//	size_t i = f_el.QuadratureOrder();
-//	i /= 2;
-//	i++;
+	size_t i = f_el.QuadratureOrder();
+	i /= 2;
+	i++;
 
-//	clog << "Let's check the normality of the element #" << i << " of the basis :" << endl;
+	clog << "Let's check the normality of the element #" << i << " of the basis :" << endl;
 
-//	double I = f_el.L2Norm	(
-//										[&](const Point<1>& p){ return f_el.EvaluateBasisFunction(i, p);}
-//									);
-//	I *= I * (i + 0.5);
-//	//TODO: do something on this value
-//	clog << "Integral: " << I << endl;
+	double I = f_el.L2Norm	(
+										[&](const Point<1>& p){ return f_el.EvaluateBasisFunction(i, p);}
+									);
+	I *= I * (i + 0.5);
+	//TODO: do something on this value
+	clog << "Integral: " << I << endl;
 
-//	clog << "FirstNotExactElement ended" << endl << endl;
-//};
-
+	clog << "FirstNotExactElement ended" << endl << endl;
+};
+#endif //TRY_IT

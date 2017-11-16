@@ -1,7 +1,7 @@
 #ifndef __QUADRATURE_H
 #define __QUADRATURE_H
 
-#include "Point.h"
+#include "LinearAlgebra.h"
 #include "TypeEnumerations.h"
 #include "AbstractFactory.h"
 

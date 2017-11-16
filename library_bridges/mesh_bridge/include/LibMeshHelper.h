@@ -5,7 +5,7 @@
 #include <point.h> //libmesh::point
 
 #include "TypeEnumerations.h"
-#include "Point.h"
+#include "LinearAlgebra.h"
 
 #include <type_traits> //enable_if
 

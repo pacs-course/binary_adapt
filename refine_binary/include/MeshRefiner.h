@@ -55,7 +55,7 @@ namespace BinaryTree
 				Export refined mesh to file.
 				It depends on the underlying mesh implementation, defined in derived classes.
 **/
-				virtual void ExportMesh(std::string output) = 0;
+				virtual void ExportMesh(std::string output) const = 0;
 
 /**
 				It produces a gnuplot script which plots the mesh with the p level associated to each element.
@@ -63,7 +63,7 @@ namespace BinaryTree
 				It is available only for 1D meshes, other dim values have to be implemented.
 **/
 				template <std::size_t dummy = dim, typename std::enable_if< (dummy == 1), size_t>::type = 0>
-				void ExportGnuPlot(const std::string&);
+				void ExportGnuPlot(const std::string&) const;
 
 /**
 				It produces a file with the values of the interpolated function.
@@ -72,7 +72,7 @@ namespace BinaryTree
 				It is available only for 1D meshes, other dim values have to be implemented
 **/
 				template <std::size_t dummy = dim, typename std::enable_if< (dummy == 1), size_t>::type = 0>
-				void ExportProjection(const std::string&, double);
+				void ExportProjection(const std::string&, double) const;
 
 /*
 				As for the one parameter version, but now x values to be computed are passed to the function
@@ -80,7 +80,7 @@ namespace BinaryTree
 */
 				//TODO
 //				template <std::size_t dummy = dim, typename std::enable_if< (dummy == 1), size_t>::type = 0>
-//				void ExportProjection(const std::string& output_filename, const std::string& points_file);
+//				void ExportProjection(const std::string& output_filename, const std::string& points_file) const;
 
 /**
 				Method implementing the refining algorithm.
@@ -114,12 +114,12 @@ namespace BinaryTree
 /**
 				Extract the values of the p levels of active elements.
 **/
-				std::vector<size_t> ExtractPLevels();
+				std::vector<size_t> ExtractPLevels() const;
 
 /**
 				The number of active elements.
 **/
-				size_t ActiveNodesNumber();
+				size_t ActiveNodesNumber() const;
 
 /**
 				Reference to _objective_function attribute.
@@ -164,7 +164,15 @@ namespace BinaryTree
 				virtual void IterateActiveNodes(DimOperator<dim>&) const = 0;
 
 			protected:
+/**
+				Must implement the iteration.
+				As IterateActiveNodes(NodeOperator&) const,
+				but can be called with input operators that can modify the underlying mesh
+**/
 				virtual void IterateActive(NodeOperator&) = 0;
+/**
+				Overloaded method, it has the same behaviour of IterateActive(NodeOperator&)
+**/
 				virtual void IterateActive(DimOperator<dim>&) = 0;
 
 /**
@@ -406,7 +414,7 @@ namespace BinaryTree
 		};
 
 	template <std::size_t dim>
-		std::vector<size_t> MeshRefiner<dim>::ExtractPLevels()
+		std::vector<size_t> MeshRefiner<dim>::ExtractPLevels() const
 		{
 			PlevelsExtractor p_ex;
 			this->IterateActiveNodes(p_ex);
@@ -414,7 +422,7 @@ namespace BinaryTree
 		};
 
 	template <std::size_t dim>
-		size_t MeshRefiner<dim>::ActiveNodesNumber()
+		size_t MeshRefiner<dim>::ActiveNodesNumber() const
 		{
 			Counter cont;
 			this->IterateActiveNodes(cont);
@@ -430,7 +438,7 @@ namespace BinaryTree
 
 	template <std::size_t dim>
 	template <std::size_t dummy, typename std::enable_if< (dummy == 1), size_t>::type>
-		void MeshRefiner<dim>::ExportGnuPlot(const std::string& script_name)
+		void MeshRefiner<dim>::ExportGnuPlot(const std::string& script_name) const
 		{
 			std::ofstream output_file(script_name);
 			output_file	<< "#It produces the plot of the plevels of the binary refined mesh" << std::endl
@@ -474,7 +482,7 @@ namespace BinaryTree
 
 	template <std::size_t dim>
 	template <std::size_t dummy, typename std::enable_if< (dummy == 1), size_t>::type>
-		void MeshRefiner<dim>::ExportProjection(const std::string& output_filename, double x_step)
+		void MeshRefiner<dim>::ExportProjection(const std::string& output_filename, double x_step) const
 		{
 			std::ofstream output_file(output_filename);
 			output_file	<< "# Interpolation data for function: " << this->_objective_function->Formula() << std::endl;

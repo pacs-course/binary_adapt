@@ -2,7 +2,6 @@
 #define __ABSTRACT_BINARY_ELEMENT_H
 
 #include "BinaryNode.h"
-#include "CoefficientComputer.h"
 
 #include <limits> //numeric_limits::max()
 
@@ -105,11 +104,6 @@ namespace BinaryTree
 					this->_error_updated = true;
 				};
 
-//				virtual CoeffVector ProjectionOverQuadraturePoints()
-//				{
-//					return this->_values;
-//				};
-
 				virtual double Projection(const Geometry::Point<dim>& point)
 				{
 					ComputeCoefficients();
@@ -124,11 +118,35 @@ namespace BinaryTree
 					return basis_evaluation.Dot(needed_coeff);
 				};
 
+//TODO: it works only if the basis is orthogonal
 				void ComputeCoefficients()
 				{
-					FiniteElements::CoefficientComputer<dim, FeType>::ComputeCoefficients(*(this->_f_element),
-																												 this->_f,
-																												 this->_coeff);
+					//I remember how many coefficients have been already computed
+					size_t cursor = (this->_coeff).Size();
+					//New number of coefficients
+					size_t s = this->_f_element->BasisSize();
+
+					if (cursor >= s)
+						//Coefficients already computed
+						return;
+
+					//memory allocation
+					(this->_coeff).Resize(s);
+
+					//I don't recompute already stored coefficients
+					for(; cursor < s; ++cursor)
+					{
+						(this->_coeff)[cursor] = this->_f_element->L2Prod	(
+																								*(this->_f),
+																								[this, cursor]
+																								(const Geometry::Point<dim>& p)
+																								{ return this->_f_element->EvaluateBasisFunction(cursor, p);}
+																							);
+
+						double norm_squared = this->_f_element->BasisNormSquared(cursor);
+
+						(this->_coeff)[cursor] /= norm_squared;
+					}
 				};
 
 			protected:

@@ -7,7 +7,7 @@
 #include <mesh_refinement.h> //libMesh::MeshRefinement
 
 #include "BinaryNode.h"
-#include "Point.h"
+#include "LinearAlgebra.h"
 #include "Functor.h"
 
 

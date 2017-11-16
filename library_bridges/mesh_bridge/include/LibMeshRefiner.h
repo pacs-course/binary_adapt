@@ -93,7 +93,7 @@ namespace LibmeshBinary
 				Implementation of mesh export on file.
 				Declared pure virtual in base class.
 **/				
-				virtual void ExportMesh(std::string) override;
+				virtual void ExportMesh(std::string) const override;
 
 
 /**
@@ -121,44 +121,34 @@ namespace LibmeshBinary
 				virtual void IterateActive(BinaryTree::DimOperator<dim>&) override;
 
 
-				virtual void DerivedInitialization(int argc, char** argv)override
-				{
-					this->_libmesh_init_ptr = Helpers::MakeUnique<libMesh::LibMeshInit> (argc, argv);
+/**
+				Initialization of libMesh objects.
+				The LibMeshInit communicator is constructed with main arguments passed as input;
+				the Mesh attribute is initialized, even if the mesh has to be built yet;
+				the MeshRefinement attribute is initialized with the just constructed Mesh attribute
+**/
+				virtual void DerivedInitialization(int, char**) override;
 
-					_mesh_ptr = std::make_shared<libMesh::Mesh> (this->_libmesh_init_ptr->comm(), static_cast<unsigned char> (dim));
-#ifdef MESH_DATA_VERSION
-					_mesh_data_ptr = std::make_shared<libMesh::MeshData> (*_mesh_ptr);
-#endif //MESH_DATA_VERSION
-					_mesh_refinement_ptr = Helpers::MakeUnique<libMesh::MeshRefinement> (*_mesh_ptr);
+/**
+				Method that initialize _godfather attribute.
+				It fills _godfather attribute elements storage with active elements of the mesh.
+**/
+				virtual void InitializeGodfather() override;
 
-					this->_initialized = true;
-
-				};
-
-				virtual void InitializeGodfather() override
-				{
-					this->_godfather.template FillElements <Iterator>
-																	(this->_mesh_ptr->elements_begin(),
-																	 this->_mesh_ptr->elements_end(),
-																	 [](Iterator iter){return BinarityMap::AsBinary<dim>(*iter);}
-																	);
-
-				};
-
-				void CheckInitialization() const
-				{
-					if(!(this->_initialized))
-						throw runtime_error("Trying to use an uninitialized mesh");
-				};
+/**
+				Method raising an exception if the object has not been initialized.
+**/
+				void CheckInitialization() const;
 
 			protected:
-/*
-				The LibMeshInit object has to be initialized with the main arguments
+/**
+				libMesh communicator.
+				The LibMeshInit object has to be initialized with the main arguments.
 				Since I don't want to pass any argument to the constructor
 				(otherwise I should change the AbstractFactory in order to allow input arguments to the constructor)
 				I store it as a pointer, which will be initialized as nullptr
 				The real initialization of the LibMeshInit object will be done by the Init method
-*/
+**/
 				unique_ptr<libMesh::LibMeshInit> _libmesh_init_ptr;
 
 				std::shared_ptr<libMesh::MeshBase> _mesh_ptr;
@@ -283,7 +273,7 @@ namespace LibmeshBinary
 		};
 
 	template <size_t dim>
-		void LibmeshRefiner<dim>::ExportMesh(std::string output)
+		void LibmeshRefiner<dim>::ExportMesh(std::string output) const
 		{
 			CheckInitialization();
 
@@ -331,6 +321,40 @@ namespace LibmeshBinary
 			std::for_each( this->_mesh_ptr->active_elements_begin(),
 								this->_mesh_ptr->active_elements_end(),
 								[&func](libMesh::Elem* el_ptr){return func(BinarityMap::AsBinary<dim>(el_ptr));});
+		};
+
+
+	template <size_t dim>
+		void LibmeshRefiner<dim>::DerivedInitialization(int argc, char** argv)
+		{
+			this->_libmesh_init_ptr = Helpers::MakeUnique<libMesh::LibMeshInit> (argc, argv);
+
+			_mesh_ptr = std::make_shared<libMesh::Mesh> (this->_libmesh_init_ptr->comm(), static_cast<unsigned char> (dim));
+#ifdef MESH_DATA_VERSION
+			_mesh_data_ptr = std::make_shared<libMesh::MeshData> (*_mesh_ptr);
+#endif //MESH_DATA_VERSION
+			_mesh_refinement_ptr = Helpers::MakeUnique<libMesh::MeshRefinement> (*_mesh_ptr);
+
+			this->_initialized = true;
+
+		};
+
+	template <size_t dim>
+		void LibmeshRefiner<dim>::InitializeGodfather()
+		{
+			this->_godfather.template FillElements <Iterator>
+															(this->_mesh_ptr->active_elements_begin(),
+															 this->_mesh_ptr->active_elements_end(),
+															 [](Iterator iter){return BinarityMap::AsBinary<dim>(*iter);}
+															);
+
+		};
+
+	template <size_t dim>
+		void LibmeshRefiner<dim>::CheckInitialization() const
+		{
+			if(!(this->_initialized))
+				throw runtime_error("Trying to use an uninitialized mesh");
 		};
 
 } //namespace LibmeshBinary

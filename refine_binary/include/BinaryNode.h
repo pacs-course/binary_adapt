@@ -6,7 +6,7 @@
 #include <functional> //std::function
 #include <vector> //std::vector
 
-#include "Point.h"
+#include "LinearAlgebra.h"
 
 namespace BinaryTree
 {

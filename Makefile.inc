@@ -7,14 +7,14 @@ JacobiPolInclude	:= $(HOME)/MySoftware/jacobi_polynomial
 JacobiPolDir		:= $(HOME)/MySoftware/jacobi_polynomial
 JacobiPolLibFile	:= $(JacobiPolDir)/jacobi_polynomial.o
 
-SandiaRuleInclude	:= /home/soblinsky/MySoftware/sandia_rules
-SandiaRuleDir		:= /home/soblinsky/MySoftware/sandia_rules
+SandiaRuleInclude	:= $(HOME)/MySoftware/sandia_rules
+SandiaRuleDir		:= $(HOME)/MySoftware/sandia_rules
 SandiaRuleLibFile	:= $(SandiaRuleDir)/sandia_rules.o
 
 GTestInclude		:= /usr/include
 GTestDir				:= /usr/lib
 
-GetPotInclude		:= /home/soblinsky/MySoftware/getpot-c++
+GetPotInclude		:= $(HOME)/MySoftware/getpot-c++
 
 MuParserInclude	:= /usr/local/include
 MuParserDir			:= /usr/local/lib

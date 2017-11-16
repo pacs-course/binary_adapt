@@ -1,7 +1,7 @@
 #ifndef __FUNCTOR_H
 #define __FUNCTOR_H
 
-#include "Point.h"
+#include "LinearAlgebra.h"
 #include "AbstractFactory.h"
 
 namespace BinaryTree

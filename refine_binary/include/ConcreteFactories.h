@@ -5,7 +5,7 @@
 #include "TypeEnumerations.h"
 #include "Maps.h"
 #include "Basis.h"
-#include "StdBananaFElement.h"
+#include "StdFElementInterface.h"
 
 /*
 	List of all the concrete instances of the factories useful in the library
@@ -51,14 +51,14 @@ namespace GenericFactory
 	The key is the type of the basis
 */
 	template <std::size_t dim>
-		using BasisFactory = ObjectFactory<FiniteElements::AbstractBasis<dim>, FiniteElements::BasisType>;
+		using TensorialBasisFactory = ObjectFactory<FiniteElements::TensorialBasis<dim>, FiniteElements::BasisType>;
 
 /* I specialize the BasisFactory constructor */
 	template <>
-		Factory <FiniteElements::AbstractBasis<1>, FiniteElements::BasisType, std::unique_ptr<FiniteElements::AbstractBasis<1>> >::Factory();
+		Factory <FiniteElements::TensorialBasis<1>, FiniteElements::BasisType, std::unique_ptr<FiniteElements::TensorialBasis<1>> >::Factory();
 
 	template <>
-		Factory <FiniteElements::AbstractBasis<2>, FiniteElements::BasisType, std::unique_ptr<FiniteElements::AbstractBasis<2>> >::Factory();
+		Factory <FiniteElements::TensorialBasis<2>, FiniteElements::BasisType, std::unique_ptr<FiniteElements::TensorialBasis<2>> >::Factory();
 
 /*---Singleton Factories---*/
 
@@ -67,22 +67,22 @@ namespace GenericFactory
 	The key is the ElementType denoting the geometry of the object
 */
 	template <std::size_t dim, FiniteElements::BasisType FeType>
-		using StdFElementFactory = SingletonFactory <FiniteElements::StdBananaFElement<dim, FeType>, Geometry::ElementType>;
+		using StdFElementFactory = SingletonFactory <FiniteElements::StdFElementInterface<dim, FeType>, Geometry::ElementType>;
 
 	template <>
-		Factory <FiniteElements::StdBananaFElement<1, FiniteElements::LegendreType>,
+		Factory <FiniteElements::StdFElementInterface<1, FiniteElements::LegendreType>,
 					Geometry::ElementType,
-					std::shared_ptr<FiniteElements::StdBananaFElement<1, FiniteElements::LegendreType>> >::Factory();
+					std::shared_ptr<FiniteElements::StdFElementInterface<1, FiniteElements::LegendreType>> >::Factory();
 
 	template <>
-		Factory <FiniteElements::StdBananaFElement<2, FiniteElements::LegendreType>,
+		Factory <FiniteElements::StdFElementInterface<2, FiniteElements::LegendreType>,
 					Geometry::ElementType,
-					std::shared_ptr<FiniteElements::StdBananaFElement<2, FiniteElements::LegendreType>> >::Factory();
+					std::shared_ptr<FiniteElements::StdFElementInterface<2, FiniteElements::LegendreType>> >::Factory();
 
 	template <>
-		Factory <FiniteElements::StdBananaFElement<2, FiniteElements::WarpedType>,
+		Factory <FiniteElements::StdFElementInterface<2, FiniteElements::WarpedType>,
 					Geometry::ElementType,
-					std::shared_ptr<FiniteElements::StdBananaFElement<2, FiniteElements::WarpedType>> >::Factory();
+					std::shared_ptr<FiniteElements::StdFElementInterface<2, FiniteElements::WarpedType>> >::Factory();
 
 }
 

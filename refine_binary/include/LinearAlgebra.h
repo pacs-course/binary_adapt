@@ -46,6 +46,7 @@ namespace Geometry
 	using MatrixType = Matrix<dim>;
 
 	using ColumnVector = DynamicVector;
+	using Vector = ColumnVector;
 
 	class DynamicVector
 	{
@@ -67,6 +68,8 @@ namespace Geometry
 
 			double Dot(const DynamicVector&) const;
 			double Dot(const BlockType&) const;
+
+			DynamicVector CWiseProduct(const DynamicVector&) const;
 
 			size_t Size() const;	
 			void Resize(size_t);

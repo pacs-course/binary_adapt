@@ -277,10 +277,8 @@ TEST_F(LoadTest, IntervalLegendreOrthonormality)
 	//for which the exactness of the quadrature rule for the L2 norm of the function still holds
 	for (size_t i = 0; i < order/2; ++i)
 	{
-		double I = sfic.L2Norm	(
-											[&sfic, i](const Point<1>& p){ return sfic.EvaluateBasisFunction(i, p);}
-										);
-		I *= I * (static_cast<double>(i) + 0.5);
+		double I = sfic.BasisNormSquared(i);
+		I *= static_cast<double>(i) + 0.5;
 		auto err = abs(I - 1);
 
 		string s1 = "Legendre function #"
@@ -345,18 +343,15 @@ TEST_F(LoadTest, SquareLegendreOrthonormality)
 	//for which the exactness of the quadrature rule for the L2 norm of the function still holds
 	size_t normality_size = std_square.BasisSize(order/2);
 
-//	iteration_end = (normality_size < 100) ? normality_size : 100;
 	iteration_end = normality_size;
 
 	for (size_t i = 0; i < iteration_end; ++i)
 	{
-		double I = std_square.L2Prod	(
-													[&](const Point<2>& p){ return std_square.EvaluateBasisFunction(i, p);},
-													[&](const Point<2>& p){ return std_square.EvaluateBasisFunction(i, p);}
-												);
+		double I = std_square.BasisNormSquared(i);
 
 		double K1 = (static_cast<double>(k1) + 0.5);
 		double K2 = (static_cast<double>(k2) + 0.5);
+
 		I *= K1*K2;
 		auto err = abs(I - 1);
 
@@ -391,7 +386,7 @@ TEST_F(LoadTest, WarpedOrthogonality)
 	clog << "Checking the orthogonality on the standard triangle" << endl;
 
 	size_t iteration_end = (exactness_size < 50) ? exactness_size : 50;
-	for (size_t k(0); k < iteration_end; ++k)
+	for (size_t k = 0; k < iteration_end; ++k)
 		for (size_t i = k + 1; i + k <= iteration_end; ++i)
 		{
 			double I = std_triangle.L2Prod	(

@@ -59,6 +59,36 @@ namespace Geometry
 					return fval.Dot(weights);
 				};
 
+/**
+				Integrate a multifunction.
+**/
+				ColumnVector MultiIntegrate(const function<ColumnVector(Point<dim>)>& multi_f) const
+				{
+					QuadWeightVec weights = GetQuadWeights();
+					QuadPointVec<dim> nodes = GetQuadPoints();
+
+					//quadrature nodes and weights must have the same length
+					if (nodes.Size() != weights.Size() )
+						throw std::length_error("Trying to integrate with different number of nodes and weights!");
+
+					ColumnVector first_values = multi_f(nodes[0]);
+					size_t r = first_values.Size();
+					size_t c = nodes.Size();
+					DynamicMatrix multi_fval(r, c);
+
+					multi_fval.SetCol(0, first_values);
+
+					//TODO: can be optimized using weights simmetry
+					for (size_t i = 1; i < c; ++i)
+					{
+						auto p = nodes[i];
+						ColumnVector values = multi_f(p);
+						multi_fval.SetCol(i, values);
+					}
+
+					return (multi_fval * weights);
+				};
+
 				template <typename F1, typename F2>
 				double L2Prod (const F1& f, const F2& g)const
 				{
@@ -71,8 +101,8 @@ namespace Geometry
 					return sqrt(L2Prod(f,f));
 				};
 
-				protected:
 #ifdef SIMMETRY_OPT
+				protected:
 					bool CheckSimmetry(const QuadWeightVec& vec) const
 					{
 						int length = vec.Size();

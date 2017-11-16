@@ -1,4 +1,4 @@
-#include "Point.h"
+#include "LinearAlgebra.h"
 
 using namespace std;
 
@@ -49,6 +49,12 @@ namespace Geometry
 		return (this->_vec).dot(v);
 	};
 
+	DynamicVector DynamicVector::CWiseProduct(const DynamicVector& v) const
+	{
+		auto eig_v = (this->_vec).cwiseProduct(v._vec);
+		return DynamicVector(eig_v);
+	};
+
 	size_t DynamicVector::Size() const
 	{
 		return this->_vec.size();
@@ -79,7 +85,7 @@ namespace Geometry
 
 	DynamicVector operator* (const DynamicMatrix& A, const DynamicVector& b)
 	{
-		return DynamicVector(A * b);
+		return DynamicVector(A._mat * b._vec);
 	};
 
 } //namespace Geometry

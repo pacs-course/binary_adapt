@@ -1,7 +1,7 @@
 #ifndef __MAPS_H
 #define __MAPS_H
 
-#include "Point.h"
+#include "LinearAlgebra.h"
 #include "AbstractFactory.h"
 #include "TypeEnumerations.h"
 

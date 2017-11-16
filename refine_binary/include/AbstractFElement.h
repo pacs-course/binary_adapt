@@ -109,21 +109,21 @@ namespace FiniteElements
 				{
 					CheckInitialization();
 					return 	_ref_felement->EvaluateBasisFunction(ind, _map->ComputeInverse(point))
-								/								//to normalize the basis I divide by the constant jacobian^1/2 of the map
-								sqrt(_map->Jacobian())
+//								/								//to normalize the basis I divide by the constant jacobian^1/2 of the map
+//								sqrt(_map->Jacobian())
 								;
 				};
 
 				//TODO: optimize storing already evaluated points
-				virtual vector<double> EvaluateBasis (const Geometry::Point<dim>& point)const
+				virtual Geometry::Vector EvaluateBasis (const Geometry::Point<dim>& point)const
 				{
 					CheckInitialization();
 					auto result = this->_ref_felement->EvaluateBasis(this->_p_level, _map->ComputeInverse(point));
 
 					/* to normalize the basis I divide by the constant jacobian^1/2 of the map */
-					auto rescale = sqrt(_map->Jacobian());
-					for (auto& iter : result)
-						iter /= rescale;
+//					auto rescale = sqrt(this->_map->Jacobian());
+//					for (auto& value : result)
+//						value /= rescale;
 
 					return result;
 				};
@@ -147,6 +147,19 @@ namespace FiniteElements
 				virtual void PLevel(size_t new_p)
 				{
 					this->_p_level = new_p;
+				};
+
+			public:
+				/**
+					Norm of the basis function with input index.
+					It returns the norm of the correspondent basis function of the reference element,
+					rescaled by the constant jacobian of the affine map
+				**/
+				virtual double BasisNormSquared(size_t ind)
+				{
+					double std_norm = this->_ref_felement->BasisNormSquared(ind);
+					double J = this->_map->Jacobian();
+					return std_norm * J;
 				};
 
 			protected:
@@ -177,7 +190,7 @@ namespace FiniteElements
 				The reference standard element associated to the type of the object
 				It is meant to be a singleton, so it's stored as a shared_ptr
 */
-				shared_ptr<StdBananaFElement<dim, FeType>> _ref_felement;
+				shared_ptr<StdFElementInterface<dim, FeType>> _ref_felement;
 
 			private:
 /*

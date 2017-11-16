@@ -2,7 +2,7 @@
 #define __ABSTRACTSPACE_H
 
 #include "TypeEnumerations.h"
-#include "Point.h"
+#include "LinearAlgebra.h"
 
 
 namespace FiniteElements

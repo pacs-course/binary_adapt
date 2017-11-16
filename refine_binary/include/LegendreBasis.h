@@ -6,13 +6,15 @@
 #include <memory> //std::shared_ptr
 
 //jacobi_polynomial.hpp need the "using namespace std" before the include
-//I'm in a header file, I don't want to put "using namespace std" outside the namespace FiniteElements
+//TODO: I'm in a header file, I don't want to put "using namespace std" outside the namespace FiniteElements
 using namespace std;
 #include "jacobi_polynomial.hpp"
 
 namespace FiniteElements
 {
+#ifdef MYVERSION
 	unique_ptr<double[]> ManualOneDLegendreEvaluation(size_t index, double x);
+#endif //MYVERSION
 
 	template <size_t dim>
 		class LegendreBasis : public TensorialBasis<dim>
@@ -37,7 +39,7 @@ namespace FiniteElements
 
 //#define MYVERSION
 				/* In the Legendre case I can optimize this function thanks to the jacobi_polynomial working principle */
-				virtual vector<double> EvaluateBasis(size_t degree, const Geometry::Point<dim>& p) override
+				virtual Geometry::Vector EvaluateBasis(size_t degree, const Geometry::Point<dim>& p) override
 				{
 					size_t length = this->ComputeSize(degree);
 					this->UpdateSize(length);
@@ -53,18 +55,17 @@ namespace FiniteElements
 #endif //MYVERSION
 					}
 
-					vector<double> result;
+					Geometry::Vector result(length);
 					for( size_t i(0); i < length; ++i)
 					{
 						double tot(1);
 						for (size_t j(0); j < dim; ++j)
 							tot *= evaluations[j][this->_tensorial_indexes[i][j]];
-						result.push_back(tot);
+						result[i] = tot;
 					};
 
 					return result;
 				};
-
 
 			protected:
 				virtual double OneDEvaluation(size_t index, double x)const override
@@ -86,6 +87,7 @@ namespace FiniteElements
 				};
 		};
 
+#ifdef MYVERSION
 		unique_ptr<double[]> ManualOneDLegendreEvaluation(size_t index, double x)
 		{
 			unique_ptr<double[]> result(new double[index+1]);
@@ -105,5 +107,6 @@ namespace FiniteElements
 			}
 			return move(result);
 		};
+#endif //MYVERSION
 } //namespace FiniteElements
 #endif //__LEGENDRE_BASIS_H

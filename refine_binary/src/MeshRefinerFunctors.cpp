@@ -31,7 +31,7 @@ namespace BinaryTree
 		this->_p_levels.push_back(node->PLevel());
 	};
 
-	std::vector<size_t> PlevelsExtractor::GetPLevels()
+	vector<size_t> PlevelsExtractor::GetPLevels()
 	{
 		return this->_p_levels;
 	};

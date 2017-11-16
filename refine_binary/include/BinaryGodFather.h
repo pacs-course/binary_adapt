@@ -40,12 +40,12 @@ namespace BinaryTree
 				void SortElements();
 
 			protected:
-	/*
-				these are the binary elements of the initial mesh;
-				every element could generate a binary tree during the algo;
+/**
+				These are the binary elements of the initial mesh.
+				Every element could generate a binary tree during the algorithm execution;
 				_elements will always be sorted in such a way that the first element of the vector
 				must point to (i.e. the return of the S() method must be) the next element to be divided
-	*/
+**/
 				std::list<DimensionedNode<dim>*> _elements;
 		};
 

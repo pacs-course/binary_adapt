@@ -47,43 +47,43 @@ namespace GenericFactory
 		};
 
 	template <>
-		Factory <AbstractBasis<1>,
+		Factory <TensorialBasis<1>,
 					BasisType,
-					unique_ptr<AbstractBasis<1>> >::Factory()
+					unique_ptr<TensorialBasis<1>> >::Factory()
 		{
 			add(	LegendreType,
 					&Helpers::Builders	<LegendreBasis<1>,
-														 AbstractBasis<1>
+														 TensorialBasis<1>
 														>::BuildObject
 				);
 		};
 
 	template <>
-		Factory <AbstractBasis<2>,
+		Factory <TensorialBasis<2>,
 					BasisType,
-					unique_ptr<AbstractBasis<2>> >::Factory()
+					unique_ptr<TensorialBasis<2>> >::Factory()
 		{
 			add(	LegendreType,
 					&Helpers::Builders	<LegendreBasis<2>,
-														 AbstractBasis<2>
+														 TensorialBasis<2>
 														>::BuildObject
 				);
 
 			add(	WarpedType,
 					&Helpers::Builders	<WarpedBasis,
-														 AbstractBasis<2>
+														 TensorialBasis<2>
 														>::BuildObject
 				);
 		};
 
 	template <>
-		Factory <StdBananaFElement<1, LegendreType>,
+		Factory <StdFElementInterface<1, LegendreType>,
 					ElementType,
-					shared_ptr<StdBananaFElement<1, LegendreType>> >::Factory()
+					shared_ptr<StdFElementInterface<1, LegendreType>> >::Factory()
 		{
 			add(	IntervalType,
 					&Helpers::Builders	<StdFIperCube<1, LegendreType>,
-														 StdBananaFElement<1, LegendreType>
+														 StdFElementInterface<1, LegendreType>
 														>::BuildSingleton
 				);
 #ifdef MYDEBUG
@@ -93,25 +93,25 @@ namespace GenericFactory
 		};
 
 	template <>
-		Factory <StdBananaFElement<2, LegendreType>,
+		Factory <StdFElementInterface<2, LegendreType>,
 					ElementType,
-					shared_ptr<StdBananaFElement<2, LegendreType>> >::Factory()
+					shared_ptr<StdFElementInterface<2, LegendreType>> >::Factory()
 		{
 			add(	SquareType,
 					&Helpers::Builders <StdFIperCube<2, LegendreType>,
-														 StdBananaFElement<2, LegendreType>
+														 StdFElementInterface<2, LegendreType>
 														>::BuildSingleton
 				);
 		};
 
 	template <>
-		Factory <StdBananaFElement<2, WarpedType>,
+		Factory <StdFElementInterface<2, WarpedType>,
 					ElementType,
-					shared_ptr<StdBananaFElement<2, WarpedType>> >::Factory()
+					shared_ptr<StdFElementInterface<2, WarpedType>> >::Factory()
 		{
 			add(	TriangleType,
 					&Helpers::Builders <StdFElement<2, TriangleType, WarpedType>,
-														 StdBananaFElement<2, WarpedType>
+														 StdFElementInterface<2, WarpedType>
 														>::BuildSingleton
 				);
 		};

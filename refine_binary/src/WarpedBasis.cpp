@@ -46,12 +46,12 @@ namespace FiniteElements
 		while (length < ind)
 			length = ComputeSize(degree++);
 
-		vector<double> full_evaluation = WarpedBasis::EvaluateBasis(degree, p);
+		Geometry::Vector full_evaluation = WarpedBasis::EvaluateBasis(degree, p);
 		return full_evaluation[ind];
 	};
 
 	/* Thanks to the jacobi_polynomial working principle I can optimize this method */ 
-	vector<double> WarpedBasis::EvaluateBasis(size_t degree, const Geometry::Point<2>& p)
+	Geometry::Vector WarpedBasis::EvaluateBasis(size_t degree, const Geometry::Point<2>& p)
 	{
 		size_t length = this->ComputeSize(degree);
 		this->UpdateSize(length);
@@ -71,7 +71,7 @@ namespace FiniteElements
 			k1_k2_evaluations.push_back(move(eval));
 		}
 
-		vector<double> result;
+		Geometry::Vector result(length);
 		for( size_t i(0); i < length; ++i)
 		{
 			size_t k1 = this->_tensorial_indexes[i][0];
@@ -82,7 +82,7 @@ namespace FiniteElements
 			double power = Helpers::IntPower(basis, k1);
 
 			double tot = k1_evaluations[k1] * power * k1_k2_evaluations[k1][k2];
-			result.push_back(tot);
+			result[i] = tot;
 		};
 
 		return result;
