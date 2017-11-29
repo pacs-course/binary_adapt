@@ -15,24 +15,25 @@ TEST_F(LibmeshTest, LibmeshVersionCompatibility)
 	//TODO
 };
 
-//TEST_F(BasicTest, SandiaQuadratureTest)
-//{
-//	clog << endl << "Starting PointTest" << endl;
+#ifdef TRY_IT
+TEST_F(BasicTest, SandiaQuadratureTest)
+{
+	clog << endl << "Starting PointTest" << endl;
 
-//	size_t order = 2;
+	size_t order = 2;
 
-//	LibmeshBinary::LibmeshQuadratureRule<1, IntervalType> one_d_rule();
-//	SandiaQuadrature::SandiaQuadratureRule<1> one_d_rule(order);
-//	SandiaQuadrature::SandiaQuadratureRule<2> two_d_rule(order);
-//	auto one_d_points = one_d_rule.GetPoints();
-//	auto one_d_weights = one_d_rule.GetWeights();
+	LibmeshBinary::LibmeshQuadratureRule<1, IntervalType> one_d_rule();
+	SandiaQuadrature::SandiaQuadratureRule<1> one_d_rule(order);
+	SandiaQuadrature::SandiaQuadratureRule<2> two_d_rule(order);
+	auto one_d_points = one_d_rule.GetPoints();
+	auto one_d_weights = one_d_rule.GetWeights();
 
-//	auto two_d_points = two_d_rule.GetPoints();
-//	auto two_d_weights = one_d_rule.GetWeights();
+	auto two_d_points = two_d_rule.GetPoints();
+	auto two_d_weights = one_d_rule.GetWeights();
 
-//	clog << endl << "PointTest ended" << endl;	
-//};
-
+	clog << endl << "PointTest ended" << endl;	
+};
+#endif //TRY_IT
 
 TEST_F(LibmeshTest, GeneralIntegration)
 {
@@ -49,7 +50,7 @@ TEST_F(LibmeshTest, GeneralIntegration)
 	LibmeshBinary::LibmeshIntervalClass* libmesh_interval = dynamic_cast<LibmeshBinary::LibmeshIntervalClass*> (element);
 	ASSERT_NE(libmesh_interval, nullptr) << "LibmeshIntervalType not recognized casting to LibmeshBinary::LibmeshIntervalClass*";
 
-	clog << "Costruisco FElement" << endl;
+	clog << "Constructing FElement" << endl;
 	LibmeshBinary::FElement<1, LegendreType, LibmeshBinary::LibmeshIntervalClass> interval(iter);
 
 	clog << "Initializing interval" << endl;
@@ -97,7 +98,7 @@ TEST_F(LibmeshTest, GeneralIntegration)
 	LibmeshBinary::LibmeshTriangleClass* libmesh_triangle = dynamic_cast<LibmeshBinary::LibmeshTriangleClass*> (element2);
 	ASSERT_NE(libmesh_triangle, nullptr) << "LibmeshTriangleType not recognized casting to LibmeshBinary::LibmeshTriangleClass*";
 
-	clog << "Costruisco FElement" << endl;
+	clog << "Constructing FElement" << endl;
 	LibmeshBinary::FElement<2, WarpedType, LibmeshBinary::LibmeshTriangleClass> triangle(iter2);
 
 	clog << "Initializing triangle" << endl;
@@ -231,7 +232,12 @@ TEST_F(LibmeshTest, IntervalProjectionTest)
 		}
 	}
 
-	clog << "Checking the basis normality on the (0, 1) interval :" << endl;
+	clog << "Checking the basis normality on the (0,1) interval :" << endl;
+
+	//I call InitNorms so I compute it ones here.
+	//During the for cicles the norms vector on the std element will not be modified
+	StdFElementInterface<1, LegendreType>::InitNorms(order/2);
+
 	for (size_t i(0); i < order/2; ++i)
 	{
 		double I = f_el.BasisNormSquared(i);
@@ -256,30 +262,35 @@ TEST_F(LibmeshTest, IntervalProjectionTest)
 	}
 
 	clog << "Projecting x^2 on (0,1)" << endl;
+
+	//I call InitNorms so I compute it ones here.
+	//During the for cicles the norms vector on the std element will not be modified
+	StdFElementInterface<1, LegendreType>::InitNorms(order - 2);
+
 	EXPECT_EQ(el->PLevel(), 0) << "p level not modified yet, expected zero but it values " + to_string(el->PLevel());
 
-	// quadrature exact till order - 2 since i'm doing the L2 product with x^2
-	for (size_t p = order - 2; p >= 2; --p)
+	size_t p_exact = 2;
+
+	//TODO: add checks on these values
+	for (size_t p = 0; p < p_exact; ++p)
 	{
 		el->PLevel(p);
-		EXPECT_EQ(el->PLevel(), p) << "Element p level: expected " + to_string(p) + " is " + to_string(el->PLevel());
+		EXPECT_EQ(el->PLevel(), p) << "Element p level: expected " << p << " is " + to_string(el->PLevel());
+		double error = el->ProjectionError();
+		clog << "Interpolation error on P" << el->PLevel() << " : " << error << endl;
+	}
+
+	// quadrature exact till order - 2 since i'm doing the L2 product with x^2
+	for (size_t p = p_exact; p <= order - 2; ++p)
+	{
+		el->PLevel(p);
+		EXPECT_EQ(el->PLevel(), p) << "Element p level: expected " << p << " is " << el->PLevel();
 		double error = el->ProjectionError();
 		
 		// p >= 2, x^2 expected to be exactly integrated
-		EXPECT_LT(error, 1E-10) << "x^2 wrongly projected on P" + to_string(p) + " : interpolation error = " + to_string(error);
-		clog << "Errore di interpolazione su P" << el->PLevel() << " : " << error << endl;
+		EXPECT_LT(error, 1E-10) << "x^2 wrongly projected on P" << p << " : interpolation error = " << error;
+		clog << "Interpolation error on P" << el->PLevel() << " : " << error << endl;
 	}
-
-	//TODO: add checks on these values
-	el->PLevel(1);
-	EXPECT_EQ(el->PLevel(), 1) << "Element p level: expected 1 is " + to_string(el->PLevel());
-	double error = el->ProjectionError();
-	clog << "Errore di interpolazione su P" << el->PLevel() << " : " << error << endl;
-
-	el->PLevel(0);
-	EXPECT_EQ(el->PLevel(), 0) << "Element p level: expected 0 is " + to_string(el->PLevel());
-	error = el->ProjectionError();
-	clog << "Errore di interpolazione su P" << el->PLevel() << " : " << error << endl;
 
 	clog << "IntervalProjectionTest ended" << endl << endl;
 }
@@ -468,8 +479,21 @@ TEST_F(LibmeshTest, TriangleProjectionTest)
 
 	auto order = (el->GetFElement()).QuadratureOrder();
 
+	//I call InitNorms so I compute it ones here.
+	//During the for cicles the norms vector on the std element will not be modified
+	StdFElementInterface<2, WarpedType>::InitNorms(order - 2);
+
+	size_t p_exact = 2;
+	for (size_t p = 0; p < p_exact; ++p)
+	{
+		el->PLevel(p);
+		EXPECT_EQ(el->PLevel(), p) << "Element p level: expected " << p << " is " + to_string(el->PLevel());
+		double error = el->ProjectionError();
+		clog << "Interpolation error on P" << el->PLevel() << " : " << error << endl;
+	}
+
 	// quadrature exact till order - 2 since i'm doing the L2 product with x^2 + y^2
-	for (size_t p = order - 2; p >= 2; --p)
+	for (size_t p = p_exact; p <= order - 2; ++p)
 	{
 		el->PLevel(p);
 		EXPECT_EQ(el->PLevel(), p) << "Element p level: expected " + to_string(p) + " is " + to_string(el->PLevel());
@@ -477,20 +501,10 @@ TEST_F(LibmeshTest, TriangleProjectionTest)
 		
 		//p >= 2, so x^2 + y^2 expected to be exactly integrated
 		EXPECT_LT(error, 1E-10) << "x^2 wrongly projected on P" + to_string(p) + " : interpolation error = " + to_string(error);
-		clog << "Errore di interpolazione su P" << el->PLevel() << " : " << error << endl;
+		clog << "Interpolation error on P" << el->PLevel() << " : " << error << endl;
 	}
 
-		el->PLevel(1);
-		EXPECT_EQ(el->PLevel(), 1) << "Element p level: expected 1 is " + to_string(el->PLevel());
-		double error = el->ProjectionError();
-		clog << "Errore di interpolazione su P" << el->PLevel() << " : " << error << endl;
-
-		el->PLevel(0);
-		EXPECT_EQ(el->PLevel(), 0) << "Element p level: expected 0 is " + to_string(el->PLevel());
-		error = el->ProjectionError();
-		clog << "Errore di interpolazione su P" << el->PLevel() << " : " << error << endl;
-
-//	//TODO: add checks on values not exactly integrated
+//	TODO: add checks on values not exactly integrated
 
 	clog << "TriangleProjectionTest ended" << endl << endl;
 };
@@ -534,7 +548,9 @@ TEST_F(LibmeshTest, LibmeshRefinement)
 	mesh.insert_elem(copy_element_ptr);
 #endif //ACTIVATE_BUG
 
-//	element_ptr = copy_element_ptr;
+#ifdef TRY_IT
+	element_ptr = copy_element_ptr;
+#endif //TRY_IT
 
 	EXPECT_TRUE (copy_element_ptr->operator== (**(mesh.elements_begin())) ) << "After the insert the element is different from the starting one";
 	el_nodes = element_ptr->get_nodes();
@@ -596,7 +612,7 @@ TEST_F(LibmeshTest, TriangleBisection)
 	LibmeshBinary::Triangle* el = nullptr;
 	LibmeshBinary::Triangle* hansel = nullptr;
 	LibmeshBinary::Triangle* gretel = nullptr;
-	vector<Point<2>> nodes;
+	VectorPoint<2> nodes;
 
 	auto iter = mesh.elements_begin();
 	auto first_el_ptr = *iter;
@@ -612,8 +628,8 @@ TEST_F(LibmeshTest, TriangleBisection)
 	EXPECT_EQ(el->n_children(), 2) << "The expected triangular binary element has " << el->n_children() << " children instead of 2" << endl;
 	nodes = el->Nodes();
 	clog << "Initial element nodes:" << endl;
-	for (auto n : nodes)
-		clog << n;
+	for (size_t i = 0; i < nodes.Size(); ++i)
+		clog << nodes[i];
 	clog << endl;
 
 	EXPECT_LT(abs(nodes[0][0]), 1E-14);
@@ -630,8 +646,8 @@ TEST_F(LibmeshTest, TriangleBisection)
 
 	nodes = hansel->Nodes();
 	clog << "Left child nodes:" << endl;
-	for (auto n : nodes)
-		clog << n;
+	for (size_t i = 0; i < nodes.Size(); ++i)
+		clog << nodes[i];
 	clog << endl;
 
 	EXPECT_LT(abs(nodes[0][0]), 1E-14);
@@ -643,8 +659,8 @@ TEST_F(LibmeshTest, TriangleBisection)
 
 	nodes = gretel->Nodes();
 	clog << "Right child nodes:" << endl;
-	for (auto n : nodes)
-		clog << n;
+	for (size_t i = 0; i < nodes.Size(); ++i)
+		clog << nodes[i];
 	clog << endl;
 
 	EXPECT_LT(abs(nodes[0][0]) - 0.5, 1E-14);
@@ -663,8 +679,8 @@ TEST_F(LibmeshTest, TriangleBisection)
 	EXPECT_EQ(el->n_children(), 2) << "The expected triangular binary element has " << el->n_children() << " children instead of 2" << endl;
 	nodes = el->Nodes();
 	clog << "Initial element nodes:" << endl;
-	for (auto n : nodes)
-		clog << n;
+	for (size_t i = 0; i < nodes.Size(); ++i)
+		clog << nodes[i];
 	clog << endl;
 
 	EXPECT_LT(abs(nodes[0][0]), 1E-14);
@@ -681,8 +697,8 @@ TEST_F(LibmeshTest, TriangleBisection)
 
 	nodes = hansel->Nodes();
 	clog << "Left child nodes:" << endl;
-	for (auto n : nodes)
-		clog << n;
+	for (size_t i = 0; i < nodes.Size(); ++i)
+		clog << nodes[i];
 	clog << endl;
 
 	EXPECT_LT(abs(nodes[0][0]), 1E-14);
@@ -694,8 +710,8 @@ TEST_F(LibmeshTest, TriangleBisection)
 
 	nodes = gretel->Nodes();
 	clog << "Right child nodes:" << endl;
-	for (auto n : nodes)
-		clog << n;
+	for (size_t i = 0; i < nodes.Size(); ++i)
+		clog << nodes[i];
 	clog << endl;
 
 	EXPECT_LT(abs(nodes[0][0]) - 0.5, 1E-14);

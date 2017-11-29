@@ -1,4 +1,4 @@
-Modify the ambient variables in Makefile.inc with the correct paths.
+Modify the environment variables in Makefile.inc with the correct paths.
 Then do:
 	make
 	make check

@@ -1,14 +1,14 @@
 #include <array>
 #include <utility> //std::move
 
-#ifdef SYSTEM
+#ifdef DEPRECATED
 #include <cstdlib> //system
-#else //SYSTEM
+#else //DEPRECATED
 #include <sys/stat.h> //mkdir, stat
 #include <stdio.h> //remove
-#endif //SYSTEM
+#endif //DEPRECATED
 
-#include "PluginLoader.h"
+#include "LibraryInit.h"
 #include "BinaryTreeHelper.h"
 
 #include "LibMeshRefiner.h"
@@ -74,30 +74,7 @@ int main(int argc, char** argv)
 
 	libMesh::LibMeshInit init (argc, argv);
 
-
-	PluginLoading::PluginLoader pl;
-	cout << "PluginLoader costruito" << endl;
-
-	string quad_so_file = "libsandia_quadrature";
-	string func_so_file = "libinterpolating_functions";
-
-#ifdef DEBUG
-	quad_so_file += "_Debug";
-	func_so_file += "_Debug";
-#endif //DEBUG
-
-	quad_so_file += ".so";
-	func_so_file += ".so";
-
-	pl.Add(quad_so_file);
-	pl.Add(func_so_file);
-
-	if (!pl.Load())
-	{
-		cerr << "Houston we have a problem: something went wrong loading plugins";
-		return 1;
-	}
-	cout << "Plugins loaded" << endl;
+	BinaryTree::Init();
 
 	size_t max_iter = 40;
 
@@ -132,11 +109,11 @@ int main(int argc, char** argv)
 	}
 
 	string results_dir = "results";
-#ifdef SYSTEM
+#ifdef DEPRECATED
 	string instruction = "mkdir -p " + results_dir;
 	if ( system(instruction.c_str()) )
 		return 1;
-#else //SYSTEM
+#else //DEPRECATED
 	struct stat st;
 
 	if (stat(results_dir.c_str(), &st) == -1 && mkdir(results_dir.c_str(), 0777) != 0)
@@ -144,21 +121,21 @@ int main(int argc, char** argv)
 		cerr << "Failed while constructing " << results_dir << " directory" << endl;
 		return 1;
 	}
-#endif //SYSTEM
+#endif //DEPRECATED
 
 	string log_filename = results_dir + "/example.log";
 
-#ifdef SYSTEM
+#ifdef DEPRECATED
 	string remove_instruction = "rm -f " + log_filename;
 	if ( system(remove_instruction.c_str()) )
 		return 1;
-#else //SYSTEM
+#else //DEPRECATED
 	if (stat(log_filename.c_str(), &st) != -1 && remove(log_filename.c_str()) != 0)
 	{
 		cerr << "Error removing " << log_filename << endl;
 		return 1;
 	}
-#endif //SYSTEM
+#endif //DEPRECATED
 
 	//I redirect the standard buffers to file
 	Helpers::Logfile logfile(log_filename);
@@ -186,13 +163,14 @@ int main(int argc, char** argv)
 
 	clog << "Binary tree algorithm successfully executed" << endl;
 
-	//now I manually construct the mesh to be compared with the previously computed one
-	//I keep the h adaptation unchanged, while I modify the p levels:
-	//	I want the minimum p level near the singularity in 0,
-	//	so I redistribute those degrees of freedom among the other elements, increasing their p level
+	/* now I manually construct the mesh to be compared with the previously computed one
+		I keep the h adaptation unchanged, while I modify the p levels:
+		I want the minimum p level near the singularity in 0,
+		so I redistribute those degrees of freedom among the other elements, increasing their p level */
 
 	ManualAdapter adapter;
-	binary_refiner_ptr->IterateActiveNodes(adapter);	
+	clog << "ManualAdapter constructed" << endl;
+	binary_refiner_ptr->IterateActiveNodes(adapter);
 
 	double manual_error = binary_refiner_ptr->GlobalError();
 
@@ -211,6 +189,10 @@ int main(int argc, char** argv)
 
 	cout << "The difference is: " << endl;
 	cout << "E - e = " << algo_error - manual_error << endl;
+
+	//I make the refined mesh usable in libmesh
+	mesh_ptr->prepare_for_use(/*skip_renumber =*/ false);
+
 
 	cout << endl << "sqrt comparison example ended" << endl;
 }

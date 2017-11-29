@@ -55,14 +55,14 @@ TEST_F(BasicTest, MapsTest)
 {
 	clog << endl << "Starting MapsTest" << endl;
 
-	clog << "I create the map from (-1, 1) to (1, 2)" << endl;
+	clog << "I create the map from (-1,1) to (1,2)" << endl;
 
-	NodesVector<1> interval;
+	NodesVector<1> interval(2);
 
 	Point<1> left = 1;
-	interval.push_back(left);
+	interval.Insert(0, left);
 	Point<1> right = 2;
-	interval.push_back(right);
+	interval.Insert(1, right);
 
 	IntervalMap map1;
 	map1.Init(interval);
@@ -102,14 +102,14 @@ TEST_F(BasicTest, MapsTest)
 	clog << "2D test" << endl << endl;
 
 	clog << "I create the triangular map between co{(1,1),(2,1),(2,2)} and the reference triangle, which is co{(-1,-1),(1,-1),(-1,1)}" << endl;
-	NodesVector<2> triangle;
+	NodesVector<2> triangle(3);
 
 	Point<2> bottom_left({1, 1});
-	triangle.push_back(bottom_left);
+	triangle.Insert(0, bottom_left);
 	Point<2> bottom_right({2, 1});
-	triangle.push_back(bottom_right);
+	triangle.Insert(1, bottom_right);
 	Point<2> top({2, 2});
-	triangle.push_back(top);
+	triangle.Insert(2, top);
 
 	TriMap map2;
 	map2.Init(triangle);
@@ -189,14 +189,14 @@ TEST_F(BasicTest, MapsTest)
 									+ ")";
 
 	clog << "I create the triangular map between co{(1.5,1.5),(2,1),(2,2)} and the reference triangle, which is co{(-1,-1),(1,-1),(-1,1)}" << endl;
-	NodesVector<2> triangle2;
+	NodesVector<2> triangle2(3);
 
 	Point<2> bottom_left2({1.5, 1.5});
-	triangle2.push_back(bottom_left2);
+	triangle2.Insert(0, bottom_left2);
 	Point<2> bottom_right2({2, 1});
-	triangle2.push_back(bottom_right2);
+	triangle2.Insert(1, bottom_right2);
 	Point<2> top2({2, 2});
-	triangle2.push_back(top2);
+	triangle2.Insert(2, top2);
 
 	TriMap trimap2;
 	trimap2.Init(triangle2);
@@ -293,11 +293,11 @@ TEST_F(BasicTest, MapsTest)
 
 	mapped_point = map3.ComputeInverse(t_top);
 	err = abs(mapped_point[1] - t_top[1]);
-	EXPECT_TRUE(isnan(mapped_point[0]) && (err < 1E-4)) << "Point (-1,1) expected to be inverse mapped in (nan,1), is mapped in ("
-																			+ to_string(mapped_point[0])
-																			+ ","
-																			+ to_string(mapped_point[1])
-																			+ ")";
+	EXPECT_TRUE(std::isnan(mapped_point[0]) && (err < 1E-4))<< "Point (-1,1) expected to be inverse mapped in (nan,1), is mapped in ("
+																				+ to_string(mapped_point[0])
+																				+ ","
+																				+ to_string(mapped_point[1])
+																				+ ")";
 
 	clog << "MapsTest ended" << endl << endl;
 };

@@ -6,9 +6,7 @@
 
 namespace LibmeshBinary
 {
-/*
-	Initializing the static attribute
-*/
+/*	Initializing the static attribute */
 	map<libMesh::MeshBase*, bool> BinarityMap::_boolean_map;
 
 	bool BinarityMap::CheckBinarity(libMesh::MeshBase& mesh)

@@ -37,8 +37,12 @@ LibDirs	= $(LibDir)
 Dirs		= $(ObjDirs) $(LibDirs)
 
 
+Plugin			:= $(RootDir)/plugin_loader
+PluginDir		:= $(Plugin)/lib
+PluginInclude	:= $(Plugin)/include
+
 # Search Path For Include Files (InclPaths is included before mode specific InclPaths_MODE)
-InclPaths			:= $(IncludeDir) $(EigenInclude) $(JacobiPolInclude)
+InclPaths			:= $(IncludeDir) $(PluginInclude) $(EigenInclude) $(GetPotInclude) $(JacobiPolInclude)
 InclPaths_Debug	:=
 InclPaths_Release	:=
 # Defined values used by CPP preprocessor (Defines is included before mode specific Defines_MODE)
@@ -47,7 +51,7 @@ Defines_Debug		:= DEBUG _GLIBCXX_DEBUG
 Defines_Release	:= RELEASE
 # Compiler specific flags (CXXFlags is included before mode specific CXXFlags_MODE)
 CXXFlags				:= -march=native -Wall -Wextra
-CXXFlags_Debug		:= -g -std=gnu++11 -O2 -felide-constructors -funroll-loops -fstrict-aliasing -Wdisabled-optimization -Wno-variadic-macros -DNDEBUG
+CXXFlags_Debug		:= -g -std=gnu++11 -felide-constructors -funroll-loops -fstrict-aliasing -Wdisabled-optimization -Wno-variadic-macros -DNDEBUG
 CXXFlags_Release	:= -O3 -std=c++14
 
 
@@ -65,15 +69,15 @@ LibSuffix	:= .so.$(LibVers)
 LD				:= g++
 
 # List of Library Names (Libs is included before mode specific Libs_MODE)
-Libs				:=
+Libs				:= plugin_loader
 Libs_Debug		:=
 Libs_Release	:=
 # Search Paths for Libraries (LibPaths is included before mode specific LibPaths_MODE)
-LibPaths				:=
+LibPaths				:= $(PluginDir)
 LibPaths_Debug		:=
 LibPaths_Release	:=
 # Linker specific flags (LFlags is included before mode specific LFlags_MODE)
-LFlags			:= -shared
+LFlags			:= -shared -Wl,-rpath,$(PluginDir)
 LFlags_Debug	:= -g -Wl,-soname,lib$(LIBNAME)_Debug.so.$(MajLibVers)
 LFlags_Release	:= -O3 -Wl,-soname,lib$(LIBNAME).so.$(MajLibVers)
 endif
@@ -96,7 +100,12 @@ CXX         := g++
 #########################
 # Generic Template Part #
 #########################
-all: $(Modes)
+all: $(JacobiPolLibFile) $(Modes)
+
+JacobiPolSrc := $(wildcard $(JacobiPolSrcDir)/*.cpp)
+
+$(JacobiPolLibFile): $(JacobiPolSrc)
+	$(CXX) $(IncPathFlag)  $(JacobiPolInclude) -O3 -fPIC -c -o $@ $<
 
 .PHONY:init
 init:$(Modes:%=init_%)

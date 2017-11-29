@@ -9,24 +9,19 @@ namespace SandiaQuadrature
 	__attribute__((destructor))
 	static void ExitFunction()
 	{
-#ifdef MYDEBUG
-		clog << "I'm closing the sandia quadrature library" << endl;
-#endif //MYDEBUG
 	};
 
+/**
+	Function doing quadrature rules builders registrations at plugin loading.
+	Automatically called when the plugin is loaded,
+	it makes the registrations of quadrature rules builders in
+	quadrature rules factories.
+**/
 	__attribute__((constructor))
 	static void RegisterFunction()
 	{
-#ifdef MYDEBUG
-		clog << "Registering in Quadrature factory" << endl;
-#endif //MYDEBUG
-
 		auto& q_one_d_factory (Geometry::QuadratureFactory<1>::Instance());
 		auto& q_two_d_factory (Geometry::QuadratureFactory<2>::Instance());
-
-#ifdef MYDEBUG
-			cerr << "Indirizzo della factory 1D di quadrature : " << &q_one_d_factory << endl;
-#endif //MYDEBUG
 
 		q_one_d_factory.add (Geometry::IntervalType,
 									&Helpers::Builders <SandiaQuadratureRule<1>,

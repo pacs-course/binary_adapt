@@ -9,6 +9,7 @@ using namespace std;
 namespace FiniteElements
 {
 	WarpedBasis::WarpedBasis() : TensorialBasis<2>(){};
+	WarpedBasis::~WarpedBasis(){};
 
 	WarpedBasis::WarpedBasis(const WarpedBasis& input_basis)
 	{
@@ -24,9 +25,6 @@ namespace FiniteElements
 		return *this;
 	};
 
-	/* This basis doesn't is not the result of a simple tensorization,
-		so I don't have a 1d version of it. If I'm in OneDEvaluation
-		it means that something has gone wrong, so I raise an exception */
 	double WarpedBasis::OneDEvaluation(size_t, double)const
 	{
 		throw logic_error("Trying to call the meaningless 1d evaluation of the warped basis");
@@ -34,12 +32,14 @@ namespace FiniteElements
 
 	double WarpedBasis::Evaluate(size_t ind, const Geometry::Point<2>& p)
 	{
+#ifdef VERBOSE
 		static bool called = true;
 		if (called)
 		{
-			cerr << "WARNING: Evaluate method in WarpedBasis is deprecated because of inefficiency" << endl;
+			cerr << "Warning: Evaluate method in WarpedBasis is deprecated because of inefficiency" << endl;
 			called = false;
 		}
+#endif //VERBOSE
 
 		size_t degree = 0;
 		size_t length = 0;

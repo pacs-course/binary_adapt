@@ -1,34 +1,27 @@
-#include "MyFunctors.h"
+#include "Functors.h"
 
 #include "BinaryTreeHelper.h"
 
 /*
 	A function which does the registrations in the factory
 */
-namespace MyFunctions
+namespace Functions
 {
 	__attribute__((destructor))
 	static void ExitFunction()
-	{
-#ifdef MYDEBUG
-		clog << "I'm closing the functions library" << endl;
-#endif //MYDEBUG
-	};
+	{};
 
+/**
+	Function doing the functor builders registrations at plugin loading.
+	Automatically called when the plugin is loaded,
+	it makes the registrations of functors builders in
+	functor factories.
+**/
 	__attribute__((constructor))
 		static void RegisterFunction()
 		{
-#ifdef MYDEBUG
-			clog << "Registering in Functor factory" << endl;
-#endif //MYDEBUG
-
 			auto& f_one_d_factory(BinaryTree::FunctionsFactory<1>::Instance());
 			auto& f_two_d_factory(BinaryTree::FunctionsFactory<2>::Instance());
-
-#ifdef MYDEBUG
-			cerr << "Indirizzo della factory 1D di funzioni : " << &f_one_d_factory << endl;
-			cerr << "Indirizzo della factory 2D di funzioni : " << &f_two_d_factory << endl;
-#endif //MYDEBUG
 
 			f_one_d_factory.add ("mu_parser_expr",
 										&Helpers::Builders <ParserFunctor<1>,

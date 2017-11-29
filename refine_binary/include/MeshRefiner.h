@@ -14,14 +14,20 @@
 
 namespace BinaryTree
 {
-
+/**
+	Class implementing the binary tree adaptation algorithm.
+	This is a wrapper for external libraries that practically implement the tree structure and the mesh management.
+	The mesh can be set from file through LoadMesh() method, then refined by calling Refine() method,
+	finally exported to file through ExportMesh() method.
+	Mesh elements can be iterated through IterateActiveNodes() method.
+**/
 	template <std::size_t dim>
 		class MeshRefiner
 		{
 			public:
 /**
-				constructor.
-				Default constructor, the initialization of the attribute must be done through the Init method
+				default constructor.
+				The initialization of the attribute must be done through the Init method
 **/
 				MeshRefiner() : _objective_function(nullptr),
 									 _godfather(),
@@ -128,7 +134,7 @@ namespace BinaryTree
 
 /**
 				Iterate on the activated nodes of the mesh.
-				For each node n it calls the functor NodeOperator(n);
+				For each node n it calls the functor NodeOperator();
 				using this virtual method to navigate the mesh I'm taking advantage
 				from the fact that the underlying mesh in concrete refiner classes
 				implements an iterator structure to iterate only active elements.
@@ -138,7 +144,7 @@ namespace BinaryTree
 **/
 				void IterateActiveNodes(NodeOperator& func)
 				{
-					IterateActive(func);
+					this->IterateActive(func);
 					this->_error_updated = false;
 				};
 /**
@@ -147,7 +153,7 @@ namespace BinaryTree
 **/
 				void IterateActiveNodes(DimOperator<dim>& func)
 				{
-					IterateActive(func);
+					this->IterateActive(func);
 					this->_error_updated = false;
 				};
 
@@ -156,12 +162,12 @@ namespace BinaryTree
 				In the const version I don't need to update the error since I'm sure
 				that the functor has not modified the mesh.
 **/
-				virtual void IterateActiveNodes(NodeOperator&) const = 0;
+				virtual void IterateActiveNodes(ConstOperator&) const = 0;
 /**
 				Overloaded method for DimOperator<dim> input.
 				It has the same behaviour of the NodeOperator input const method.
 **/
-				virtual void IterateActiveNodes(DimOperator<dim>&) const = 0;
+				virtual void IterateActiveNodes(ConstDimOperator<dim>&) const = 0;
 
 			protected:
 /**
@@ -175,6 +181,7 @@ namespace BinaryTree
 **/
 				virtual void IterateActive(DimOperator<dim>&) = 0;
 
+			private:
 /**
 				Needed by Refine method.
 				It performs the p refinement along the parents of input parameter
@@ -219,7 +226,18 @@ namespace BinaryTree
 **/
 				DimensionedGodFather<dim> _godfather;
 
+/**
+				Projection error of _objective_function attribute over the underlying mesh.
+				It is computed as the sum of the projection errors over each single element.
+**/
 				double _global_error;
+
+			private:
+/**
+				True if underlying mesh not modified since last _global_error update.
+				Every method which modifies the underlying mesh should set _error_updated = false.
+				UpdateGlobalError() is the only method that does _error_updated = true. 
+**/
 				bool _error_updated;
 		};
 
@@ -261,19 +279,25 @@ namespace BinaryTree
 		};
 
 
-	/* If no variadic argument is passed */
+/**
+	In case no variadic argument is passed
+**/
 	template <typename... Args>
 		void Execute(){};
 
-	/* End of the recursion */
+/**
+	End of the recursion
+**/
 	template <typename T>
 		void Execute(T f)
 		{
 			f();
 		};
 
-	/* Function which simply calls in sequence the functors passed by arguments
-		It will be called by MeshRefiner<dim>::Refine at each step of the algo */
+/**
+	Function which simply calls in sequence the functors passed by arguments.
+	It will be called by MeshRefiner<dim>::Refine at each step of the algo.
+**/
 	template <typename... Args>
 		void Execute (std::function<void()> f, Args... funcs)
 		{
@@ -295,6 +319,9 @@ namespace BinaryTree
 				std::cout << std::endl << "Complexity : " << n_iter << std::endl;
 #endif //VERBOSE
 				BinaryNode* daddy = this->_godfather.MakeBisection();
+
+				daddy->Left()->Deactivate();
+				daddy->Right()->Deactivate();
 				
 				ClimbUp(daddy);
 
@@ -314,6 +341,7 @@ namespace BinaryTree
 				Execute(funcs...);
 				++n_iter;
 			}
+			this->_error_updated = false;
 		};
 
 	template <size_t dim>
@@ -341,27 +369,11 @@ namespace BinaryTree
 
 			while(daddy)
 			{
-#ifdef MYDEBUG
-				std::clog << "Modifico i valori dell'elemento di id # " << daddy->NodeID() << std::endl;
-#endif //MYDEBUG
-
 				auto val = daddy->PLevel();
 				daddy->PLevel(val + 1);
 
 				auto hansel = daddy->Left ();
 				auto gretel = daddy->Right();
-
-#ifdef MYDEBUG
-				std::clog << "Daddy ha q = " << daddy->Q() << std::endl;
-				std::clog << "Daddy ha e tilde = " << daddy->TildeError() << std::endl;
-				std::clog << "Daddy ha e = " << daddy->ProjectionError() << std::endl;
-				std::clog << "Hansel ha q = " << hansel->Q() << std::endl;
-				std::clog << "Hansel ha e tilde = " << hansel->TildeError() << std::endl;
-				std::clog << "Hansel ha e = " << hansel->ProjectionError() << std::endl;
-				std::clog << "Gretel ha q = " << gretel->Q() << std::endl;
-				std::clog << "Gretel ha e tilde = " << gretel->TildeError() << std::endl;
-				std::clog << "Gretel ha e = " << gretel->ProjectionError() << std::endl;
-#endif //MYDEBUG
 
 				auto new_E = std::min(	hansel->E() + gretel->E(),
 												daddy->ProjectionError()
@@ -371,32 +383,17 @@ namespace BinaryTree
 				auto new_E_tilde = new_E * old_E_tilde
 										 /
 										 (new_E + old_E_tilde);
-	#ifdef MYDEBUG
-				std::clog << "E" << std::endl;
-				std::clog << "Old value: " << daddy->E() << std::endl;
-	#endif //MYDEBUG
+
 				daddy->E(new_E);
-	#ifdef MYDEBUG
-				std::clog << "New value: " << new_E << std::endl;
-	#endif //MYDEBUG
 				daddy->ETilde(new_E_tilde);
-	#ifdef MYDEBUG
-				std::clog << "E tilde" << std::endl;
-				std::clog << "Old value: " << old_E_tilde << std::endl;
-				std::clog << "New value: " << new_E_tilde << std::endl;
-	#endif //MYDEBUG
 
 				BinaryNode* alfa_bro(nullptr);
 
 				hansel->Q() > gretel->Q() ? alfa_bro = hansel : alfa_bro = gretel;
 
 				auto new_q = std::min (alfa_bro->Q(), new_E_tilde);
-	#ifdef MYDEBUG
-				std::clog << "Il figlio alfa ha q = " << alfa_bro->Q() << std::endl;
-				std::clog << "Il nuovo q vale: " << new_q << std::endl;
-	#endif //MYDEBUG
-				daddy->Q(new_q);
 
+				daddy->Q(new_q);
 				daddy->S(alfa_bro->S());
 
 				previous_daddy = daddy;									 

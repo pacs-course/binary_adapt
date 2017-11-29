@@ -16,6 +16,8 @@ Test_valgrind.sh
 Test_check.sh
 README
 *.conf
-mesh_files/*.x[dt]a
+mesh_files/*.msh
 *.m
 *.msh
+sandia_rules/*pp
+jacobi_polynomial/*pp

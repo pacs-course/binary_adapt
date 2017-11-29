@@ -7,11 +7,11 @@
 #include "Basis.h"
 #include "StdFElementInterface.h"
 
-/*
-	List of all the concrete instances of the factories useful in the library
-	Full specializations of the constructors make the necessary registrations
-	The possibility to add other builders is left to an external user 
-*/
+/**
+	List of all the concrete instances of the factories used in the library.
+	Full specializations of the constructors make the necessary registrations;
+	The possibility to add other builders is left to an external user.
+**/
 /* NB: It's not allowed to specialize aliases,
 	so I need to replace aliases with correspondent full class names */
 
@@ -19,41 +19,41 @@ namespace GenericFactory
 {
 /*---Object Factories---*/
 
-/*
-	Factory for affine maps between an element and its correspondent std one
-	The key is the type of the element to be mapped in the corresponding std element
-*/
+/**
+	Factory for affine maps between an element and its correspondent std one.
+	The key is the type of the element corresponding std element has to be mapped to.
+**/
 	template <std::size_t dim>
 		using AffineMapFactory = ObjectFactory <Geometry::AffineMap<dim>, Geometry::ElementType>;
 
-/* I specialize the AffineMapFactory constructor */
+/* Specializing the AffineMapFactory constructor */
 	template <>
 		Factory <Geometry::AffineMap<1>, Geometry::ElementType, std::unique_ptr<Geometry::AffineMap<1>> >::Factory();
 
 	template <>
 		Factory <Geometry::AffineMap<2>, Geometry::ElementType, std::unique_ptr<Geometry::AffineMap<2>> >::Factory();
 
-/*
-	Factory for maps between standard elements (i.e. between reference triangle and reference square)
-	The key is the type of the element to be mapped in the corresponding standard ipercube
-*/
+/**
+	Factory for maps between standard elements (i.e. between reference triangle and reference square).
+	The key is the type of the element corresponding standard ipercube has to be mapped to.
+	For the 1D case no map between standard elements is needed, since the standard element is already the ipercube.
+**/
 	template <std::size_t dim>
 		using StdMapFactory = ObjectFactory <Geometry::Map<dim>, Geometry::ElementType>;
 
-/* I specialize the StdMapFactory constructor */
-/*		for the 1D case I don't need any map between std elements, since the stdFElem is already the ipercube */
+/* Specializing the StdMapFactory constructor */
 	template <>
 		Factory <Geometry::Map<2>, Geometry::ElementType, std::unique_ptr<Geometry::Map<2>> >::Factory();
 
 
-/*
-	Factory for basis needed by StdFElement objects
-	The key is the type of the basis
-*/
+/**
+	Factory for basis needed by StdFElement objects.
+	The key is the type of the basis.
+**/
 	template <std::size_t dim>
 		using TensorialBasisFactory = ObjectFactory<FiniteElements::TensorialBasis<dim>, FiniteElements::BasisType>;
 
-/* I specialize the BasisFactory constructor */
+/*	Specializing the BasisFactory constructor */
 	template <>
 		Factory <FiniteElements::TensorialBasis<1>, FiniteElements::BasisType, std::unique_ptr<FiniteElements::TensorialBasis<1>> >::Factory();
 
@@ -62,13 +62,15 @@ namespace GenericFactory
 
 /*---Singleton Factories---*/
 
-/*
-	Factory for standard elements needed by FElements objects
-	The key is the ElementType denoting the geometry of the object
-*/
+/**
+	Factory for standard elements needed by FElements objects.
+	The key is the ElementType denoting the geometry of the object.
+	The factory ensures that only one standard element is constructed.
+**/
 	template <std::size_t dim, FiniteElements::BasisType FeType>
 		using StdFElementFactory = SingletonFactory <FiniteElements::StdFElementInterface<dim, FeType>, Geometry::ElementType>;
 
+/*	Specializing the StdFElementFactory constructor */
 	template <>
 		Factory <FiniteElements::StdFElementInterface<1, FiniteElements::LegendreType>,
 					Geometry::ElementType,

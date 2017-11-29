@@ -4,7 +4,6 @@ using namespace std;
 
 namespace LibmeshBinary
 {
-//#ifdef TRY_IT
 	/* initializing the static attribute
 		I have to create the new node at the half of the longest side of the triangle
 
@@ -99,12 +98,6 @@ namespace LibmeshBinary
 		side_lengths[1] = nodes[2].distance(nodes[1]);
 		side_lengths[2] = nodes[0].distance(nodes[2]);
 
-#ifdef MYDEBUG
-		cerr << "Lato 0: l = " << side_lengths[0] << endl;
-		cerr << "Lato 1: l = " << side_lengths[1] << endl;
-		cerr << "Lato 2: l = " << side_lengths[2] << endl;
-#endif //MYDEBUG
-
 		double longest_length = side_lengths[0];
 
 		for (size_t i = 1; i < side_lengths.size(); ++i)
@@ -115,11 +108,10 @@ namespace LibmeshBinary
 				this->_longest_side = i;
 			}
 		}
-#ifdef MYDEBUG
-		cerr << "longest_length = " << longest_length << endl;
-		cerr << "_longest_side = " << _longest_side << endl;
-#endif //MYDEBUG
 	};
+
+	Triangle::~Triangle()
+	{};
 
 	float	Triangle::embedding_matrix(const unsigned int child_num,
 												const unsigned int child_node_num,
@@ -137,5 +129,4 @@ namespace LibmeshBinary
 	{
 		return 2;
 	};
-//#endif //TRY_IT
 };

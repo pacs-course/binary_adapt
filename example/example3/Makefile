@@ -37,7 +37,6 @@ DynamicLibraries =	\
 							$(RootDir)/library_bridges/mesh_bridge \
 							$(RootDir)/refine_binary \
 							$(RootDir)/interpolating_functions \
-							$(RootDir)/plugin_loader \
 
 RunTimeLibraries =	\
 							$(RootDir)/quadrature_rules/mesh_quadrature \
@@ -87,7 +86,7 @@ Defines_Debug	:= DEBUG _GLIBCXX_DEBUG
 Defines_Opt		:= OPT
 # Compiler specific flags (CXXFlags is included before mode specific CXXFlags_MODE)
 CXXFlags			:= -march=native -Wall -Wextra
-CXXFlags_Debug	:= -g -std=gnu++11 -O2 -felide-constructors -funroll-loops -fstrict-aliasing -Wdisabled-optimization -Wno-variadic-macros -DNDEBUG
+CXXFlags_Debug	:= -g -std=gnu++11 -felide-constructors -funroll-loops -fstrict-aliasing -Wdisabled-optimization -Wno-variadic-macros -DNDEBUG
 CXXFlags_Opt	:= -std=c++14 -O3
 
 # Linker specific flags (LFlags is included before mode specific LFlags_MODE)

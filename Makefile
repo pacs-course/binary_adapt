@@ -40,7 +40,7 @@ binaries	:= $(example) \
 docdir := ./doc
 
 .PHONY: all $(binaries) $(libraries)
-all: navigate doc
+all: navigate
 
 .PHONY: navigate
 navigate: $(libraries) $(binaries)

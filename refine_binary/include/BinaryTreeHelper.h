@@ -68,10 +68,15 @@ namespace Helpers
 			std::basic_streambuf<char>* _err_buf;
 	};
 	
-
+/**
+	Builders to be registered in the factories
+**/
 	template <typename ConcreteProduct, typename AbstractProduct = ConcreteProduct>
 		struct Builders
 		{
+/**
+			It makes sure that only one element is constructed.
+**/
 			static std::shared_ptr<AbstractProduct> BuildSingleton()
 			{
 				static std::shared_ptr<AbstractProduct> ptr = std::make_shared<ConcreteProduct>();
@@ -84,14 +89,19 @@ namespace Helpers
 			};
 		};
 
-	//Functions to convert my enums into strings
+/**
+	Function to convert BasisType enum into string
+**/
 	std::string BasisTypeConverter(FiniteElements::BasisType const & id);
+/**
+	Function to convert ElementType enum into string
+**/
 	std::string ElementTypeConverter(Geometry::ElementType const & id);
 
-	/**
-		An optimized function to compute powers when the exponent is an unsigned integer
-		and it is known at runtime
-	**/
+/**
+	An optimized function to compute powers when the exponent is an unsigned integer
+	and it is known at runtime
+**/
 	inline double IntPower (double basis, size_t exp)
 	{
 #ifdef BASIC
@@ -130,10 +140,10 @@ namespace Helpers
 #endif //BASIC
 	};
 
-	/**
+/**
 		An optimized function to compute powers when the exponent is an unsigned integer
 		and it is known at compile time
-	**/
+**/
 	template <size_t exp>
 		double Power (double basis)
 		{

@@ -3,6 +3,9 @@
 
 namespace Geometry
 {
+	IntervalMap::IntervalMap(){};
+	IntervalMap::~IntervalMap(){};
+
 	void IntervalMap::Init(const NodesVector<1>& vert)
 	{
 		double a = vert[0][0];
@@ -13,6 +16,9 @@ namespace Geometry
 		this->_jacobian = this->_mat(0,0);
 		this->_inverse(0,0) = 1 / this->_mat(0,0);
 	};
+
+	TriMap::TriMap(){};
+	TriMap::~TriMap(){};
 
 	void TriMap::Init(const NodesVector<2>& vert)
 	{
@@ -36,6 +42,12 @@ namespace Geometry
 		//TODO: optimize it
 		this->_inverse = this->_mat.Inverse();
 	};
+
+	QuadMap::QuadMap(){};
+	QuadMap::~QuadMap(){};
+
+	StdTriMap::StdTriMap(){};
+	StdTriMap::~StdTriMap(){};
 
 	Point<2> StdTriMap::Evaluate (const Point<2>& p)const
 	{

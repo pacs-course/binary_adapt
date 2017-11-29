@@ -6,6 +6,8 @@ namespace Geometry
 {
 	DynamicVector::DynamicVector() : _vec(){};
 
+	DynamicVector::~DynamicVector(){};
+
 	DynamicVector::DynamicVector(size_t l) : _vec(l){};
 
 	DynamicVector::DynamicVector(const DynamicVector& v)
@@ -62,10 +64,6 @@ namespace Geometry
 
 	void DynamicVector::Resize(size_t L)
 	{
-#ifdef VERBOSE
-		clog << "Warning: resizing the DynamicVector" << endl;
-#endif //VERBOSE
-
 		this->_vec.conservativeResize(L);
 	};
 
@@ -75,6 +73,8 @@ namespace Geometry
 	};
 
 	DynamicMatrix::DynamicMatrix() : _mat(){};
+
+	DynamicMatrix::~DynamicMatrix(){};
 
 	DynamicMatrix::DynamicMatrix(size_t i, size_t j) : _mat(i,j){};
 

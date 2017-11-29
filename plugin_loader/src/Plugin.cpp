@@ -2,6 +2,7 @@
 
 #include <stdexcept> //std::runtime_error
 #include <iostream>
+
 using namespace std;
 
 namespace PluginLoading
@@ -11,15 +12,9 @@ namespace PluginLoading
 
 	Plugin::~Plugin()
 	{
-#ifdef DESTRUCTOR_ALERT
-		std::cerr << "Sono nel distruttore di Plugin" << std::endl; 
-#endif
-#ifdef BANANA
+#ifdef TRY_IT
 		Close();
-#endif //BANANA
-#ifdef DESTRUCTOR_ALERT
-		std::cerr << "Plugin distrutto" << std::endl;
-#endif
+#endif //TRY_IT
 	};
 
 	void* Plugin::Open()
@@ -37,9 +32,6 @@ namespace PluginLoading
 
 	void Plugin::Close()
 	{
-#ifdef MYDEBUG
-		cerr << "Closing plugin" << endl;
-#endif //MYDEBUG
 		if ( this->_handle )
 		{
 			int err = dlclose(this->_handle);

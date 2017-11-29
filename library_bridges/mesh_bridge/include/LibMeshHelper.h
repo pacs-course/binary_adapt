@@ -11,24 +11,25 @@
 
 namespace LibmeshBinary
 {
-/*
-	renaming libMesh enumerators for the use in my program
-	since in libMesh there are multiple types describing the same geometry, in this way a potential switch is easier, since it must be done only ones here
-	cannot use the using syntax since I'm renaming enumerators, not types
-*/
-	//TODO: find a more c++ style way to do it
+/**
+	Renaming libMesh enumerators for the use in this library.
+	In libMesh there are multiple types describing the same geometry (i.e. TRI3, TRI6):
+	in this way a potential switch is easier, since it must be done only ones here.
+	"using" syntax cannot be used to rename enumerators, only for types.
+**/
+	//TODO: use a more c++ style way to do it
 	#define LibmeshInvalidType libMesh::INVALID_ELEM
 	#define LibmeshIntervalType libMesh::EDGE2
 	#define LibmeshTriangleType libMesh::TRI3
 	#define LibmeshSquareType libMesh::QUAD4
 	#define LibmeshCubeType libMesh::HEX8
 
-/*
-	conversion from Geometry::ElementType to the correspondent libMesh::ElemType,
-	necessary for the initialization of the libMesh::QBase object
-	I use the fact that ElementType is known at compile time,
-	so the conversion is done in the template specialization
-*/
+/**
+	Conversion from Geometry::ElementType to correspondent libMesh::ElemType.
+	It is necessary for the initialization of the libMesh::QBase object.
+	Since ElementType is known at compile time,
+	the conversion can be done as template type specialization.
+**/
 	template <Geometry::ElementType Type = Geometry::InvalidElementType>
 		libMesh::ElemType ConvertType()
 		{
@@ -47,17 +48,17 @@ namespace LibmeshBinary
 	template <>
 		libMesh::ElemType ConvertType<Geometry::CubeType> ();
 
-/*
-	It does the conversion in the opposite direction
-	type is known at runtime (it's the output of the pure virtual method type() of the libMesh::Elem class)
-	so I cannot define the function as the previous one
-*/
+/**
+	Conversion from libMesh::ElemType to correspondent Geometry::ElementType.
+	libMesh::ElemType is known at runtime (it's the output of the pure virtual method type() of the libMesh::Elem class),
+	so the function cannot be defined template as ConvertType().
+**/
 	Geometry::ElementType ConvertLibmeshType (libMesh::ElemType type);
 
-/*
-	conversion from libMesh::point to Geometry::Point<dim>
-	libmesh::point has 3 coordinates, so for dim > 3 it does not make sense
-*/
+/**
+	Conversion from libMesh::point to #Geometry::Point.
+	libmesh::point has 3 coordinates, so for dim > 3 it does not make sense.
+**/
 	template <size_t dim, typename std::enable_if< (dim < 4), size_t>::type = 0>
 		Geometry::Point<dim> ConvertPoint(const libMesh::Point& point)
 		{
@@ -68,8 +69,6 @@ namespace LibmeshBinary
 
 			return result;
 		};
-
-
 
 } //namespace LibmeshBinary
 #endif //__LIBMESH_HELPER_H

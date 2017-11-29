@@ -6,31 +6,83 @@
 
 #include "muParser.h"
 
-namespace MyFunctions
+namespace Functions
 {
+/**
+	Initialize mu::Parser variables with array elements addresses and names.
+	It assigns the name to variables, as they should be called in the expression.
+	Called by MuParserInterface constructor.
+**/
 	template <size_t dim>
 		void AssignVariablesName(std::array<double, dim>&, mu::Parser&);
 
+/**
+	Wrapper for muParser library.
+	It implements an interface to use muParser objects.
+	It is a functor with dimensionality dim,
+	when called operator() it evaluates	the mathematical Expression() at input points.
+**/
 	template <size_t dim>
 		class MuParserInterface
 		{
 			public:
+/**
+				constructor.
+				It initializes _parser variables with _variables content.
+**/
 				MuParserInterface();
+/**
+				constructor with string.
+				As for default constructor, but it initializes _expr expression too.
+**/
 				MuParserInterface(const std::string&);
+/**
+				destructor
+**/
 				~MuParserInterface();
+/**
+				copy constructor
+**/
 				MuParserInterface(const MuParserInterface&);
+/**
+				assignment operator
+**/
 				MuParserInterface& operator = (const MuParserInterface&);
 
+/**
+				set the mathematical expression
+**/
 				void Expression(const std::string&);
+/**
+				get the mathematical expression
+**/
 				std::string Expression()const;
+/**
+				evaluate the mathematical expression at input values
+**/
 				double operator() (const std::array<double, dim>&) const;
 
 			protected:
+/**
+				parser of mathematical expression.
+				It needs the addresses where to store the variables values,
+				which is set to _variables elements.
+				The underlying mathematical expression is set to _expr string.
+				Call _parser.Eval() to evaluate the expression at variables values.
+**/
 				mu::Parser _parser;
+/**
+				mathematical expression
+**/
 				std::string _expr;
 
 			private:
-				//It's modified by the derived method operator(), which is labeled const
+/**
+				Location for variables values.
+				Here _parser variables are stored, needed when evaluating operator() method.
+				operator(), which is labeled const because it's called by Functor<dim>::operator() const method,
+				needs to modify this attribute: so it's labeled mutable.
+**/
 				mutable std::array<double, dim> _variables;
 		};
 
@@ -92,6 +144,9 @@ namespace MyFunctions
 			return this->_parser.Eval();
 		};
 
+/**
+	By default variables are called xi, with i = 1:dim
+**/
 	template <size_t dim>
 		void AssignVariablesName(std::array<double, dim>& container, mu::Parser& mpi)
 		{
@@ -100,11 +155,17 @@ namespace MyFunctions
 				mpi.DefineVar("x" + std::to_string(++cont), &var);
 		};
 
+/**
+	If dim==1 variable is called x
+**/
 	template <>
 		void AssignVariablesName<1>(std::array<double, 1>&, mu::Parser&);
 
+/**
+	If dim==2 variables are called x and y
+**/
 	template <>
 		void AssignVariablesName<2>(std::array<double, 2>&, mu::Parser&);
 
-} //namespace MyFunctions
+} //namespace Functions
 #endif //__MUPARSER_INTERFACE_H

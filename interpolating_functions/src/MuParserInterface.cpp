@@ -2,7 +2,7 @@
 
 using namespace std;
 
-namespace MyFunctions
+namespace Functions
 {
 	template <>
 		void AssignVariablesName<1>(std::array<double, 1>& container, mu::Parser& mpi)
@@ -17,4 +17,4 @@ namespace MyFunctions
 			mpi.DefineVar("y", &(container[1]));
 		};
 
-} //namespace MyFunctions
+} //namespace Functions

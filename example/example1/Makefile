@@ -35,7 +35,6 @@ Dirs			= $(ObjDirs) $(BinDirs) $(ResultsDirs)
 
 DynamicLibraries =	\
 							$(RootDir)/refine_binary \
-							$(RootDir)/plugin_loader \
 
 RunTimeLibraries =	\
 							$(RootDir)/library_bridges/mesh_bridge \
@@ -78,7 +77,7 @@ Includes := $(IncludeDir) \
 				$(patsubst %,%/include,$(LinkedLibraries))
 
 # Search Path For Include Files (InclPaths is included before mode specific InclPaths_MODE)
-InclPaths		:=	$(Includes) $(LibMeshInclude)
+InclPaths		:=	$(Includes) $(GetPotInclude) $(EigenInclude) $(LibMeshInclude)
 InclPaths_Debug:=
 InclPaths_Opt	:=
 # Defined values used by CPP preprocessor (Defines is included before mode specific Defines_MODE)
@@ -87,11 +86,11 @@ Defines_Debug	:= DEBUG _GLIBCXX_DEBUG
 Defines_Opt		:= OPT
 # Compiler specific flags (CXXFlags is included before mode specific CXXFlags_MODE)
 CXXFlags			:= -march=native -Wall -Wextra
-CXXFlags_Debug	:= -g -std=gnu++11 -O2 -felide-constructors -funroll-loops -fstrict-aliasing -Wdisabled-optimization -Wno-variadic-macros -DNDEBUG
+CXXFlags_Debug	:= -g -std=gnu++11 -felide-constructors -funroll-loops -fstrict-aliasing -Wdisabled-optimization -Wno-variadic-macros -DNDEBUG
 CXXFlags_Opt	:= -std=c++14 -O3
 
 # Linker specific flags (LFlags is included before mode specific LFlags_MODE)
-LFlags			:= $(DynamicLibsPath:%=-Wl,-rpath,%) $(RunTimeLibsPath:%=-Wl,-rpath,%) 
+LFlags			:= $(DynamicLibsPath:%=-Wl,-rpath,%) $(RunTimeLibsPath:%=-Wl,-rpath,%) -Wl,-rpath,$(LibMeshDir)
 LFlags_Debug	:=
 LFlags_Opt		:= 
 

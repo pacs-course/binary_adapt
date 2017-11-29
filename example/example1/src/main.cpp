@@ -1,5 +1,5 @@
-#include "PluginLoader.h"
 #include "MeshRefiner.h"
+#include "LibraryInit.h"
 
 #include <iostream>
 #include <memory> //std::unique_ptr
@@ -34,38 +34,12 @@ int main(int argc, char ** argv)
 
 	string conf_file = main_input("conf_file", "../../binary_tree.conf");
 
-	GetPot cl(conf_file.c_str());
-	string quad_library = "binary_tree/quadrature/triangle/quad_library";
-	string func_library = "binary_tree/functions/func_library";
-	string mesh_library = "binary_tree/mesh/mesh_library";
-
-	string quad_so_file = "lib" + string(cl(quad_library.c_str(), "mesh_quadrature"));
-	string func_so_file = "lib" + string(cl(func_library.c_str(), "interpolating_functions"));
-	string mesh_so_file = "lib" + string(cl(mesh_library.c_str(), "mesh_library"));
-
-#ifdef DEBUG
-	quad_so_file += "_Debug";
-	func_so_file += "_Debug";
-	mesh_so_file += "_Debug";
-#endif //DEBUG
-	quad_so_file += ".so";
-	func_so_file += ".so";
-	mesh_so_file += ".so";
-
-
-	PluginLoading::PluginLoader pl;
-	cerr << "Loader constructed" << endl;
-
-	pl.Add(func_so_file);
-	pl.Add(mesh_so_file);
-	pl.Add(quad_so_file);
-
-	if (!pl.Load())
+	bool failed = BinaryTree::Init(conf_file);
+	if (failed)
 	{
-		cerr << "Houston we have a problem! Something went wrong loading plugins";
+		cerr << "Library initialization failed" << endl;
 		return 1;
 	}
-	cerr << "Plugins loaded" << endl;
 
 	auto& mrf(BinaryTree::MeshRefinerFactory<2>::Instance());
 
@@ -82,6 +56,8 @@ int main(int argc, char ** argv)
 	}
 
 	cerr << "Refiner correctly constructed" << endl;
+
+	GetPot cl(conf_file.c_str());
 
 	string func_ID = "binary_tree/functions/functor";
 	string func_name = cl(func_ID.c_str(), "");

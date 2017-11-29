@@ -4,7 +4,16 @@ using namespace std;
 
 namespace BinaryTree
 {
-	void Counter::operator()(BinaryNode*)
+	NodeOperator::NodeOperator(){};
+	NodeOperator::~NodeOperator(){};
+
+	ConstOperator::ConstOperator(){};
+	ConstOperator::~ConstOperator(){};
+
+	Counter::Counter() : _counter(0){};
+	Counter::~Counter(){};
+
+	void Counter::operator()(const BinaryNode*)
 	{
 		++(this->_counter);
 	};
@@ -15,6 +24,7 @@ namespace BinaryTree
 	};
 
 	ErrorComputer::ErrorComputer(double& error_location) : _error_variable(error_location){};
+	ErrorComputer::~ErrorComputer(){};
 
 	void ErrorComputer::operator()(BinaryNode* node)
 	{
@@ -26,29 +36,30 @@ namespace BinaryTree
 		this->_error_variable = 0;
 	};
 
-	void PlevelsExtractor::operator()(BinaryNode* node)
+	PlevelsExtractor::PlevelsExtractor() : _p_levels(){};
+	PlevelsExtractor::~PlevelsExtractor(){};
+
+	void PlevelsExtractor::operator()(const BinaryNode* node)
 	{
 		this->_p_levels.push_back(node->PLevel());
 	};
 
-	vector<size_t> PlevelsExtractor::GetPLevels()
+	vector<size_t> PlevelsExtractor::GetPLevels() const
 	{
 		return this->_p_levels;
 	};
 
-	GnuPlotPrinter::GnuPlotPrinter(ofstream& output_file) :	DimOperator<1>(),
+	GnuPlotPrinter::GnuPlotPrinter(ofstream& output_file) :	ConstDimOperator<1>(),
 																				_output_file(output_file),
 																				_x_min(0),
 																				_x_max(0),
 																				_p_max(0),
 																				_cont(0)
 	{};
+	GnuPlotPrinter::~GnuPlotPrinter(){};
 
-	void GnuPlotPrinter::operator() (DimensionedNode<1>* node)
+	void GnuPlotPrinter::operator() (const DimensionedNode<1>* node)
 	{
-#ifdef MYDEBUG
-		clog << "Active element of id " << node->NodeID() << endl;
-#endif //MYDEBUG
 		auto nodes = node->Nodes();
 		auto p_val = node->PLevel();
 
@@ -101,14 +112,15 @@ namespace BinaryTree
 	ProjectionPrinter::ProjectionPrinter(ofstream& output_file, double x_step) :	_output_file(output_file),
 																											_x_step(x_step)
 	{}
+	ProjectionPrinter::~ProjectionPrinter(){};
 
-	void ProjectionPrinter::operator() (DimensionedNode<1>* node)
+	void ProjectionPrinter::operator() (const DimensionedNode<1>* node)
 	{
 		auto nodes = node->Nodes();
 
 		double x_left = nodes[0];
 		double x_right = nodes[1];
-		for (; x_left < x_right; x_left+=this->_x_step)
+		for (; x_left < x_right; x_left += this->_x_step)
 			this->_output_file << x_left << "	" << node->Projection(x_left) << endl;
 	};
 } //namespace BinaryTree

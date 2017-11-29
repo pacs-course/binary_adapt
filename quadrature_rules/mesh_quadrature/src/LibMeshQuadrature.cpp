@@ -7,14 +7,17 @@ namespace LibmeshBinary
 	ModifiedTriangleRule::ModifiedTriangleRule() : LibmeshQuadratureRule<2, Geometry::TriangleType>()
 	{
 		Geometry::NodesVector<2> vertices(3);
-		vertices[0][0] = 0;
-		vertices[0][1] = 0;
-		vertices[1][0] = 1;
-		vertices[1][1] = 0;
-		vertices[2][0] = 0;
-		vertices[2][1] = 1;
+		Geometry::Point<2> v1({0,0});
+		Geometry::Point<2> v2({1,0});
+		Geometry::Point<2> v3({0,1});
+		vertices.Insert(0, v1);
+		vertices.Insert(1, v2);
+		vertices.Insert(2, v3);
 		_std_map.Init(vertices);
 	};
+
+	ModifiedTriangleRule::~ModifiedTriangleRule()
+	{};
 
 	Geometry::QuadPointVec<2> ModifiedTriangleRule::GetPoints()
 	{

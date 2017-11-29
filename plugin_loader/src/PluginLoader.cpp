@@ -14,11 +14,8 @@ namespace PluginLoading
 {
 	PluginLoader::PluginLoader() : _plugins(), _loaded(false) {};
 
-	PluginLoader::PluginLoader(const string& loading_path) : PluginLoader()
-	{	
-		this->LoadPath(loading_path);
-	};
-
+	PluginLoader::~PluginLoader()
+	{};
 
 	void PluginLoader::Add(string full_path, const string& so_file, int mode)
 	{
@@ -28,6 +25,9 @@ namespace PluginLoading
 
 	void PluginLoader::Add(const string& full_path_so_file, int mode)
 	{
+		if (this->_loaded)
+			cerr << "Warning: adding a plugin, but the Load() has already been called" << endl;
+
 		//TODO: add the check that this plugin has not already been added;
 
 		_plugins.push_back(Helpers::MakeUnique<Plugin>(full_path_so_file, mode));
@@ -58,6 +58,12 @@ namespace PluginLoading
 		return ok;
 	};
 
+#ifdef TRY_IT
+	PluginLoader::PluginLoader(const string& loading_path) : PluginLoader()
+	{	
+		this->LoadPath(loading_path);
+	};
+
 //TODO: test it
 	void PluginLoader::LoadPath(const string& loading_path, int mode)
 	{
@@ -67,9 +73,7 @@ namespace PluginLoading
 			while(auto dir_content = readdir(plugin_folder))
 			{
 				string name = string(dir_content->d_name);
-#ifdef DEBUG
-				cerr << name << endl;
-#endif //DEBUG
+
 				//it navigates recursively subdirectories
 				if (dir_content->d_type == DT_DIR)
 					LoadPath(name, mode);
@@ -85,7 +89,7 @@ namespace PluginLoading
 			cerr << "Warning: unable to open the directory: " << loading_path << endl;
 		}
 	};
-
+#endif //TRY_IT
 	size_t PluginLoader::Size() const
 	{
 		return this->_plugins.size();

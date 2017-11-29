@@ -13,6 +13,9 @@ namespace BinaryTree
 										_tilde_error(numeric_limits<double>::max())
 	{};
 
+	BinaryNode::~BinaryNode()
+	{};
+
 	BinaryNode::BinaryNode (const BinaryNode& bn)
 	{
 		*this = bn;
@@ -58,11 +61,6 @@ namespace BinaryTree
 
 	void BinaryNode::ETilde (double val)
 	{
-#ifdef TRY_IT
-		if (val < 1E-15)
-			_E_tilde = 0;
-		else
-#endif //TRY_IT
 			_E_tilde = val;
 	};
 

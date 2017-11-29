@@ -16,10 +16,10 @@ namespace GenericFactory
 {
 	using namespace std;
 
-	//! Generic utility to convert identifiers to string (if possible)
-	/*! 
-		Use type traits to identify the correct version
-	*/
+/**
+	Generic utility to convert identifiers to string (if possible).
+	Use type traits to identify the correct version.
+**/
 	template<bool Convertible, typename Identifier>
 		struct
 		M_identifierAsString
@@ -27,7 +27,9 @@ namespace GenericFactory
 			static string value (Identifier const & id);
 		};
 
-	//! Partial specialization if not convertible
+/**
+	Partial specialization if not convertible
+**/
 	template<typename Identifier>
 		struct
 		M_identifierAsString<false,Identifier>
@@ -38,7 +40,9 @@ namespace GenericFactory
 			}
 		};
 
-	//! Partial specialization if convertible
+/**
+	Partial specialization if convertible
+**/
 	template<typename Identifier> 
 		struct
 		M_identifierAsString<true,Identifier>
@@ -49,74 +53,74 @@ namespace GenericFactory
 		 	}
 		};
 
-	//! Utility to convert identifiers to string (if possible)
+/**
+	Utility to convert identifiers to string (if possible)
+**/
 	template<typename Identifier>
 		string identifierAsString(Identifier const & id)
 		{
 			return M_identifierAsString<is_convertible<Identifier, string>::value,Identifier>::value(id);
 		};
 
-	//! Full specialization for my enums
+/**
+	Full specialization for geometric types enum
+**/
 	template<>
 		string identifierAsString<Geometry::ElementType>(Geometry::ElementType const &);
+/**
+	Full specialization for basis types enum
+**/
 	template<>
 		string identifierAsString<FiniteElements::BasisType>(FiniteElements::BasisType const &);
 
-	/*! @brief A generic factory.
-	 
-	 It is implemented as a Singleton. The compulsory way to 
-	 access a method is Factory::Instance().method().
-	 Typycally to access the factory one does
-	 \code
-	 auto&  myFactory = Factory<A,I,B>::Instance();
-	 myFactory.add(...)
-	 \endcode
-	*/
-
+/**
+	A base class for Factory class.
+	Needed by InstanceHolder class, it's the return type of a factory instance.
+**/
 	class FactoryBase
 	{
 		public:
 		virtual ~FactoryBase()
-		{
-#ifdef DESTRUCTOR_ALERT
-			cerr << "Destroying FactoryBase [" << this << "]" << endl;
-#endif //DESTRUCTOR_ALERT
-		};
-#ifdef BANANA
-		virtual void BananaCall() const
-		{
-			cerr << "qualcosa non va! chiamata la BananaCall() della classe FactoryBase" << endl;
-		}
+		{};
 	};
 
-	class BananaMap : public map<string, unique_ptr<FactoryBase>>
-	{
-		public:
-		~BananaMap()
-		{
-			cerr << "BananaMap: destroying " << size() << " registered factories" << endl;
-			for (auto f = begin(); f != end(); ++f)
-			{
-				 cerr << "BananaMap: accessing [" << f->second.get() << "]" << endl;
-				 f->second->BananaCall();
-			}
-		}
-#endif //BANANA
-	};
-
+/**
+	Factory instances handler.
+	It can be seen as a simplified factory of factories, with string key.
+	It stores the instances of the factories,
+	Factory::Instance() refers to this class to get its instance.
+**/
 	class InstanceHolder
 	{
 		public:
+/**
+			Get instance. It throws exception if instance is not present in the map.
+**/
 			static FactoryBase& FactoryInstance(const string&);
+/**
+			Add instance to the map.
+**/
 			static FactoryBase& AddInstance(const string&, unique_ptr<FactoryBase>);
+
 		private:
-#ifndef BANANA
+/**
+			map of factories instances, identified by string
+**/
 			static map<string, unique_ptr<FactoryBase>> _holder;
-#else //BANANA
-			static BananaMap _holder;
-#endif //BANANA
 	};
 
+
+/**
+	A generic factory.
+
+	It is implemented as a Singleton.
+	The compulsory way to access a method is Factory::Instance().method().
+	Typycally to access the factory one does
+	\code
+	auto& myFactory = Factory<A,I,B>::Instance();
+	myFactory.add(...)
+	\endcode
+**/
 	template	<	typename AbstractProduct,
 	 				typename Identifier,
 				   typename ReturnType
@@ -124,15 +128,18 @@ namespace GenericFactory
 		class Factory : public FactoryBase
 		{
 			public:
-				//! The container for the rules.
+				/** The container for the rules. **/
 				using AbstractProduct_type	= AbstractProduct;
-				//! The identifier.
+				/** The identifier. **/
 				using Identifier_type		= Identifier;
-				//! The builder type.
+				/** The builder type. **/
 				using Builder_type			= function<ReturnType()>;
-				//! The return type.
+				/** The return type. **/
 				using Return_type				= ReturnType;
 
+/**
+				string identifier of the factory
+**/
 				static const string Name()
 				{
 				    string s1 = typeid(AbstractProduct).name();
@@ -141,6 +148,9 @@ namespace GenericFactory
 				    return s1 + "#" + s2 + "#" + s3;
 				}
 
+/**
+				Get the instance of the factory
+**/
 				static Factory& Instance()
 				{
 					string factory_name = Name();
@@ -154,10 +164,10 @@ namespace GenericFactory
 					}
 				};
 
-				//! Get the rule with given name
-				/*!
+/**
+				Get the rule with given name
 				If ReturnType is a pointer, it is null if no rule is present.
-				*/
+**/
 				//TODO: use variadic templates in order to allow to pass parameters to the object creation rule
 				Return_type create(Identifier const & name) const
 				{
@@ -172,7 +182,10 @@ namespace GenericFactory
 					}
 				};
 
-				//! Register the given rule.
+/**
+				Register the given rule.
+				If a rule is already stored for the same key, it is overwritten.
+**/
 				void add(Identifier const & name, Builder_type const & func)
 				{
 					auto f = this->_storage.insert(make_pair(name, func));
@@ -184,13 +197,10 @@ namespace GenericFactory
 #endif //VERBOSE
 					}
 				};
-#ifdef BANANA
-				virtual void BananaCall() const override
-				{
-				    cerr << "chiamata la BananaCall() della classe derivata [" << this << "]" << endl;
-				}
-#endif //BANANA
-				//! Returns a list of registered rules.
+
+/**
+				A list of registered rules.
+**/
 				vector<Identifier> registered() const
 				{
 					vector<Identifier> tmp;
@@ -201,42 +211,61 @@ namespace GenericFactory
 
 					return tmp;
 				};
-
-				//! Unregister a rule.
+/**
+				Unregister a rule.
+**/
 				void unregister(Identifier const & name)
 				{
 					_storage.erase(name);
 				};
 
-				//! Destructor
+/**
+				default destructor
+**/
 				virtual ~Factory()
-				{
-#ifdef DESTRUCTOR_ALERT
-					cerr << "Destroying Factory [" << this << "]" << endl;
-#endif //DESTRUCTOR_ALERT
-				};
+				{};
+
+			private:
+/**
+				constructor.
+				Made private since it is a Singleton.
+**/
+				Factory() {};
+/**
+				copy constructor.
+				Deleted since it is a Singleton.
+**/
+				Factory (Factory const&) = delete;
+/**
+				assignement operator.
+				Deleted since it is a Singleton.
+**/
+				Factory& operator = (Factory const&) = delete;
 
 			protected:
 				using Container_type = map<Identifier,Builder_type>;
-
-				//! Made private since it is a Singleton
-				Factory() {};
-
-				//! Deleted since it is a Singleton
-				Factory					(Factory const&) = delete;
-				//! Deleted since it is a Singleton
-				Factory& operator =	(Factory const&) = delete;
-
-				//! It contains the actual object factory.
+/**
+				Rules storage
+**/
 				Container_type _storage;
 		};
 
 
+/**
+	Factory of objects.
+	It returns a unique_ptr to the created object.
+**/
 	template	<	typename AbstractProduct,
 	 				typename Identifier
 				>
 		using ObjectFactory = Factory<AbstractProduct, Identifier, unique_ptr<AbstractProduct>>;
 
+/**
+	Factory of singletons.
+	Factory for objects with no more than one instance wanted in the program.
+	The builder shall ensure that two or more different instances are created.
+	It is returned a shared_ptr to the instance.
+**/
 	template	<	typename AbstractProduct,
 	 				typename Identifier
 				>

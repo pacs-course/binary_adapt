@@ -6,38 +6,64 @@
 
 namespace PluginLoading
 {
+/**
+	Class to manage shared library.
+	It gives an interface to wrap functions dlopen(), dlclose()...
+**/
 	class Plugin
 	{
 		public:
-			Plugin(const std::string& so_file, int mode = RTLD_LAZY);
-			~Plugin();
-			/*
-			 	returns the handle
-			*/
+/**
+			constructor with shared object file name
+**/
+			Plugin(const std::string&, int mode = RTLD_LAZY);
+/**
+			destructor
+**/
+			virtual ~Plugin();
+
+/**
+			Load the shared object, returning the handle
+**/
 			void* Open();
 
-			/*
-			 	closes the shared object handle if it was previously opened.
-			*/ 
+/**
+			Close the shared object handle if it was previously opened.
+**/ 
 			void Close();
 
-			/*
-			 	returns the shared object handle. Useful to use dlsym function.
-			*/
+/**
+			Get the shared object handle. Useful to use dlsym function.
+**/
 			void* Handle() const;
 	
-			/*
-				returns the shared object passed to dlopen 
-			*/
+/**
+			Get the shared object passed to dlopen 
+**/
 			const std::string& File() const;
 
 		private:
+/**
+			deleted copy constructor
+**/			
 			Plugin(const Plugin&) = delete;
+/**
+			deleted assign operator
+**/
 			Plugin& operator = (const Plugin&) = delete;
 	
 		private:
+/**
+			shared object
+**/
 			std::string _so_file;
+/**
+			handle returned by dlopen()
+**/
 			void* _handle;
+/**
+			mode to be passed to dlopen()
+**/
 			int _mode;
 	};
 

@@ -14,178 +14,213 @@ namespace LibmeshBinary
 {
 	using namespace std;
 
-
+/**
+	Concrete implementation of a binary tree element.
+	It merges the functionalities given by the #BinaryTree::AbstractBinaryElement
+	with the ones given by libMesh::Elem.
+	The template parameter LibmeshGeometry defines the type of geometry underlying the element.
+	In this way any libMesh geometry can be easily endowed with a binary tree element tools.
+	It derives from a concrete libMesh::Elem implementation, so it is compatible with
+	libMesh::Mesh methods, which are defined at an abstract level using only libMesh::Elem* pointers.
+**/
 	template <size_t dim, FiniteElements::BasisType FeType = FiniteElements::InvalidFeType, class LibmeshGeometry = InvalidGeometry>
 		class BinaryTreeElement : public LibmeshGeometry, public BinaryTree::AbstractBinaryElement<dim, FeType>
 		{
 			public:
-				BinaryTreeElement	(	unique_ptr<LibmeshGeometry> element_ptr,
-											BinaryTree::FunctionPtr<dim> f,
-											libMesh::MeshRefinement& mesh_refinement
-										) :
-										LibmeshGeometry(*element_ptr),
-										BinaryTree::AbstractBinaryElement<dim, FeType>	(f,
-																										 new FElement <dim, FeType,
-																															LibmeshGeometry> (move(element_ptr))
-																										),
-										_mesh_refinement(mesh_refinement)
-				{				};
-				
-				virtual ~BinaryTreeElement()
-				{
-#ifdef DESTRUCTOR_ALERT
-					clog << "Distruggo BinaryTreeElement" << endl;
-#endif //DESTRUCTOR_ALERT
-				};
-
-				virtual BinaryTree::BinaryNode* Left()
-				{
-					if (this->has_children())
-						return BinarityMap::AsBinary<dim>(this->child(0));
-
-					return nullptr;
-				}
-				virtual BinaryTree::BinaryNode* Right()
-				{
-					if (this->has_children())
-						return BinarityMap::AsBinary<dim>(this->child(1));
-
-					return nullptr;
-				};
-				virtual BinaryTree::BinaryNode* Dad()
-				{
-					return BinarityMap::AsBinary<dim>(this->parent());
-				};
-
-				virtual size_t NodeID() override
-				{
-#ifdef VERBOSE
-					cout << "Nodes : ";
-					auto nodes = this->get_nodes();
-					auto length = this->n_nodes();
-					size_t i(0);
-					while (i < length-1)
-					{
-						auto current_ptr = nodes[i];
-						size_t j(0);
-						cout << "(";
-						while (j < dim - 1)
-							cout << (*current_ptr)(j++) << ",";
-						cout << (*current_ptr)(j) << ") ";
-						++i;
-					}
-					auto current_ptr = nodes[i];
-					size_t j(0);
-					cout << "(";
-					while (j < dim - 1)
-						cout << (*current_ptr)(j++) << ",";
-					cout << (*current_ptr)(j) << ")" << endl;
-#endif //VERBOSE
-					return static_cast<size_t>(this->id());
-				};
-
-				virtual void Bisect() override
-				{
-#ifdef MYDEBUG
-					clog << "Sono in BinElement::refine" << endl;
-#endif //MYDEBUG
-					/* First I check that the derived class which implements the refine makes two children */
-					if (this->n_children() != 2)
-						throw logic_error("This is not a binary element!");
-
-					this->set_refinement_flag(libMesh::Elem::REFINE);
-
-					libMesh::Elem::refine(this->_mesh_refinement);
-#ifdef MYDEBUG
-					clog << "Effettuata la Elem::refine" << endl;
-					clog << "L'indirizzo del primo figlio e' : " << this->child(0) << endl;
-					clog << "L'indirizzo del secondo figlio e' : " << this->child(1) << endl;
-#endif //MYDEBUG
-					BinarityMap::MakeBinary<dim>(this->_mesh_refinement, this->_f);
-#ifdef MYDEBUG
-					clog << "Binarizzati i nuovi elementi" << endl;
-					clog << "L'indirizzo del primo figlio e' : " << this->child(0) << endl;
-					clog << "L'indirizzo del secondo figlio e' : " << this->child(1) << endl;
-					clog << "Visti come BinaryNode*" << endl;
-					clog << "L'indirizzo del primo figlio e' : " << Left() << endl;
-					clog << "L'indirizzo del secondo figlio e' : " << Right() << endl;
-					auto& mesh(_mesh_refinement.get_mesh());
-					int cont = mesh.n_elem();
-					for (auto iter = mesh.elements_begin(); iter != mesh.elements_end(); ++iter)
-						if ((*iter)->refinement_flag() == libMesh::Elem::INACTIVE)
-							--cont;
-					clog << "After refinement mesh has " << mesh.n_elem() << " elements, " << cont << " of them are ACTIVE" << endl;
-					clog << "After refinement mesh has " << mesh.n_nodes() << " nodes" << endl;
-					for (size_t i = 0; i < mesh.n_nodes(); ++i)
-					{
-						cerr << "(";
-						for (size_t j = 0; j < dim-1; ++j)
-							cerr << mesh.node(i)(j) << ",";
-						cerr << mesh.node(i)(dim-1) << ")" << endl;
-					}
-#endif //MYDEBUG
-				};
-
-				virtual void Activate() override
-				{
-					/* when I activate my binary node, I also change the libMesh::Elem::_p_level,
-						so that the p-refinement can be see also in a libMesh framework */
-					this->set_p_level(this->PLevel());
-
-					if (!(this->active()))
-						this->set_refinement_flag(libMesh::Elem::JUST_REFINED);
-				};
-
-				virtual void Deactivate() override
-				{
-					if (this->active())
-						this->set_refinement_flag(libMesh::Elem::INACTIVE);
-				};
+/**
+				constructor.
+				Input parameters:
+					-	a pointer to the libMesh element to be incorporated
+					-	a pointer to the objective function of the algorithm to be projected
+					-	a libMesh::MeshRefinement object
+**/
+				BinaryTreeElement(unique_ptr<LibmeshGeometry>,
+										BinaryTree::FunctionPtr<dim>,
+										libMesh::MeshRefinement&);
+/**
+				default destructor
+**/
+				virtual ~BinaryTreeElement();
+/**
+				Return NULL if element is a leaf 
+**/
+				virtual BinaryTree::BinaryNode* Left();
+/**
+				Return NULL if element is a leaf 
+**/
+				virtual BinaryTree::BinaryNode* Right();
+/**
+				Returns NULL if node has no father
+**/
+				virtual BinaryTree::BinaryNode* Dad();
+/**
+				Node identifier
+**/
+				virtual size_t NodeID() override;
+/**
+				Overridden refinement method
+**/
+				virtual void Bisect() override;
+/**
+				Make the tree element an active mesh element
+**/
+				virtual void Activate() override;
+/**
+				Make the tree element inactive
+**/
+				virtual void Deactivate() override;
 
 			private:
+/**
+				libMesh refiner
+**/
 				libMesh::MeshRefinement& _mesh_refinement;
 		};
 
-	//TODO: use GetPot to select FElement BasisType at runtime	
+	//TODO: use GetPot to select FElement BasisType at runtime
+/**
+	Binary interval based on libMesh geometry
+**/	
 	using Interval = BinaryTreeElement<1, FiniteElements::LegendreType, LibmeshIntervalClass>;
 
-//#ifdef TRY_IT
-	//It must be modified the way libMesh elements divides theirselves
-	//The info about the procreation should be stored in the elem.embedding_matrix() method
+/**
+	Binary triangle based on libMesh geometry.
+	The override of the refinement algorithm is needed,
+	since by default it splits itself into three children.
+**/
 	class Triangle : public BinaryTreeElement<2, FiniteElements::WarpedType, LibmeshTriangleClass>
 	{
 		public:
-			Triangle(unique_ptr<LibmeshTriangleClass> el_ptr,
-						BinaryTree::FunctionPtr<2> f,
-						libMesh::MeshRefinement& mesh_refinement);
+/**
+			constructor
+**/
+			Triangle(unique_ptr<LibmeshTriangleClass>,
+						BinaryTree::FunctionPtr<2>,
+						libMesh::MeshRefinement&);
+/**
+			default destructor
+**/
+			virtual ~Triangle();
 
-			virtual ~Triangle(){};
-
+/**
+			Embedding matrix implementing the bisection.
+**/
 			virtual float	embedding_matrix (const unsigned int,
 														const unsigned int,
 														const unsigned int) const override;
+/**
+			Different embedding matrix for different longest side
+**/
 			virtual unsigned int embedding_matrix_version () const override;
 
+/**
+			Binary element has two children
+**/
 			virtual unsigned int n_children () const override;
 
-			//TODO
-//			virtual unsigned int as_parent_node (unsigned int, unsigned int) const override;
-//			const std::vector< std::pair< dof_id_type, dof_id_type >> bracketing_nodes(unsigned int c,
-//																												unsigned int n) const override;
-
-//			const std::vector< std::pair< unsigned char, unsigned char >>& parent_bracketing_nodes(unsigned int c,
-//																																unsigned int n) const override;
-
 		protected:
-			/*
-				this are the embedding matrices to be used for the binary bisection of the triangle
-				the one which will be effectively used depends on which is the longest side
-			*/
+/**
+			The embedding matrices to be used for the binary bisection of the triangle.
+			The one which will be effectively used depends on which is the longest side.
+**/
 			static const float _binary_embedding_matrices[3][2][3][3];
-			// the index of the longest side
+/**
+			the index of the longest side
+**/
 			size_t _longest_side;
 	};
-//#endif //TRY_IT
+
+
+	template <size_t dim, FiniteElements::BasisType FeType, class LibmeshGeometry>
+		BinaryTreeElement<dim, FeType, LibmeshGeometry>::
+		BinaryTreeElement
+		(
+			unique_ptr<LibmeshGeometry> element_ptr,
+			BinaryTree::FunctionPtr<dim> f,
+			libMesh::MeshRefinement& mesh_refinement
+		) :
+			LibmeshGeometry(*element_ptr),
+			BinaryTree::AbstractBinaryElement<dim, FeType>
+			(
+				f,
+				new FElement <dim, FeType, LibmeshGeometry> (move(element_ptr))
+			),
+			_mesh_refinement(mesh_refinement)
+		{};
+				
+	template <size_t dim, FiniteElements::BasisType FeType, class LibmeshGeometry>
+		BinaryTreeElement<dim, FeType, LibmeshGeometry>::
+		~BinaryTreeElement()
+		{};
+
+	template <size_t dim, FiniteElements::BasisType FeType, class LibmeshGeometry>
+		BinaryTree::BinaryNode* BinaryTreeElement<dim, FeType, LibmeshGeometry>::
+		Left()
+		{
+			if (this->has_children())
+				return BinarityMap::AsBinary<dim>(this->child(0));
+
+			return nullptr;
+		};
+
+	template <size_t dim, FiniteElements::BasisType FeType, class LibmeshGeometry>
+		BinaryTree::BinaryNode* BinaryTreeElement<dim, FeType, LibmeshGeometry>::
+		Right()
+		{
+			if (this->has_children())
+				return BinarityMap::AsBinary<dim>(this->child(1));
+
+			return nullptr;
+		};
+
+	template <size_t dim, FiniteElements::BasisType FeType, class LibmeshGeometry>
+		BinaryTree::BinaryNode* BinaryTreeElement<dim, FeType, LibmeshGeometry>::
+		Dad()
+		{
+			return BinarityMap::AsBinary<dim>(this->parent());
+		};
+
+	template <size_t dim, FiniteElements::BasisType FeType, class LibmeshGeometry>
+		size_t BinaryTreeElement<dim, FeType, LibmeshGeometry>::
+		NodeID()
+		{
+			return static_cast<size_t>(this->id());
+		};
+
+	template <size_t dim, FiniteElements::BasisType FeType, class LibmeshGeometry>
+		void BinaryTreeElement<dim, FeType, LibmeshGeometry>::
+		Bisect()
+		{
+			/* Firstly I check that the derived class which implements the refine makes two children */
+			if (this->n_children() != 2)
+				throw logic_error("This is not a binary element!");
+
+			this->set_refinement_flag(libMesh::Elem::REFINE);
+
+			libMesh::Elem::refine(this->_mesh_refinement);
+
+			BinarityMap::MakeBinary<dim>(this->_mesh_refinement, this->_f);
+		};
+
+	template <size_t dim, FiniteElements::BasisType FeType, class LibmeshGeometry>
+		void BinaryTreeElement<dim, FeType, LibmeshGeometry>::
+		Activate()
+		{
+			/* when I activate my binary node, I also change the libMesh::Elem::_p_level,
+				so that the p-refinement can be see also in a libMesh framework */
+			this->set_p_level(this->PLevel());
+
+			if (!(this->active()))
+				this->set_refinement_flag(libMesh::Elem::JUST_REFINED);
+		};
+
+	template <size_t dim, FiniteElements::BasisType FeType, class LibmeshGeometry>
+		void BinaryTreeElement<dim, FeType, LibmeshGeometry>::
+		Deactivate()
+		{
+			if (this->active())
+				this->set_refinement_flag(libMesh::Elem::INACTIVE);
+		};
 
 }; //namespace LibmeshBinary
 

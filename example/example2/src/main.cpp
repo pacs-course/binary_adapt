@@ -1,14 +1,14 @@
 #include <array>
 #include <utility> //std::move
 #include <iomanip> //std::setfill, std::setw
-#ifdef SYSTEM
+#ifdef DEPRECATED
 #include <cstdlib> //system
-#else //SYSTEM
+#else //DEPRECATED
 #include <sys/stat.h> //mkdir, stat
 #include <stdio.h> //remove
-#endif //SYSTEM
+#endif //DEPRECATED
 
-#include "PluginLoader.h"
+#include "LibraryInit.h"
 #include "BinaryTreeHelper.h"
 
 #include "LibMeshRefiner.h"
@@ -50,33 +50,9 @@ int main(int argc, char** argv)
 
 	string conf_file = main_input("conf_file", "../../binary_tree.conf");
 
-	PluginLoading::PluginLoader pl;
-	cout << "PluginLoader costruito" << endl;
+	BinaryTree::Init(conf_file);
 
 	GetPot cl(conf_file.c_str());
-	string quad_library = "binary_tree/quadrature/interval/quad_library";
-	string func_library = "binary_tree/functions/func_library";
-
-	string quad_so_file = "lib" + string(cl(quad_library.c_str(), "sandia_quadrature"));
-	string func_so_file = "lib" + string(cl(func_library.c_str(), "interpolating_functions"));
-
-#ifdef DEBUG
-	quad_so_file += "_Debug";
-	func_so_file += "_Debug";
-#endif //DEBUG
-
-	quad_so_file += ".so";
-	func_so_file += ".so";
-
-	pl.Add(quad_so_file);
-	pl.Add(func_so_file);
-
-	if (!pl.Load())
-	{
-		cerr << "Houston we have a problem: something went wrong loading plugins";
-		return 1;
-	}
-	cout << "Plugins loaded" << endl;
 
 	string iteration_number = "binary_tree/algorithm/iteration_number";
 	size_t max_iter = cl(iteration_number.c_str(), 0);
@@ -117,11 +93,11 @@ int main(int argc, char** argv)
 	string function_name = binary_refiner_ptr->GetFunctor().Formula();
 
 	string results_dir = "results/" + identifier;
-#ifdef SYSTEM
+#ifdef DEPRECATED
 	string instruction = "mkdir -p " + results_dir;
 	if ( system(instruction.c_str()) )
 		return 1;
-#else //SYSTEM
+#else //DEPRECATED
 	struct stat st;
 
 	if (stat(results_dir.c_str(), &st) == -1 && mkdir(results_dir.c_str(), 0777) != 0)
@@ -129,21 +105,21 @@ int main(int argc, char** argv)
 		cerr << "Failed while constructing " << results_dir << " directory" << endl;
 		return 1;
 	}
-#endif //SYSTEM
+#endif //DEPRECATED
 
 	string log_filename = results_dir + "/example.log";
 
-#ifdef SYSTEM
+#ifdef DEPRECATED
 	string remove_instruction = "rm -f " + log_filename;
 	if ( system(remove_instruction.c_str()) )
 		return 1;
-#else //SYSTEM
+#else //DEPRECATED
 	if (stat(log_filename.c_str(), &st) != -1 && remove(log_filename.c_str()) != 0)
 	{
 		cerr << "Error removing " << log_filename << endl;
 		return 1;
 	}
-#endif //SYSTEM
+#endif //DEPRECATED
 
 	//I redirect the standard buffers to file
 	Helpers::Logfile logfile(log_filename);
@@ -199,6 +175,10 @@ int main(int argc, char** argv)
 	for (auto e : error)
 		error_file << cont++ << "	" << e << endl;
 
+	//I make the refined mesh usable in libmesh
+	mesh_ptr->prepare_for_use(/*skip_renumber =*/ false);
+
 	logfile.~Logfile();
+
 	cout << endl << "1D refining complete example ended" << endl;
 }

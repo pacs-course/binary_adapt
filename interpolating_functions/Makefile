@@ -42,7 +42,7 @@ RefineInclude	:= $(RefineDir)/include
 
 
 # Search Path For Include Files (InclPaths is included before mode specific InclPaths_MODE)
-InclPaths			:= $(IncludeDir) $(RefineInclude) $(EigenInclude) $(LibMeshInclude) $(MuParserInclude)
+InclPaths			:= $(IncludeDir) $(RefineInclude) $(GetPotInclude) $(MuParserInclude) $(EigenInclude)
 InclPaths_Debug	:=
 InclPaths_Release	:=
 # Defined values used by CPP preprocessor (Defines is included before mode specific Defines_MODE)
@@ -51,7 +51,7 @@ Defines_Debug		:= DEBUG _GLIBCXX_DEBUG
 Defines_Release	:= RELEASE
 # Compiler specific flags (CXXFlags is included before mode specific CXXFlags_MODE)
 CXXFlags				:= -march=native -Wall -Wextra
-CXXFlags_Debug		:= -g -std=gnu++11 -O2 -felide-constructors -funroll-loops -fstrict-aliasing -Wdisabled-optimization -Wno-variadic-macros -DNDEBUG
+CXXFlags_Debug		:= -g -std=gnu++11 -felide-constructors -funroll-loops -fstrict-aliasing -Wdisabled-optimization -Wno-variadic-macros -DNDEBUG
 CXXFlags_Release	:= -O3 -std=c++14
 
 

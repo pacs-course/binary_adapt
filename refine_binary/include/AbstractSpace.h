@@ -7,21 +7,35 @@
 
 namespace FiniteElements
 {
+/**
+	Abstract class for spaces that store a basis.
+**/
 	template <size_t dim>
-		class AbstractSpace_Interface
+		class AbstractSpaceInterface
 		{
 			public:
-				virtual ~AbstractSpace_Interface()
-				{
-#ifdef DESTRUCTOR_ALERT
-				cout << "Distruggo AbstractSpace_Interface" << endl;
-#endif //DESTRUCTOR_ALERT
-				};
+/**
+				default destructor
+**/
+				virtual ~AbstractSpaceInterface()
+				{};
 
-				virtual double	EvaluateBasisFunction(std::size_t ind, const Geometry::Point<dim>& point)const = 0;
+/**
+				Get the evaluation of the underlying basis.
+				Input parameters:
+					- the index of the basis function to be evaluated;
+					- the point where the basis function has to be evaluated.
+**/
+				virtual double	EvaluateBasisFunction(std::size_t ind, const Geometry::Point<dim>& point) const = 0;
 
-				virtual std::size_t	BasisSize(std::size_t)const = 0;
+/**
+				The number of functions of the underlying basis 
+**/
+				virtual std::size_t BasisSize(std::size_t)const = 0;
 
+/**
+				The identifier of the underlying basis type
+**/
 				virtual BasisType GetFeType()const = 0;
 		};
 

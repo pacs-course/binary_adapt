@@ -22,23 +22,33 @@
 
 namespace LibmeshBinary
 {
+/**
+	Class implementing concrete #BinaryTree::MeshRefiner object based on 
+	<a href="https://libmesh.github.io/doxygen/index.html">link text</a> library.
+	#BinaryTree::MeshRefiner defines methods to implement the refinement algorithm, but has no info about the underlying mesh.
+	LibmeshRefiner uses libMesh library to manage the tree structure and the resulting mesh,
+	and to define operations like node bisection and iteration over mesh elements,
+	which are declared at an abstract level in #BinaryTree::MeshRefiner class.
+
+	This class could be also meant as an extension of libMesh,
+	i.e. if libMesh is directly linked in the program, additional methods for mesh inport/export and initialization
+	can be used, which do not belong to MeshRefiner base class since they cannot be defined at that level.
+**/
 	template <size_t dim>
 		class LibmeshRefiner : public BinaryTree::MeshRefiner<dim>
 		{
 			public :
 				using Iterator = libMesh::MeshBase::element_iterator;
-
 /**
-				constructor.
-				Default constructor. The DerivedInitialization method will initialize attributes
+				default constructor.
+				The DerivedInitialization() method will initialize attributes
 **/
 				LibmeshRefiner();
 
 /**
-				destructor.
-				Default destructor.
+				default destructor.
 **/
-				~LibmeshRefiner();
+				virtual ~LibmeshRefiner();
 
 /**
 				Directly set the mesh with an object constructed outside the class.
@@ -95,18 +105,22 @@ namespace LibmeshBinary
 **/				
 				virtual void ExportMesh(std::string) const override;
 
+/**
+				The overloads defined in base class
+**/
+				using BinaryTree::MeshRefiner<dim>::IterateActiveNodes;
 
 /**
 				Implementation of const active node iteration.
 				Declared pure virtual in base class.
 **/
-				void IterateActiveNodes(BinaryTree::NodeOperator&) const override;
+				virtual void IterateActiveNodes(BinaryTree::ConstOperator&) const override;
 
 /**
 				Implementation of const active node iteration.
 				Declared pure virtual in base class.
 **/
-				virtual void IterateActiveNodes(BinaryTree::DimOperator<dim>&) const override;
+				virtual void IterateActiveNodes(BinaryTree::ConstDimOperator<dim>&) const override;
 
 			protected:
 /**
@@ -151,20 +165,32 @@ namespace LibmeshBinary
 **/
 				unique_ptr<libMesh::LibMeshInit> _libmesh_init_ptr;
 
+/**
+				pointer to the mesh object.
+**/
 				std::shared_ptr<libMesh::MeshBase> _mesh_ptr;
 #ifdef MESH_DATA_VERSION
+/**
+				pointer to mesh data object.
+				Methods which need mesh data are deprecated in libmesh.
+**/
 				std::shared_ptr<libMesh::MeshData> _mesh_data_ptr;
 #endif //MESH_DATA_VERSION
+/**
+				pointer to libMesh MeshRefinement object.
+				It's needed to make any refinement on any element of the mesh pointed by _mesh_ptr.
+**/
 				std::unique_ptr<libMesh::MeshRefinement> _mesh_refinement_ptr;
-/*
-				libMesh need a LibMeshInit object which has to be constructed before the mesh and destructed after mesh destruction
-				To make _initialized true I have two ways:
-					- The DerivedInitialization method is called (this means that the Init(f, argc, argv) has been called)
-					  In this case the LibMeshInit obj is an attribute of this class
-					- The SetMesh method is called
-					  In this case the LibMeshInit obj has been constructed outside this class (where the mesh has been constructed)
-					  and so I can leave _libmesh_init as nullptr, since I don't need another communicator
-*/
+/**
+				Flag telling if libMesh has been initialized.
+				libMesh needs a LibMeshInit object which has to be constructed before the mesh and destructed after mesh destruction.
+				To make _initialized true there are two ways:
+					-	the DerivedInitialization() method is called (this means that the Init(f, argc, argv) has been called);
+						in this case the LibMeshInit object is an attribute of this class;
+					-	the SetMesh() method is called;
+						in this case the LibMeshInit object has been constructed outside this class (where the mesh has been constructed)
+						and so _libmesh_init if left as nullptr, since another communicator is not needed.
+**/
 				bool _initialized;
 
 		};
@@ -178,19 +204,11 @@ namespace LibmeshBinary
 #endif //MESH_DATA_VERSION
 															_mesh_refinement_ptr(nullptr),
 															_initialized(false)
-		{	
-#ifdef DESTRUCTOR_ALERT
-			cerr << "Sono nel costruttore di LibmeshBinary::LibmeshRefiner" << endl;
-#endif //DESTRUCTOR_ALERT
-		};
+		{};
 
 	template <size_t dim>
 		LibmeshRefiner<dim>::~LibmeshRefiner()
-		{
-#ifdef DEPRECATED
-			CheckInitialization();
-#endif //DEPRECATED
-		};
+		{};
 
 	template <size_t dim>
 		void LibmeshRefiner<dim>::Init(std::unique_ptr<BinaryTree::Functor<dim>> f)
@@ -248,7 +266,7 @@ namespace LibmeshBinary
 		{
 			CheckInitialization();
 
-			std::cout << "\n\n========== reading the mesh ========= \n\n";
+			clog << "\n\n========== reading the mesh ========= \n\n" << endl;
 
 			this->_mesh_ptr->read(input
 #ifdef MESH_DATA_VERSION
@@ -260,16 +278,6 @@ namespace LibmeshBinary
 			//TODO: maybe it's better to put it at the end of the Init method
 			BinarityMap::MakeBinary<dim>(*(this->_mesh_refinement_ptr), this->_objective_function);
 			InitializeGodfather();
-#ifdef MYDEBUG
-			this->_mesh_ptr->print_info();
-			this->_mesh_ptr->boundary_info->print_info();
-
-#endif //MYDEBUG
-#ifdef MESH_DATA_VERSION
-#ifdef MYDEBUG
-			this->_mesh_data_ptr->print_info();
-#endif //MYDEBUG
-#endif //MESH_DATA_VERSION
 		};
 
 	template <size_t dim>
@@ -291,19 +299,19 @@ namespace LibmeshBinary
 		};
 
 	template <size_t dim>
-		void LibmeshRefiner<dim>::IterateActiveNodes(BinaryTree::NodeOperator& func) const
+		void LibmeshRefiner<dim>::IterateActiveNodes(BinaryTree::ConstOperator& func) const
 		{
 			std::for_each( this->_mesh_ptr->active_elements_begin(),
 								this->_mesh_ptr->active_elements_end(),
-								[&func](libMesh::Elem* el_ptr){return func(BinarityMap::AsBinary<dim>(el_ptr));});
+								[&func](const libMesh::Elem* el_ptr){return func(BinarityMap::AsBinary<dim>(el_ptr));});
 		};
 
 	template <size_t dim>
-		void LibmeshRefiner<dim>::IterateActiveNodes(BinaryTree::DimOperator<dim>& func) const
+		void LibmeshRefiner<dim>::IterateActiveNodes(BinaryTree::ConstDimOperator<dim>& func) const
 		{
 			std::for_each( this->_mesh_ptr->active_elements_begin(),
 								this->_mesh_ptr->active_elements_end(),
-								[&func](libMesh::Elem* el_ptr){return func(BinarityMap::AsBinary<dim>(el_ptr));});
+								[&func](const libMesh::Elem* el_ptr){return func(BinarityMap::AsBinary<dim>(el_ptr));});
 		};
 
 

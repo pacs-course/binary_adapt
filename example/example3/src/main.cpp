@@ -2,14 +2,14 @@
 #include <utility> //std::move
 #include <iomanip> //std::setfill, std::setw
 
-#ifdef SYSTEM
+#ifdef DEPRECATED
 #include <cstdlib> //system
-#else //SYSTEM
+#else //DEPRECATED
 #include <sys/stat.h> //mkdir, stat
 #include <stdio.h> //remove
-#endif //SYSTEM
+#endif //DEPRECATED
 
-#include "PluginLoader.h"
+#include "LibraryInit.h"
 #include "BinaryTreeHelper.h"
 
 #include "LibMeshRefiner.h"
@@ -51,33 +51,7 @@ int main(int argc, char** argv)
 
 	string conf_file = main_input("conf_file", "../../binary_tree.conf");
 
-	PluginLoading::PluginLoader pl;
-	cout << "PluginLoader costruito" << endl;
-
-	GetPot cl(conf_file.c_str());
-	string quad_library = "binary_tree/quadrature/triangle/quad_library";
-	string func_library = "binary_tree/functions/func_library";
-
-	string quad_so_file = "lib" + string(cl(quad_library.c_str(), "mesh_quadrature"));
-	string func_so_file = "lib" + string(cl(func_library.c_str(), "interpolating_functions"));
-
-#ifdef DEBUG
-	quad_so_file += "_Debug";
-	func_so_file += "_Debug";
-#endif //DEBUG
-
-	quad_so_file += ".so";
-	func_so_file += ".so";
-
-	pl.Add(quad_so_file);
-	pl.Add(func_so_file);
-
-	if (!pl.Load())
-	{
-		cerr << "Houston we have a problem: something went wrong loading plugins";
-		return 1;
-	}
-	cout << "Plugins loaded" << endl;
+	BinaryTree::Init(conf_file);
 
 	unique_ptr<LibmeshBinary::LibmeshRefiner<2>> binary_refiner_ptr(nullptr);
 	try
@@ -91,6 +65,8 @@ int main(int argc, char** argv)
 		cerr << ex.what() << endl;
 		return 1;
 	}
+
+	GetPot cl(conf_file.c_str());
 
 	string func_ID = "binary_tree/functions/functor";
 	string func_name = cl(func_ID.c_str(), "");
@@ -112,11 +88,11 @@ int main(int argc, char** argv)
 
 	string results_dir = "results/" + identifier;
 
-#ifdef SYSTEM
+#ifdef DEPRECATED
 	string instruction = "mkdir -p " + results_dir;
 	if ( system(instruction.c_str()) )
 		return 1;
-#else //SYSTEM
+#else //DEPRECATED
 	struct stat st;
 
 	if (stat(results_dir.c_str(), &st) == -1 && mkdir(results_dir.c_str(), 0777) != 0)
@@ -124,28 +100,28 @@ int main(int argc, char** argv)
 		cerr << "Failed while constructing " << results_dir << " directory" << endl;
 		return 1;
 	}
-#endif //SYSTEM
+#endif //DEPRECATED
 
 	string log_filename = results_dir + "/example.log";
 
-#ifdef SYSTEM
+#ifdef DEPRECATED
 	string remove_instruction = "rm -f " + log_filename;
 	if ( system(remove_instruction.c_str()) )
 		return 1;
-#else //SYSTEM
+#else //DEPRECATED
 	if (stat(log_filename.c_str(), &st) != -1 && remove(log_filename.c_str()) != 0)
 	{
 		cerr << "Error removing " << log_filename << endl;
 		return 1;
 	}
-#endif //SYSTEM
+#endif //DEPRECATED
 
 	//I redirect the standard buffers to file
 	Helpers::Logfile logfile(log_filename);
 
 	//constructing libmesh mesh
 	int nx = 1, ny = 1;
-	auto mesh_ptr = make_shared<libMesh::SerialMesh> (init.comm());
+	auto mesh_ptr = make_shared<libMesh::Mesh> (init.comm());
 	clog << "Building a 2D mesh with " << 2 * nx * ny << " triangular elements in (0,1)x(0,1)" << endl;
 	libMesh::MeshTools::Generation::build_square(*mesh_ptr, nx, ny, 0., 1., 0., 1., LibmeshTriangleType);
 
@@ -190,12 +166,18 @@ int main(int argc, char** argv)
 	//I print to file the error data
 	string error_name	 = results_dir + "/error_data";
 	ofstream error_file(error_name);
+
 	if (!error_file.is_open())
 		cerr << "Houston we have a problem! I'm not writing on error file!" << endl;
 	error_file << "#Function: " << function_name << endl;
 	size_t cont = 0;
+
 	for (auto e : error)
 		error_file << cont++ << "	" << e << endl;
+
+	//I make the refined mesh usable in libmesh
+	mesh_ptr->prepare_for_use(/*skip_renumber =*/ false);
+
 
 	//I want last line to be printed to std::cout, so I manually destroy logfile
 	logfile.~Logfile();

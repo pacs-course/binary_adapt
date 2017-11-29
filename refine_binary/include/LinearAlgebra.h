@@ -13,16 +13,37 @@ namespace Geometry
 {
 	using namespace std;
 
+/**
+	Type for eigen column vector.
+	Eigen::DontAlign option used since fixed-size eigen object is used as class member;
+	see http://eigen.tuxfamily.org/dox-devel/group__TopicStructHavingEigenMembers.html
+**/
 	template <size_t dim>
-	using EigVector = Eigen::Matrix <double, static_cast<int>(dim), 1>;
+	using EigVector = Eigen::Matrix <double, static_cast<int>(dim), 1, Eigen::DontAlign>;
 
+/**
+	Type for dim x dim square matrix.
+	Eigen::DontAlign option used since fixed-size eigen object is used as class member;
+	see http://eigen.tuxfamily.org/dox-devel/group__TopicStructHavingEigenMembers.html
+**/
 	template <size_t dim>
-	using EigMatrix = Eigen::Matrix <double, static_cast<int>(dim), static_cast<int>(dim)>;
+	using EigMatrix = Eigen::Matrix <double, static_cast<int>(dim), static_cast<int>(dim), Eigen::DontAlign>;
 
+/**
+	Type for eigen semidynamic matrix.
+	Eigen::DontAlign option used since fixed-size eigen object is used as class member;
+	see http://eigen.tuxfamily.org/dox-devel/group__TopicStructHavingEigenMembers.html
+**/
 	template <size_t dim>
 	using EigSemiDynamicMat = Eigen::Matrix <double, static_cast<int>(dim), Eigen::Dynamic>;
 
+/**
+	Type for eigen fully dynamic matrix.
+**/
 	using EigDynamicMat = Eigen::MatrixXd;
+/**
+	Type for eigen dynamic vector
+**/
 	using EigDynamicVec = Eigen::VectorXd;
 
 
@@ -38,76 +59,169 @@ namespace Geometry
 	class DynamicVector;
 	class DynamicMatrix;
 
-
+/**
+	Fixed size vector.
+	Used to represent points of dimensionality dim.
+**/
 	template <size_t dim>
 	using VecType = Point<dim>;
 
+/**
+	Type for dim x dim square matrix.
+	Used by Maps to store info to make the map Evaluate()
+**/
 	template <size_t dim>
 	using MatrixType = Matrix<dim>;
 
+/**
+	Type for vector of points.
+	Used to store vertexes of geometries by Maps::Init() and DimensionedNode::Nodes().
+**/
+	template <size_t dim>
+	using NodesVector = VectorPoint<dim>;
+
 	using ColumnVector = DynamicVector;
+/**
+	Vector of mutable length.
+	Used to store quadrature weights.
+**/
 	using Vector = ColumnVector;
 
+/**
+	Class for vectors of unfixed size.
+	This is a wrapper class for eigen dynamic vector.
+	Operations are defined in terms of the underlying eigen vector counterparts.
+**/
 	class DynamicVector
 	{
 		public:
+/**
+			A part of the vector
+**/
 			using BlockType = EigDynamicVec::ConstSegmentReturnType;
 
-			/* default constructor */
+/**
+			default constructor
+**/
 			DynamicVector();
-			/* constructor with vector length */
+/**
+			constructor with vector length
+**/
 			DynamicVector(size_t);
+/**
+			constructor from standard vector
+**/
 			DynamicVector(const vector<double>&);
+		protected:
+/**
+			constructor from eigen type
+**/
+			DynamicVector(const EigDynamicVec& v);
 
+		public:
+/**
+			default destructor
+**/
+			virtual ~DynamicVector();
+/**
+			copy constructor
+**/
 			DynamicVector(const DynamicVector&);
+/**
+			assignment operator
+**/
 			DynamicVector& operator= (const DynamicVector&);
 
-
+/**
+			access vector element
+**/
 			double& operator[] (size_t);
+/**
+			const access to vector element
+**/
 			const double& operator[] (size_t) const;
 
+/**
+			Scalar product with another vector.
+			Vectors must have the same size.
+**/
 			double Dot(const DynamicVector&) const;
+/**
+			Scalar product with part of another vector.
+			Must have the same size.
+**/
 			double Dot(const BlockType&) const;
-
+/**
+			Term by term product.
+**/
 			DynamicVector CWiseProduct(const DynamicVector&) const;
 
+/**
+			Length of the vector
+**/
 			size_t Size() const;	
+/**
+			Set new length of the vector
+**/
 			void Resize(size_t);
 
+/**
+			The first part of the vector until input index.
+**/
 			BlockType Head(size_t) const;
 
 			friend DynamicVector operator* (const DynamicMatrix&, const DynamicVector&);
 
 			friend class DynamicMatrix;
-		protected:
-			DynamicVector(const EigDynamicVec& v);
 
 		protected:
+/**
+			eigen vector storage.
+**/
 			EigDynamicVec _vec;
 	};
 
+/**
+	Class for matrix with both rows and colums dynamically allocated.
+	This is a wrapper class for eigen fully dynamic matrix.
+	Operations are defined in terms of the underlying eigen matrix counterparts.
+**/
 	class DynamicMatrix
 	{
 		public:
-			/* default constructor */
+/**
+			default constructor
+**/
 			DynamicMatrix();
-			/* constructor with vector length */
+/**
+			constructor with matrix size
+**/
 			DynamicMatrix(size_t, size_t);
+/**
+			default destructor
+**/
+			virtual ~DynamicMatrix();
 
+/**
+			Set vector as matrix column.
+**/
 			void SetCol(size_t, const DynamicVector&);
 
 			friend DynamicVector operator* (const DynamicMatrix&, const DynamicVector&);
 
 		protected:
+/**
+			eigen matrix storage
+**/
 			EigDynamicMat _mat;
 	};
 
 	DynamicVector operator* (const DynamicMatrix&, const DynamicVector&);
 
-	/* A class that holds {dim}D points, equally vectors
-		When used as vectors, they are meant as column vector
-		The Point class is derived from Eigen one for efficiency reasons
-	*/
+/**
+	Class for points in R^dim.
+	Equally it could be meant as a column vector of length = dim.
+**/
 	template <size_t dim>
 		class Point
 		{
@@ -119,50 +233,92 @@ namespace Geometry
 				iterator end();
 				const_iterator begin()const;
 				const_iterator end()const;
-
+/**
+				constructor
+**/
 				Point(double value = 0.0);
+/**
+				default destructor
+**/
+				virtual ~Point(){};
+/**
+				constructor from initializer list
+**/
+				Point(const initializer_list<double>&);
 
-				Point(const initializer_list<double>& coor);
+			protected:
+/**
+				constructor from EigVector type
+**/
+				Point(const EigVector<dim>&);
 
-				/* copy constructor */
-				Point (const Point& x);
+			public:
+/**
+				copy constructor
+**/
+				Point (const Point&);
+/**
+				assignment operator
+**/
+				Point& operator= (const Point&);
 
-				/* assignment operator */
-				Point& operator= (const Point& x);
-
-				/* for a 1D point I implement the implicit cast to double */
+/**
+				Implicit cast to double for 1D points
+**/
 				template <size_t dummy = dim, typename enable_if< (dummy == 1), int>::type = 0>
 				operator double() const;
-
-				/* explicit cast to std::array */
+/**
+				explicit cast to std::array
+**/
 				explicit operator array<double, dim> () const;
 
-				/* Product by scalar */
-				Point<dim> operator * (double alfa) const;
+/**
+				Product by scalar
+**/
+				Point<dim> operator * (double) const;
+/**
+				Product by scalar
+**/
+				Point<dim>& operator *= (double);
 
-				Point<dim>& operator *= (double alfa);
+/**
+				Vectors difference
+**/
+				Point<dim> operator - (const Point<dim>&) const;
+/**
+				Vectors sum
+**/
+				Point<dim> operator + (const Point<dim>&) const;
 
-				/* Vector difference */
-				Point<dim> operator - (const Point<dim>& x) const;
+/**
+				Access to point component
+**/
+				double& operator[] (size_t);
+/**
+				const access to point component
+**/
+				const double& operator[] (size_t) const;
 
-				/* Vector sum */
-				Point<dim> operator + (const Point<dim>& x) const;
-
-				double& operator[] (size_t ind);
-
-				const double& operator[] (size_t ind)const;
-
-				//tensor product
+/**
+				Tensor product.
+				(x) tensor (y) = (x,y)
+**/
 				template <size_t N>
-					Point<dim + N> Tensor (const Point<N>& p2) const;
+					Point<dim + N> Tensor (const Point<N>&) const;
 
-				/* Modulus of the vector */
+/**
+				Modulus of the vector
+**/
 				double Abs() const;
+/**
+				Euclidean distance between vectors
+**/
+				double distance (Point<dim> const&) const;
 
-				/* Euclidean distance from input vector */
-				double distance (Point<dim> const& x) const;
-
-				//friend to enable cout << p
+/**
+				stream operator overload.
+				friend to enable i.e. cout << point.
+**/
 				friend ostream& operator<< (ostream& output, const Point<dim>& p)
 				{
 					output << "(" << p[0];
@@ -172,6 +328,10 @@ namespace Geometry
 					return output;
 				};
 
+/**
+				Print point to standard output.
+				If boolean input is true, a new line is added at the end of the output.
+**/
 				void Print(bool newline = true) const;
 
 				template <size_t N>
@@ -186,37 +346,62 @@ namespace Geometry
 				friend class VectorPoint<dim>;
 
 			protected:
-				/* constructor from EigVector type */
-				Point(const EigVector<dim>& v) : _vec(v){};
-			protected:
+/**
+				eigen fixed-size vector storage
+**/
 				EigVector<dim> _vec;
 		};
 
-		/* It is meant as a vector of columns */
+/**
+	Class for a matrix meant as a vector of dim sized columns
+**/
 	template <size_t dim>
 		class VectorPoint
 		{
 			public:
-				/* constructor */
+/**
+				default constructor
+**/
 				VectorPoint() : _mat(){};
+/**
+				default destructor
+**/
+				virtual ~VectorPoint(){};
 
-				/* constructor with columns number */
+/**
+				constructor with columns number
+**/
 				VectorPoint(size_t c) : _mat(dim, c){};
 
-				/* copy constructor */
-				VectorPoint(const VectorPoint&);
+			protected:
+/**
+				constructor from eigen type
+**/
+				VectorPoint(const EigSemiDynamicMat<dim>& m) : _mat(m){};
 
-				/* assignment operator */
+			public:
+/**
+				copy constructor
+**/
+				VectorPoint(const VectorPoint&);
+/**
+				assignment operator
+**/
 				VectorPoint& operator= (const VectorPoint&);
 
+/**
+				Get a copy of a column
+**/
 				Point<dim> operator[] (size_t) const;
 
-				/* Insert a column */
+/**
+				Set a column
+**/
 				void Insert (size_t, const Point<dim>&);
 
-				double Determinant() const;
-				VectorPoint Inverse()const;
-
+/**
+				The number of columns
+**/
 				size_t Size() const;
 
 				template <size_t N>
@@ -229,33 +414,61 @@ namespace Geometry
 				friend VectorPoint<N> operator- (const VectorPoint<N>&, const Point<N>&);
 
 			protected:
-				/* constructor from EigSemiDynamicMat */
-				VectorPoint(const EigSemiDynamicMat<dim>& m) : _mat(m){};
-				
-			protected:
+/**
+				eigen matrix storage
+**/
 				EigSemiDynamicMat<dim> _mat;
 		};
 
+/**
+	Class for matrices in R^(dim x dim)
+**/
 	template <size_t dim>
 		class Matrix
 		{
 			public:
-				/* constructor */
+/**
+				default constructor
+**/
 				Matrix() : _mat(){};
+/**
+				default destructor
+**/
+				virtual ~Matrix(){};
 
-				/* copy constructor */
+			protected:
+/**
+				constructor from eigen type
+**/
+				Matrix(const EigMatrix<dim>& m) : _mat(m){};
+
+			public:
+/**
+				copy constructor
+**/
 				Matrix(const Matrix&);
-
-				/* assignment operator */
+/**
+				assignment operator
+**/
 				Matrix& operator= (const Matrix&);
 
+/**
+				access element of the matrix
+**/
 				double& operator() (size_t, size_t);
-
+/**
+				const access to element of the matrix
+**/
 				const double& operator() (size_t, size_t) const;
 
+/**
+				matrix determinant
+**/
 				double Determinant() const;
+/**
+				inverse matrix
+**/
 				Matrix Inverse()const;
-
 
 				template <size_t N>
 				friend Point<N> operator* (const Matrix<N>&, const Point<N>&);
@@ -264,11 +477,58 @@ namespace Geometry
 				friend VectorPoint<N> operator* (const Matrix<N>&, const VectorPoint<N>&);
 
 			protected:
-				/* constructor from EigMatrix */
-				Matrix(const EigMatrix<dim>& m) : _mat(m){};
-			protected:
+/**
+				eigen matrix storage
+**/
 				EigMatrix<dim> _mat;
 		};
+
+/**
+	Matrix times vector product
+**/
+	template <size_t dim>
+		Point<dim> operator* (const Matrix<dim>& A, const Point<dim>& b)
+		{
+			EigVector<dim> p = A._mat * b._vec;
+			return Point<dim>(p);
+		};
+
+/**
+	Matrix times matrix product
+**/
+	template <size_t dim>
+		VectorPoint<dim> operator* (const Matrix<dim>& A, const VectorPoint<dim>& B)
+		{
+			EigSemiDynamicMat<dim> M = A._mat * B._mat;
+			return VectorPoint<dim>(M);
+		};
+
+/**
+	Add vector to every column
+**/
+	template <size_t dim>
+		VectorPoint<dim> operator+ (const VectorPoint<dim>& A, const Point<dim>& b)
+		{
+			VectorPoint<dim> result(A);
+			for (size_t i = 0; i < result.Size(); ++i)
+				result._mat.col(i) += b._vec;
+
+			return result;
+		};
+
+/**
+	Subtract vector from every column
+**/
+	template <size_t dim>
+		VectorPoint<dim> operator- (const VectorPoint<dim>& A, const Point<dim>& b)
+		{
+			VectorPoint<dim> result(A);
+			for (size_t i = 0; i < result.Size(); ++i)
+				result._mat.col(i) -= b._vec;
+
+			return result;
+		};
+
 
 	template <size_t dim>	
 		typename Point<dim>::iterator Point<dim>::begin()
@@ -316,6 +576,10 @@ namespace Geometry
 					(this->_vec)[i++] = val;
 			}
 		};
+
+	template <size_t dim>	
+		Point<dim>::Point(const EigVector<dim>& v) : _vec(v)
+		{};
 
 	template <size_t dim>	
 		Point<dim>::Point (const Point<dim>& x)
@@ -423,14 +687,12 @@ namespace Geometry
 				cout << endl;
 		};
 
-		/* copy constructor */
 	template <size_t dim>	
 		Matrix<dim>::Matrix(const Matrix<dim>& m)
 		{
 			*this = m;
 		};
 
-		/* assignment operator */
 	template <size_t dim>	
 		Matrix<dim>& Matrix<dim>::operator= (const Matrix<dim>& m)
 		{
@@ -465,14 +727,12 @@ namespace Geometry
 			return Matrix<dim>(this->_mat.inverse());
 		};
 
-		/* copy constructor */
 	template <size_t dim>	
 		VectorPoint<dim>::VectorPoint(const VectorPoint<dim>& m)
 		{
 			*this = m;
 		};
 
-		/* assignment operator */
 	template <size_t dim>	
 		VectorPoint<dim>& VectorPoint<dim>::operator= (const VectorPoint<dim>& m)
 		{
@@ -481,18 +741,6 @@ namespace Geometry
 				this->_mat = m._mat;
 			}
 			return *this;
-		};
-
-	template <size_t dim>
-		double VectorPoint<dim>::Determinant() const
-		{
-			return this->_mat.determinant();
-		};
-
-	template <size_t dim>
-		VectorPoint<dim> VectorPoint<dim>::Inverse() const
-		{
-			return VectorPoint<dim>(this->_mat.inverse());
 		};
 
 	template <size_t dim>
@@ -510,39 +758,26 @@ namespace Geometry
 	template <size_t dim>
 		void VectorPoint<dim>::Insert(size_t c, const Point<dim>& p)
 		{
+			size_t l = _mat.size();
+			if (c >= l)
+			{
+//TODO: test it, it raises an exception on the last line
+#ifdef DO_NOT_THROW
+				cerr << "Warning: inserting column in VectorPoint at index " << c << ", but size is " << l << endl;
+				_mat.conservativeResize(dim, c + 1);
+#ifdef VERBOSE
+				cerr << "***Resizing VectorPoint***" << endl;
+				cerr << "New size: " << _mat.cols() << endl;
+#endif //VERBOSE
+#else //DO_NOT_THROW
+				throw logic_error("Trying to insert column in "
+										+ to_string(c)
+										+ " position, but VectorPoint size is "
+										+ to_string(_mat.cols()));
+#endif //DO_NOT_THROW
+			}
 			_mat.col(c) = p._vec;
 		};
 
-	template <size_t dim>
-		Point<dim> operator* (const Matrix<dim>& A, const Point<dim>& b)
-		{
-			return Point<dim>(A._mat * b._vec);
-		};
-
-	template <size_t dim>
-		VectorPoint<dim> operator* (const Matrix<dim>& A, const VectorPoint<dim>& B)
-		{
-			return VectorPoint<dim>(A._mat * B._mat);
-		};
-
-	template <size_t dim>
-		VectorPoint<dim> operator+ (const VectorPoint<dim>& A, const Point<dim>& b)
-		{
-			VectorPoint<dim> result(A);
-			for (size_t i = 0; i < result.Size(); ++i)
-				result._mat.col(i) += b._vec;
-
-			return result;
-		};
-
-	template <size_t dim>
-		VectorPoint<dim> operator- (const VectorPoint<dim>& A, const Point<dim>& b)
-		{
-			VectorPoint<dim> result(A);
-			for (size_t i = 0; i < result.Size(); ++i)
-				result._mat.col(i) -= b._vec;
-
-			return result;
-		};
-}
+} //namespace Geometry
 #endif //__POINT__HH
