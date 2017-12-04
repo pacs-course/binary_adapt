@@ -6,7 +6,7 @@
 #ifdef LIBMESH_BUG_FIXED
 #include <GetPot>
 #else
-#include "getpot.h"
+#include "libmesh/getpot.h"
 #endif
 
 using namespace std;

@@ -28,8 +28,8 @@
 
 #include "libmesh/libmesh.h"
 #include "libmesh/mesh_generation.h" //MeshTools
-#include <gmsh_io.h>
-#include "getpot.h"
+#include "libmesh/gmsh_io.h"
+#include "libmesh/getpot.h"
 
 using namespace std;
 using namespace Geometry;

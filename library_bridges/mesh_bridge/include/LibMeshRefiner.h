@@ -6,12 +6,11 @@
 #include "BinaryTreeHelper.h"
 
 //Basic include file needed for the mesh functionality.
-#include "libmesh.h"
-#include "mesh.h"
-#include "mesh_base.h"
-
-#include "boundary_info.h"
-#include "elem.h"
+#include "libmesh/libmesh.h"
+#include "libmesh/mesh.h"
+#include "libmesh/mesh_base.h"
+#include "libmesh/boundary_info.h"
+#include "libmesh/elem.h"
 
 #include <string> //std::string
 #include <algorithm> //std::for_each

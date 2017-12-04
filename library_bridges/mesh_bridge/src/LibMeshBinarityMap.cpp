@@ -1,8 +1,8 @@
 #include "LibMeshBinarityMap.h"
 #include "LibMeshBinaryElements.h"
 
-#include <face_tri3.h>
-#include <edge_edge2.h>
+#include "libmesh/face_tri3.h"
+#include "libmesh/edge_edge2.h"
 
 namespace LibmeshBinary
 {

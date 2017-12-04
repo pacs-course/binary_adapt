@@ -155,7 +155,7 @@ $(Dirs):
 clean: $(LIBNAME)_clean $(Modes:%=clean_%)
 ifeq ($(JacobiPolLibFile),$(JacobiPolObj))
 	@echo cleaning $(JacobiPolObj)
-	@rm $(JacobiPolObj)
+	@rm -f $(JacobiPolObj)
 endif
 	@echo Done!
 

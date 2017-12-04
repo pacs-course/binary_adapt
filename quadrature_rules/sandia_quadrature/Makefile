@@ -156,7 +156,7 @@ $(Dirs):
 clean: $(LIBNAME)_clean $(Modes:%=clean_%)
 ifeq ($(SandiaRuleLibFile), $(SandiaRuleObj))
 	@echo cleaning $(SandiaRuleObj)
-	@rm $(SandiaRuleObj)
+	@rm -f $(SandiaRuleObj)
 endif
 	@echo Done!
 

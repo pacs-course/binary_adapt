@@ -1,7 +1,8 @@
 clear all
 close all
 clc
-filename = 'error_data'
+%put here the error_data file
+filename = 'results/RENAME_ME_parsed_functor/error_data'
 delimiterIn = '\t';
 headerlinesIn = 1;
 A = importdata(filename,delimiterIn,headerlinesIn);
@@ -14,11 +15,11 @@ ylabel ('L^{2} error', 'Fontsize', 22);
 title ('Error vs Complexity', 'Fontsize', 28);
 ylim([1E-16 1])
 set(gca, 'Fontsize', 18)
-%%
-hold on
-b = 1.7;
-y = exp(-b*sqrt(A.data(:,1)));
-plot(A.data(:,1), y, '-r')
+%% teoric error profile for sqrt function
+%hold on
+%b = 1.7;
+%y = exp(-b*sqrt(A.data(:,1)));
+%plot(A.data(:,1), y, '-r')
 %%
 [garbage, expr] = strtok(A.textdata, ' ');
 temp = strcat('@(x)', expr);

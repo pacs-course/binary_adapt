@@ -2,8 +2,8 @@
 #define __LIBMESH_BINARITY_MAP_H
 
 #include "libmesh/mesh.h" //libMesh::MeshBase
-#include <elem.h> //libMesh::Elem
-#include <mesh_refinement.h> //libMesh::MeshRefinement
+#include "libmesh/elem.h" //libMesh::Elem
+#include "libmesh/mesh_refinement.h" //libMesh::MeshRefinement
 
 #include "BinaryNode.h"
 #include "LinearAlgebra.h"

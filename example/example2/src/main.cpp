@@ -29,7 +29,7 @@
 #include "libmesh/libmesh.h"
 #include "libmesh/mesh_generation.h" //MeshTools
 
-#include "getpot.h"
+#include "libmesh/getpot.h"
 
 using namespace std;
 using namespace Geometry;

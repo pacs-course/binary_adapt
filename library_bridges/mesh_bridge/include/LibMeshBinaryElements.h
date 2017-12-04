@@ -8,7 +8,7 @@
 #include <memory> //std::shared_ptr
 #include <functional> //std::function
 
-#include <mesh_refinement.h>
+#include "libmesh/mesh_refinement.h"
 
 namespace LibmeshBinary
 {

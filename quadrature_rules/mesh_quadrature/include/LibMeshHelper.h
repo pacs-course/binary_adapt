@@ -1,8 +1,8 @@
 #ifndef __LIBMESH_HELPER_H
 #define __LIBMESH_HELPER_H
 
-#include <enum_elem_type.h> //libMesh::ElemType
-#include <point.h> //libmesh::point
+#include "libmesh/enum_elem_type.h" //libMesh::ElemType
+#include "libmesh/point.h" //libmesh::point
 
 #include "TypeEnumerations.h"
 #include "LinearAlgebra.h"

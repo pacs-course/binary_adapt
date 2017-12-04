@@ -6,8 +6,8 @@
 #include "LibMeshHelper.h" //ConvertType
 #include "Maps.h" //TriMap
 
-#include <quadrature.h> //libMesh::QBase
-#include "getpot.h"
+#include "libmesh/quadrature.h" //libMesh::QBase
+#include "libmesh/getpot.h"
 
 namespace LibmeshBinary
 {

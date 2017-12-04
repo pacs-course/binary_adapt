@@ -6,6 +6,7 @@
 #include <string> //string
 #include <array> //array
 #include <math.h> //sqrt, abs
+#include <vector> //vector
 
 #include <Eigen/Dense>
 /**
