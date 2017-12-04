@@ -8,7 +8,9 @@
 #include "TypeEnumerations.h"
 #include "LinearAlgebra.h"
 
-
+/**
+	Tools to endow geometric elements with a finite element space structure
+**/
 namespace FiniteElements
 {
 	using namespace std;
@@ -22,31 +24,13 @@ namespace FiniteElements
 /**
 			Recursive computation of tensorial indexes.
 			Here it is set the dim-D component of the index tuple in position *iter;
-			the update of the *iter parameter will be done by the partial specialization for d=1,
+			the update of the *iter parameter will be done by the partial specialization for @p d = 1,
 			that is after that the last element of the tuple has been set.
 			FillIndexes function cannot be set as TensorialBasis method because
 			std c++ does not allow partial specialization of member functions.
 **/
-			static void FillIndexes(typename IndexVector<dim>::iterator& iter, size_t degree)
-			{
-				for(size_t current_degree = 0; current_degree <= degree; ++current_degree)
-				{
-					(*iter)[d-1] = current_degree;
-					Filler<dim, d-1>::FillIndexes (iter, degree - current_degree);
-				}
-			};
+			static void FillIndexes(typename IndexVector<dim>::iterator&, size_t);
 		};
-
-	template <size_t dim>
-		struct Filler<dim, 1>
-		{
-			static void FillIndexes(typename IndexVector<dim>::iterator& iter, size_t degree)
-			{
-				(*iter)[0] = degree;
-				++iter;			
-			};
-		};
-
 
 	//TODO: maybe check the object to be effectively a basis (linearly independent and maximal)
 	//have to be inserted in the construction or after it
@@ -304,6 +288,32 @@ namespace FiniteElements
 			UpdateSize(ind + 1);
 
 			return (this->_tensorial_indexes)[ind];
+		};
+
+	template <size_t dim, size_t d>
+		void Filler<dim, d>::FillIndexes(typename IndexVector<dim>::iterator& iter, size_t degree)
+		{
+			for(size_t current_degree = 0; current_degree <= degree; ++current_degree)
+			{
+				(*iter)[d-1] = current_degree;
+				Filler<dim, d-1>::FillIndexes (iter, degree - current_degree);
+			}
+		};
+
+/**
+	Partial specialization to end the recursion
+**/
+	template <size_t dim>
+		struct Filler<dim, 1>
+		{
+			static void FillIndexes(typename IndexVector<dim>::iterator&, size_t);
+		};
+
+	template <size_t dim>
+		void Filler<dim, 1>::FillIndexes(typename IndexVector<dim>::iterator& iter, size_t degree)
+		{
+			(*iter)[0] = degree;
+			++iter;			
 		};
 
 };//namespace FiniteElements

@@ -7,7 +7,7 @@
 
 /**
 	Class redirecting libMesh buffers.
-	Class with the same behaviour of #LogFile class,
+	Class with the same behaviour of #Helpers::Logfile class,
 	but acting on libMesh proper buffers.
 **/
 class LibmeshLogFile

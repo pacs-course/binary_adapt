@@ -11,6 +11,9 @@
 #include "getpot.h"
 #endif
 
+/**
+	It contains implementation of functor objects that can be interpolated by the binary tree algorithm
+**/
 namespace Functions
 {
 	using namespace std;

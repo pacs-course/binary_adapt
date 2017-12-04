@@ -108,7 +108,6 @@ namespace BinaryTree
 																	Iterator end,
 																	std::function<DimensionedNode<dim>*(Iterator)> extract)
 		{
-			//TODO : maybe a resize could be fine, push_back can be avoided
 			this->_elements.clear();
 			for (; begin != end; ++begin)
 				this->_elements.push_back(extract(begin));

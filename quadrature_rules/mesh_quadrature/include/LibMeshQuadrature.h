@@ -14,7 +14,7 @@ namespace LibmeshBinary
 //TODO: implement other possible nodes other than gaussian
 
 /**
-	Quadrature rule class for #Type geometry.
+	Quadrature rule class for #Geometry::ElementType geometry.
 	Nodes are Gaussian.
 	Nodes and weights computation is based on external library 
 	<a href="https://libmesh.github.io/doxygen/classlibMesh_1_1QGauss.html">link text</a>.

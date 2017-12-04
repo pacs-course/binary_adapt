@@ -12,9 +12,11 @@ namespace PluginLoading
 
 	Plugin::~Plugin()
 	{
-#ifdef TRY_IT
+/* defining this macro make the example programs crash upon exiting
+	(it crashes on AbstractFactory destructor call: this destructor gets called twice) */
+#ifdef ENABLE_PLUGIN_CLOSE_BUG
 		Close();
-#endif //TRY_IT
+#endif
 	};
 
 	void* Plugin::Open()

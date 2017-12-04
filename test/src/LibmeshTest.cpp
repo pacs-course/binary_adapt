@@ -16,6 +16,10 @@ TEST_F(LibmeshTest, LibmeshVersionCompatibility)
 };
 
 #ifdef TRY_IT
+/* TODO Test to check the correctness of quadrature nodes and weights
+	get from sandia quadrature plugin;
+	It needs the possibility to configure the plugin from a
+	configuration file different from the default one */
 TEST_F(BasicTest, SandiaQuadratureTest)
 {
 	clog << endl << "Starting PointTest" << endl;
@@ -172,8 +176,6 @@ TEST_F(LibmeshTest, BinaryElementsConstruction)
 
 	mesh2.prepare_for_use(/*skip_renumber =*/ false);
 
-////TODO: add other assertion
-
 	clog << "BinaryElementsConstruction ended" << endl << endl;
 };
 
@@ -271,7 +273,7 @@ TEST_F(LibmeshTest, IntervalProjectionTest)
 
 	size_t p_exact = 2;
 
-	//TODO: add checks on these values
+	//TODO: add automated checks on these values
 	for (size_t p = 0; p < p_exact; ++p)
 	{
 		el->PLevel(p);
@@ -296,7 +298,8 @@ TEST_F(LibmeshTest, IntervalProjectionTest)
 }
 
 #ifdef TRY_IT
-
+/*	Function to test the projection on generic squared object.
+	It needs the implementation of SquareMap */
 TEST_F(LibmeshTest, SquareProjectionTest)
 {
 	clog << endl << "Starting SquareProjectionTest" << endl;
@@ -363,11 +366,11 @@ TEST_F(LibmeshTest, SquareProjectionTest)
 
 	for (size_t i(0); i < iteration_end; ++i)
 	{
-		double I = f_el.L2Prod	(
-											[&](const Point<2>& p){ return f_el.EvaluateBasisFunction(i, p);},
-											[&](const Point<2>& p){ return f_el.EvaluateBasisFunction(i, p);}
-										);
 
+		double I = f_el.BasisNormSquared(i);
+
+		// I divide the integral by the manually computed value of L2 norm for legendre functions on (0,1) interval
+		// so I should obtain 1
 		double K1 = (static_cast<double>(k1) + 0.5);
 		double K2 = (static_cast<double>(k2) + 0.5);
 		I *= K1*K2;
@@ -387,7 +390,7 @@ TEST_F(LibmeshTest, SquareProjectionTest)
 
 		(k2 == deg) ? (k2 = 0, k1 = ++deg) : (--k1, ++k2);
 	}
-	//TODO: add checks on values not exactly integrated
+	//TODO: add automated checks on values not exactly integrated
 
 	libmesh_ptr = f_el.ReleaseGeometry();
 	clog << "SquareProjectionTest ended" << endl << endl;
@@ -446,7 +449,7 @@ TEST_F(LibmeshTest, TriangleOrthogonality)
 				EXPECT_LT(I, 1E-10) << s2;
 			}
 		}
-	//TODO: add checks on values not exactly integrated
+	//TODO: add automated checks on values not exactly integrated
 
 	//to avoid segfault when libMesh::Mesh destructor is called
 	libmesh_ptr = f_el.ReleaseGeometry();
@@ -504,7 +507,7 @@ TEST_F(LibmeshTest, TriangleProjectionTest)
 		clog << "Interpolation error on P" << el->PLevel() << " : " << error << endl;
 	}
 
-//	TODO: add checks on values not exactly integrated
+//	TODO: add automated checks on values not exactly integrated
 
 	clog << "TriangleProjectionTest ended" << endl << endl;
 };
@@ -542,15 +545,11 @@ TEST_F(LibmeshTest, LibmeshRefinement)
 	//so the default one should copy the address of the nodes attribute in the copy
 	EXPECT_EQ(el_nodes[0], copy_el_nodes[0]);
 
-#ifdef ACTIVATE_BUG
-	//insert_elem destroys the element pointed by element_ptr since it has the same id of its copy
-	//the destruction deletes memory pointed by copy_el_nodes
-	mesh.insert_elem(copy_element_ptr);
-#endif //ACTIVATE_BUG
-
-#ifdef TRY_IT
-	element_ptr = copy_element_ptr;
-#endif //TRY_IT
+	/*the result is that this call:
+	will not work, and will cause an application crash;
+	insert_elem destroys the element pointed by element_ptr since it has the same id of its copy
+	the destruction deletes memory pointed by copy_el_nodes */
+	//mesh.insert_elem(copy_element_ptr);
 
 	EXPECT_TRUE (copy_element_ptr->operator== (**(mesh.elements_begin())) ) << "After the insert the element is different from the starting one";
 	el_nodes = element_ptr->get_nodes();
@@ -739,28 +738,9 @@ TEST_F(LibmeshTest, ManualBinaryRefinement)
 	unique_ptr<BinaryTree::Functor<1>> smart_ptr = f_factory.create("x_squared");
 	BinaryTree::FunctionPtr<1> f_ptr (smart_ptr.release());
 
-#define MAKE_OPTION
-#ifdef MAKE_OPTION
 	LibmeshBinary::BinarityMap::MakeBinary<1>(refiner, f_ptr);
 	LibmeshBinary::Interval* I = dynamic_cast<LibmeshBinary::Interval*>(mesh.elem(0));
 	ASSERT_NE (I, nullptr) << "MakeBinary has not worked properly!";
-
-#else //MAKE_OPTION
-
-	//construction ed initialization of a Binary object of type Interval
-	auto iter = mesh.elements_begin();
-	auto ptr = dynamic_cast<LibmeshBinary::LibmeshIntervalClass*>(*iter);
-	ASSERT_NE(copy_element_ptr, nullptr) << "Element type not recognized casting to LibmeshBinary::LibmeshIntervalClass*";
-
-	auto smart_ptr = unique_ptr<LibmeshBinary::LibmeshIntervalClass>(ptr);
-	LibmeshBinary::Interval* I = new LibmeshBinary::Interval(move(smart_ptr), f_ptr, refiner);
-	I->Init();
-	*iter = I;
-
-	//to check if I have a LibmeshGeometry method as expected
-	EXPECT_TRUE (I->active());
-
-#endif //MAKE_OPTION
 
 	clog << "I directly call the Interval refine method" << endl;
 	I->Bisect();
@@ -776,11 +756,7 @@ TEST_F(LibmeshTest, ManualBinaryRefinement)
 	EXPECT_TRUE(hansel->active());
 	EXPECT_TRUE(gretel->active());	
 	EXPECT_FALSE(I->active());
-#ifdef TRY_IT
-	hansel->Activate();
-	gretel->Activate();
-	I->Deactivate();
-#endif //TRY_IT
+
 	mesh.prepare_for_use(/*skip_renumber =*/ false);
 
 	size_t cont = 0;
@@ -802,7 +778,7 @@ TEST_F(LibmeshTest, ManualBinaryRefinement)
 	clog << "ManualBinaryRefinement ended" << endl << endl;
 };
 
-//TODO, TOP PRIORITY
+//TODO make results checking fully automated
 TEST_F(LibmeshTest, BinaryRefinement)
 {
 	clog << endl << "Starting BinaryRefinement" << endl;
@@ -841,7 +817,7 @@ TEST_F(LibmeshTest, BinaryRefinement)
 	clog << "BinaryRefinement ended" << endl << endl;
 };
 
-//TODO
+//TODO: to be automated checks on input/output methods
 TEST_F(LibmeshTest, IOTest)
 {
 	clog << endl << "Starting libMesh file IO test" << endl;
@@ -856,11 +832,11 @@ TEST_F(LibmeshTest, IOTest)
 	clog << "libMesh file IO test ended" << endl << endl;
 };
 
-//TODO:	WATCH OUT! The first polinomial not exactly integrated has zero norm,
-//			since I'm integrating Jacobi polinomial over Gauss Lobatto quadrature nodes,
-//			which are by definition the roots of the the over mentioned polinomial.
 
 #ifdef TRY_IT
+/*TODO:	WATCH OUT! The first polinomial not exactly integrated has zero norm,
+			since I'm integrating Jacobi polinomial over Gauss Lobatto quadrature nodes,
+			which are by definition the roots of the the over mentioned polinomial. */
 TEST_F(LibmeshTest, FirstNotExactElement)
 {
 	clog << endl << "Starting FirstNotExactElement" << endl;
@@ -885,7 +861,6 @@ TEST_F(LibmeshTest, FirstNotExactElement)
 										[&](const Point<1>& p){ return f_el.EvaluateBasisFunction(i, p);}
 									);
 	I *= I * (i + 0.5);
-	//TODO: do something on this value
 	clog << "Integral: " << I << endl;
 
 	clog << "FirstNotExactElement ended" << endl << endl;

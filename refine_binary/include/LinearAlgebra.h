@@ -8,14 +8,15 @@
 #include <math.h> //sqrt, abs
 
 #include <Eigen/Dense>
-
+/**
+	Geometric structures needed the library objects
+**/
 namespace Geometry
 {
 	using namespace std;
 
 /**
-	Type for eigen column vector.
-	Eigen::DontAlign option used since fixed-size eigen object is used as class member;
+	Type for eigen column vector. v	Eigen::DontAlign option used since fixed-size eigen object is used as class member;
 	see http://eigen.tuxfamily.org/dox-devel/group__TopicStructHavingEigenMembers.html
 **/
 	template <size_t dim>
@@ -761,20 +762,21 @@ namespace Geometry
 			size_t l = _mat.size();
 			if (c >= l)
 			{
-//TODO: test it, it raises an exception on the last line
-#ifdef DO_NOT_THROW
+#ifdef TRY_IT
+/*	Make automatically the resize instead of throwing the exception
+TODO: test it */
 				cerr << "Warning: inserting column in VectorPoint at index " << c << ", but size is " << l << endl;
 				_mat.conservativeResize(dim, c + 1);
 #ifdef VERBOSE
 				cerr << "***Resizing VectorPoint***" << endl;
 				cerr << "New size: " << _mat.cols() << endl;
 #endif //VERBOSE
-#else //DO_NOT_THROW
+#else //TRY_IT
 				throw logic_error("Trying to insert column in "
 										+ to_string(c)
 										+ " position, but VectorPoint size is "
 										+ to_string(_mat.cols()));
-#endif //DO_NOT_THROW
+#endif //TRY_IT
 			}
 			_mat.col(c) = p._vec;
 		};

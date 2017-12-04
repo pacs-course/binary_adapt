@@ -1,0 +1,5 @@
+lib/
+example/example*/plots/
+example/example*/results/
+example/example*/stored_results/
+

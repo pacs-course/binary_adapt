@@ -23,7 +23,6 @@ BaseDir 		= ../..
 -include $(BaseDir)/Makefile.inc
 
 #DIRECTORY TREE
-InstallDir	= $(BaseDir)/lib
 CurrentDir	= $(CURDIR)
 IncludeDir	= $(CurrentDir)/include
 SrcDir		= $(CurrentDir)/src
@@ -104,6 +103,9 @@ CXX         := g++
 all: $(SandiaRuleLibFile) $(Modes)
 
 SandiaRuleSrc := $(wildcard $(SandiaRuleSrcDir)/*.cpp)
+SandiaRuleObj := $(addprefix $(ObjDir)/,$(notdir $(SandiaRuleSrc:.cpp=.o)))
+
+SandiaRuleLibFile ?= $(SandiaRuleObj)
 
 $(SandiaRuleLibFile): $(SandiaRuleSrc)
 	$(CXX) $(IncPathFlag)  $(SandiaRuleInclude) -O3 -fPIC -c -o $@ $<
@@ -120,6 +122,7 @@ install:all $(Modes:%=install_%)
 
 $(Modes:%=install_%):
 	@echo installing $(subst install_,,$@)
+	@mkdir -p $(InstallDir)
 	cp $(LibDir)/lib$(LIBNAME)$(subst _install,,$(subst _Release,,_$@))$(LibSuffix) $(InstallDir)
 ifeq ($(LibType), dynamic)
 	cd $(InstallDir); \
@@ -151,6 +154,10 @@ $(Dirs):
 
 
 clean: $(LIBNAME)_clean $(Modes:%=clean_%)
+ifeq ($(SandiaRuleLibFile), $(SandiaRuleObj))
+	@echo cleaning $(SandiaRuleObj)
+	@rm $(SandiaRuleObj)
+endif
 	@echo Done!
 
 $(LIBNAME)_clean:
@@ -177,7 +184,7 @@ $(ObjDir)/$(1)/$(subst .cpp,.d,$(2))
 endef
 
 define CompileObject
-$(call ObjectFilename,$(1),$(2)): $(SrcDir)/$(2)
+$(call ObjectFilename,$(1),$(2)): $(SrcDir)/$(2) $(BaseDir)/Makefile.inc
 	@echo compiling: '$$<'
 	$$(CXX_$(1)) -c -o '$$@' '$$<'
 	$$(CXX_$(1)) '$$<' -MM -MF '$$@'.temp.dep

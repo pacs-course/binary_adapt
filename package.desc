@@ -14,7 +14,7 @@ Test_gdb_run.sh
 Test_run.sh
 Test_valgrind.sh
 Test_check.sh
-README
+README.md
 *.conf
 mesh_files/*.msh
 *.m

@@ -232,7 +232,7 @@ TEST_F(LoadTest, StdIntegration)
 	EXPECT_LT(err, 1E-14) << s;
 
 
-	//TODO : make other integrals
+	//TODO : check other integrals
 	clog << "StdIntegration ended" << endl << endl;
 };
 
@@ -296,7 +296,7 @@ TEST_F(LoadTest, IntervalLegendreOrthonormality)
 		clog << s1 << endl;
 		EXPECT_LT(err, 1E-10) << s2;
 	}
-	//TODO: add checks on values not exactly integrated
+	//TODO: add automated checks on values not exactly integrated
 
 	clog << "IntervalLegendreOrthonormality ended" << endl << endl;
 
@@ -376,7 +376,7 @@ TEST_F(LoadTest, SquareLegendreOrthonormality)
 
 		(k2 == deg) ? (k2 = 0, k1 = ++deg) : (--k1, ++k2);
 	}
-	//TODO: add checks on values not exactly integrated
+	//TODO: add automated checks on values not exactly integrated
 
 	clog << "SquareLegendreOrthonormality ended" << endl << endl;
 
@@ -418,7 +418,7 @@ TEST_F(LoadTest, WarpedOrthogonality)
 			EXPECT_LT(I, 1E-10) << s2;
 		}
 
-	//TODO: add checks on values not exactly integrated
+	//TODO: add automated checks on values not exactly integrated
 
 	clog << "WarpedOrthogonality ended" << endl << endl;
 };

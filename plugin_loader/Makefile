@@ -23,7 +23,6 @@ BaseDir 		= ..
 -include $(BaseDir)/Makefile.inc
 
 #DIRECTORY TREE
-InstallDir	= $(BaseDir)/lib
 CurrentDir	= $(CURDIR)
 IncludeDir	= $(CurrentDir)/include
 SrcDir		= $(CurrentDir)/src
@@ -166,7 +165,7 @@ $(ObjDir)/$(1)/$(subst .cpp,.d,$(2))
 endef
 
 define CompileObject
-$(call ObjectFilename,$(1),$(2)): $(SrcDir)/$(2)
+$(call ObjectFilename,$(1),$(2)): $(SrcDir)/$(2) $(BaseDir)/Makefile.inc
 	@echo compiling: '$$<'
 	$$(CXX_$(1)) -c -o '$$@' '$$<'
 	$$(CXX_$(1)) '$$<' -MM -MF '$$@'.temp.dep

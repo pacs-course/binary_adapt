@@ -12,6 +12,9 @@
 #include <stdexcept> //std::runtime_error
 #include <fstream> //std::ofstream
 
+/**
+	Structures implementing the binary tree adaptation algorithm
+**/
 namespace BinaryTree
 {
 /**
@@ -84,7 +87,7 @@ namespace BinaryTree
 				As for the one parameter version, but now x values to be computed are passed to the function
 				in a file named points_file
 */
-				//TODO
+				//TODO define it
 //				template <std::size_t dummy = dim, typename std::enable_if< (dummy == 1), size_t>::type = 0>
 //				void ExportProjection(const std::string& output_filename, const std::string& points_file) const;
 

@@ -25,7 +25,6 @@ BaseDir		= ./..
 #DIRECTORY TREE
 CurrentDir	= $(CURDIR)
 RootDir		= $(CurrentDir)/$(BaseDir)
-InstallDir	= $(BaseDir)/lib
 IncludeDir	= $(CurrentDir)/include
 SrcDir		= $(CurrentDir)/src
 # Directory where target binary is created and object files
@@ -103,9 +102,12 @@ CXX         := g++
 all: $(JacobiPolLibFile) $(Modes)
 
 JacobiPolSrc := $(wildcard $(JacobiPolSrcDir)/*.cpp)
+JacobiPolObj := $(addprefix $(ObjDir)/,$(notdir $(JacobiPolSrc:.cpp=.o)))
+
+JacobiPolLibFile ?= $(JacobiPolObj)
 
 $(JacobiPolLibFile): $(JacobiPolSrc)
-	$(CXX) $(IncPathFlag)  $(JacobiPolInclude) -O3 -fPIC -c -o $@ $<
+	$(CXX) $(IncPathFlag) $(JacobiPolInclude) -O3 -fPIC -c -o $@ $<
 
 .PHONY:init
 init:$(Modes:%=init_%)
@@ -119,6 +121,7 @@ install:all $(Modes:%=install_%)
 
 $(Modes:%=install_%):
 	@echo installing $(subst install_,,$@)
+	@mkdir -p $(InstallDir)
 	cp $(LibDir)/lib$(LIBNAME)$(subst _install,,$(subst _Release,,_$@))$(LibSuffix) $(InstallDir)
 ifeq ($(LibType), dynamic)
 	cd $(InstallDir); \
@@ -150,6 +153,10 @@ $(Dirs):
 
 
 clean: $(LIBNAME)_clean $(Modes:%=clean_%)
+ifeq ($(JacobiPolLibFile),$(JacobiPolObj))
+	@echo cleaning $(JacobiPolObj)
+	@rm $(JacobiPolObj)
+endif
 	@echo Done!
 
 $(LIBNAME)_clean:
@@ -176,7 +183,7 @@ $(ObjDir)/$(1)/$(subst .cpp,.d,$(2))
 endef
 
 define CompileObject
-$(call ObjectFilename,$(1),$(2)): $(SrcDir)/$(2)
+$(call ObjectFilename,$(1),$(2)): $(SrcDir)/$(2) $(BaseDir)/Makefile.inc
 	@echo compiling: '$$<'
 	$$(CXX_$(1)) -c -o '$$@' '$$<'
 	$$(CXX_$(1)) '$$<' -MM -MF '$$@'.temp.dep

@@ -40,7 +40,7 @@ binaries	:= $(example) \
 docdir := ./doc
 
 .PHONY: all $(binaries) $(libraries)
-all: navigate
+all: $(libraries)
 
 .PHONY: navigate
 navigate: $(libraries) $(binaries)
@@ -62,7 +62,7 @@ $(libraries):
 #inserire qui eventuali dipendenze fra le librerie
 
 .PHONY: check
-check:
+check: tests
 	./Test_check.sh
 
 .PHONY: install

@@ -91,8 +91,7 @@ namespace FiniteElements
 			*this = input_basis;
 		};
 
-//#define MYVERSION
-#ifdef MYVERSION
+#ifdef INTERNAL_LEGENDRE
 	unique_ptr<double[]> ManualOneDLegendreEvaluation(size_t index, double x)
 	{
 		unique_ptr<double[]> result(new double[index+1]);
@@ -112,7 +111,7 @@ namespace FiniteElements
 		}
 		return move(result);
 	};
-#endif //MYVERSION
+#endif //INTERNAL_LEGENDRE
 
 	template <size_t dim>
 		Geometry::Vector LegendreBasis<dim>::EvaluateBasis(size_t degree, const Geometry::Point<dim>& p)
@@ -124,11 +123,11 @@ namespace FiniteElements
 			for(size_t i(0); i < dim; ++i)
 			{
 				double x = *(p_iter++);
-#ifndef MYVERSION
+#ifndef INTERNAL_LEGENDRE
 				evaluations.push_back(std::move(std::unique_ptr<double[]> (j_polynomial(1, degree, 0, 0, &x))));
-#else //MYVERSION
+#else
 				evaluations.push_back(std::move(ManualOneDLegendreEvaluation(degree, x)));
-#endif //MYVERSION
+#endif
 			}
 
 			Geometry::Vector result(length);
@@ -154,11 +153,11 @@ namespace FiniteElements
 				called = false;
 			}
 #endif //VERBOSE
-#ifndef MYVERSION 
+#ifndef INTERNAL_LEGENDRE 
 			unique_ptr<double[]> eval(j_polynomial(1, index, 0, 0, &x));
-#else //MYVERSION
+#else
 			unique_ptr<double[]> eval = move(ManualOneDLegendreEvaluation(index, x));
-#endif //MYVERSION
+#endif
 			return eval[index];
 		};
 

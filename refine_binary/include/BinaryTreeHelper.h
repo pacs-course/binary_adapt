@@ -9,7 +9,9 @@
 #include <iostream>
 #include <string> //std::string
 
-
+/**
+	Helpful tools, classes and functions needed by the library objects.
+**/
 namespace Helpers
 {
 /**
@@ -29,9 +31,9 @@ namespace Helpers
 	};
 
 /**
-		Class which redirects buffers on file.
-		Logfile logfile_object(filename) automatically riderects buffers to filename.
-		The destruction of logfile_object redirects back buffers to std ones, restoring the original state  
+	Class which redirects buffers on file.
+	Logfile logfile_object(filename) automatically riderects buffers to filename.
+	The destruction of logfile_object redirects back buffers to std ones, restoring the original state  
 **/
 	class Logfile
 	{
@@ -104,45 +106,20 @@ namespace Helpers
 **/
 	inline double IntPower (double basis, size_t exp)
 	{
-#ifdef BASIC
-		double power = 1;
-		if (exp)
-		{
-			power = basis;
-			for (size_t j = 1; j < exp; ++j)
-				power *= basis;
-		}
-		return power;
-#else //BASIC
-
 		if (exp == 0)
 			return 1.0;
 		if (exp == 1)
 			return basis;
-#ifdef NOT_RECURSIVE
-		double power = basis;
-		size_t cur_exp = 2;
-		for (; cur_exp <= exp; cur_exp *= 2)
-			power *= power;
-
-		for (cur_exp /= 2; cur_exp < exp; ++cur_exp)
-			power *= basis;
-		return power;
-#else //NOT_RECURSIVE
-
 		if (exp == 2)
 			return basis * basis;
 
 		double half_exp_result = IntPower(basis * basis, exp/2);
 		return exp % 2 ? basis * half_exp_result : half_exp_result;
-#endif //NOT_RECURSIVE
-
-#endif //BASIC
 	};
 
 /**
-		An optimized function to compute powers when the exponent is an unsigned integer
-		and it is known at compile time
+	An optimized function to compute powers when the exponent is an unsigned integer
+	and it is known at compile time
 **/
 	template <size_t exp>
 		double Power (double basis)

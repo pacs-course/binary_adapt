@@ -1,21 +1,5 @@
-File da commentare:	AbstractBinaryElement.h
-							AbstractFactory.h
-							ConcreteFactories.h
-							LinearAlgebra.h
-							InstanceHolder.cpp
-
-Macro da controllare:	VERBOSE
-								TRY_IT
-								MYVERSION
-								ACTIVATE_BUG
-								LIBMESH_BUG_FIXED
-								THROW_EXCEPTION
-								MESH_DATA_VERSION
-								DEPRECATED
 
 Example 1 ha bisogno di linkare libmesh per compilare, anche se non utilizza mai oggetti della libreria
-Example 4 chiama la IterateActiveNodes const anche se va a modificare
-Tutti gli esempi in debug vanno in core
 
 Eigen::DontAlign da documentazione di Eigen non mi fa perdere tanto
 

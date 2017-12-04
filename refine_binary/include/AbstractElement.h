@@ -7,11 +7,6 @@
 
 #include <functional> //function
 
-#ifdef TRY_IT
-//TODO: use numeric_limits
-#define TOLL 1E-18
-#endif //TRY_IT
-
 namespace Geometry
 {
 	using namespace std;
@@ -87,6 +82,10 @@ namespace Geometry
 				double L2Norm (const F& f) const;
 
 #ifdef TRY_IT
+/*	possible optimization method */
+
+//TODO: use numeric_limits
+#define TOLL 1E-18
 				protected:
 					bool CheckSimmetry(const QuadWeightVec& vec) const
 					{

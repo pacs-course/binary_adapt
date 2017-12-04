@@ -1,12 +1,24 @@
+/**
+	Example of 1D binary tree adaptation of libMesh mesh.
+	From binary_tree.conf configuration file are taken:
+
+		* quadrature rule library
+		* functors library
+		* the functor to be interpolated
+		* the maximum number of iterations of the algorithm  
+		* the tolerance on the error for the algorithm stopping criterion
+
+	After the creation of libMesh::Mesh object the algorithm is applied,
+	then the refining mesh can be used inside libMesh.
+	Information about the algorithm flow are extracted during the execution
+	and stored togheter with the results in ./results directory.
+**/
+
 #include <array>
 #include <utility> //std::move
 #include <iomanip> //std::setfill, std::setw
-#ifdef DEPRECATED
-#include <cstdlib> //system
-#else //DEPRECATED
 #include <sys/stat.h> //mkdir, stat
 #include <stdio.h> //remove
-#endif //DEPRECATED
 
 #include "LibraryInit.h"
 #include "BinaryTreeHelper.h"
@@ -28,7 +40,6 @@ using namespace LibmeshBinary;
 
 void PrintHelp()
 {
-	//TODO
 	cout << "All info are in the README file" << endl;
 	cout << "Manually set the configuration file with" << endl;
 	cout << "	conf_file = path/to/file" << endl;
@@ -93,11 +104,6 @@ int main(int argc, char** argv)
 	string function_name = binary_refiner_ptr->GetFunctor().Formula();
 
 	string results_dir = "results/" + identifier;
-#ifdef DEPRECATED
-	string instruction = "mkdir -p " + results_dir;
-	if ( system(instruction.c_str()) )
-		return 1;
-#else //DEPRECATED
 	struct stat st;
 
 	if (stat(results_dir.c_str(), &st) == -1 && mkdir(results_dir.c_str(), 0777) != 0)
@@ -105,21 +111,14 @@ int main(int argc, char** argv)
 		cerr << "Failed while constructing " << results_dir << " directory" << endl;
 		return 1;
 	}
-#endif //DEPRECATED
 
 	string log_filename = results_dir + "/example.log";
 
-#ifdef DEPRECATED
-	string remove_instruction = "rm -f " + log_filename;
-	if ( system(remove_instruction.c_str()) )
-		return 1;
-#else //DEPRECATED
 	if (stat(log_filename.c_str(), &st) != -1 && remove(log_filename.c_str()) != 0)
 	{
 		cerr << "Error removing " << log_filename << endl;
 		return 1;
 	}
-#endif //DEPRECATED
 
 	//I redirect the standard buffers to file
 	Helpers::Logfile logfile(log_filename);

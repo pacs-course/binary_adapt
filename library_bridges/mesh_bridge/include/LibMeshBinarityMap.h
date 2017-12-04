@@ -16,7 +16,7 @@ namespace LibmeshBinary
 	Class to convert a libMesh mesh.
 	It contains functions needed to make a generic
 	libMesh tree a binary tree, that is a tree made
-	of #BinaryTree::AbstractBinaryElements nodes.
+	of #BinaryTree::AbstractBinaryElement nodes.
 	All informations and functions to pass from
 	a libMesh point of view to a BinaryTree one 
 	are concentrated here, with the purpose of
@@ -28,7 +28,7 @@ namespace LibmeshBinary
 /**
 			Convert the mesh stored by the input libMesh refiner.
 			It convert every element of the mesh to its correspondent
-			#LibMeshBinaryElement binary counterpart.
+			#LibmeshBinary::BinaryTreeElement binary counterpart.
 			The resulting mesh will be composed of binary tree elements.
 **/
 			template <size_t dim>
@@ -72,7 +72,7 @@ namespace LibmeshBinary
 				);
 
 		private:
-//			TODO: could this static variable could make the code not re-entrant?
+//			TODO: check if this static variable could make the code not re-entrant
 /**
 			A map which tells if an object of libMesh::Meshbase has been binarized.
 			The compulsory way to binarize an element is by calling BinarityMap::MakeBinary<dim> (mesh_to_be_binarized, f).
@@ -127,7 +127,7 @@ namespace LibmeshBinary
 							el_ptr->child(i)->set_parent(el_ptr);
 /*
 					I have to replace the binarized element in neighbors address list
-					TODO: the first neighbor should be the father; maybe previous replacement could be avoided
+					TODO: the first neighbor should be the father; check if previous replacement could be avoided
 */
 					for (size_t i = 0; i < el_ptr->n_neighbors(); ++i)
 					{
@@ -156,12 +156,6 @@ namespace LibmeshBinary
 			libMesh::MeshRefinement& mesh_refinement
 		)
 		{
-#ifdef THROW_EXCEPTION
-			Binaryclass test1;
-			LibmeshClass test2;
-			if (test1.Type() != test2.Type())
-				throw logic_error("Invalid combination of template parameter inside binarize_node");
-#endif //THROW_EXCEPTION
 /*
 			The mesh can contain elements of different dimension (i.e. volume objects and boundary objects)
 			Since for the binary tree algorithm I need only the dim objects, I binarize only these ones
@@ -174,7 +168,6 @@ namespace LibmeshBinary
 /*
 			I check if the element has been already casted (i.e. in adaptation, we want to transform only the children but not the father);
 			WARNING : if I don't add this two lines the functions generates a segmentation fault error when calling the map initialization inside the el->init() instruction; the first line of AffineMap::init() cannot access the nodes_ptr address memory
-			TODO: verify why this happens
 */
 			result = dynamic_cast<BinaryClass*> (el_ptr);
 			if (!result)

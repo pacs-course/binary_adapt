@@ -7,7 +7,6 @@
 #include <memory> //std::shared_ptr, std::unique_ptr
 #include <utility> //std::move
 
-
 namespace FiniteElements
 {
 	using namespace std;

@@ -11,20 +11,23 @@
 #include "getpot.h"
 #endif
 
+/**
+	Quadrature rule implementation based on sandia_rules library
+**/
 namespace SandiaQuadrature
 {
 	using namespace std;
 
 /**
-	Compute the tensor product of each possible #dim-sized tuple of points of the vector.
-	The computation is done recursively on template parameter #dim
+	Compute the tensor product of each possible @p dim sized tuple of points of the vector.
+	The computation is done recursively on template parameter @p dim
 **/
 	template <size_t dim>
 		Geometry::QuadPointVec<dim> TensorizePoints (const Geometry::QuadPointVec<1>&);
 
 /**
-	Compute the term by term product of each possible #dim-sized tuple of points of the vector.
-	The computation is done recursively on template parameter #dim
+	Compute the term by term product of each possible @p dim sized tuple of points of the vector.
+	The computation is done recursively on template parameter @p dim
 **/
 	template <size_t dim>
 		Geometry::QuadWeightVec TensorizeWeights (const Geometry::QuadWeightVec&);
@@ -32,7 +35,7 @@ namespace SandiaQuadrature
 
 //TODO: implement other possible nodes other than gaussian
 /**
-	Quadrature rule class for the ipercube of #dim dimensionality.
+	Quadrature rule class for the ipercube of @p dim dimensionality.
 	Nodes are Gaussian.
 	Nodes and weights computation is based on external library 
 	<a href="https://people.sc.fsu.edu/~jburkardt/cpp_src/sandia_rules/sandia_rules.html">link text</a>.

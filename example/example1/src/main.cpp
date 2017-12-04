@@ -1,3 +1,21 @@
+/**
+	Example of 2D binary tree adaptation loading everything at runtime.
+
+		* mesh manager library
+		* quadrature rule library
+		* functors library
+
+	are taken from binary_tree.conf configuration file and loaded at runtime.
+
+	From the same file are taken:
+
+		* the input file storing the mesh to be refined
+		* the output file where to store the result
+		* the functor to be interpolated
+		* the maximum number of iterations of the algorithm  
+		* the tolerance on the error for the algorithm stopping criterion  
+**/
+
 #include "MeshRefiner.h"
 #include "LibraryInit.h"
 
@@ -15,7 +33,6 @@ using namespace std;
 
 void PrintHelp()
 {
-	//TODO
 	cout << "All info are in the README file" << endl;
 	cout << "If you don't want to use the default configuration file, " <<
 			  "manually set it typing:" << endl;

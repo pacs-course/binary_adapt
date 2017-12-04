@@ -1,12 +1,28 @@
+/**
+	Example of comparison between 1D binary tree adaptation of libMesh mesh
+	and manually adaptation.
+	From binary_tree.conf configuration file are taken:
+
+		* quadrature rule library
+		* functors library
+
+	After the creation of libMesh::Mesh object the algorithm is applied,
+	then the refining mesh can be used inside libMesh.
+	The same starting mesh is then manually refined, keeping unchanged
+	the h levels of the algorithm result, but modifying the p refinement levels,
+	redistributing them in such a way that they follow the optimal distribution
+	suggested by:
+
+		"C. Schwab. P- and Hp- Finite Element Methods: Theory and Applications in
+Solid and Fluid Mechanics . G.H.Golub and others. Clarendon Press, 1998." p. 90
+
+	Results about the comparison are stored in ./results directory.
+**/
+
 #include <array>
 #include <utility> //std::move
-
-#ifdef DEPRECATED
-#include <cstdlib> //system
-#else //DEPRECATED
 #include <sys/stat.h> //mkdir, stat
 #include <stdio.h> //remove
-#endif //DEPRECATED
 
 #include "LibraryInit.h"
 #include "BinaryTreeHelper.h"
@@ -109,11 +125,7 @@ int main(int argc, char** argv)
 	}
 
 	string results_dir = "results";
-#ifdef DEPRECATED
-	string instruction = "mkdir -p " + results_dir;
-	if ( system(instruction.c_str()) )
-		return 1;
-#else //DEPRECATED
+
 	struct stat st;
 
 	if (stat(results_dir.c_str(), &st) == -1 && mkdir(results_dir.c_str(), 0777) != 0)
@@ -121,21 +133,14 @@ int main(int argc, char** argv)
 		cerr << "Failed while constructing " << results_dir << " directory" << endl;
 		return 1;
 	}
-#endif //DEPRECATED
 
 	string log_filename = results_dir + "/example.log";
 
-#ifdef DEPRECATED
-	string remove_instruction = "rm -f " + log_filename;
-	if ( system(remove_instruction.c_str()) )
-		return 1;
-#else //DEPRECATED
 	if (stat(log_filename.c_str(), &st) != -1 && remove(log_filename.c_str()) != 0)
 	{
 		cerr << "Error removing " << log_filename << endl;
 		return 1;
 	}
-#endif //DEPRECATED
 
 	//I redirect the standard buffers to file
 	Helpers::Logfile logfile(log_filename);

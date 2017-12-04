@@ -17,13 +17,13 @@ namespace PluginLoading
 	PluginLoader::~PluginLoader()
 	{};
 
-	void PluginLoader::Add(string full_path, const string& so_file, int mode)
+	void PluginLoader::Add(std::string full_path, const std::string& so_file, int mode)
 	{
 		full_path += so_file;
 		this->Add(full_path, mode);
 	};
 
-	void PluginLoader::Add(const string& full_path_so_file, int mode)
+	void PluginLoader::Add(const std::string& full_path_so_file, int mode)
 	{
 		if (this->_loaded)
 			cerr << "Warning: adding a plugin, but the Load() has already been called" << endl;
@@ -59,6 +59,7 @@ namespace PluginLoading
 	};
 
 #ifdef TRY_IT
+/*	Plugin loading from a directory */
 	PluginLoader::PluginLoader(const string& loading_path) : PluginLoader()
 	{	
 		this->LoadPath(loading_path);

@@ -17,17 +17,6 @@ namespace BinaryTree
 //			if this function is called more than once
 	bool Init(string conf_filename)
 	{
-/*		I istantiate the factories here for the first time
-		If the first istanstiation is done inside the plugin
-		I get a segfault when the plugin is destroyed */
-//		Geometry::QuadratureFactory<1>::Instance();
-//		Geometry::QuadratureFactory<2>::Instance();
-
-//		MeshRefinerFactory<1>::Instance();
-//		MeshRefinerFactory<2>::Instance();
-
-//		FunctionsFactory<1>::Instance();
-//		FunctionsFactory<2>::Instance();
 
 		GetPot cl(conf_filename.c_str());
 

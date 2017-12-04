@@ -9,10 +9,6 @@
 #include "libmesh.h"
 #include "mesh.h"
 #include "mesh_base.h"
-//The MeshData class is deprecated from libMesh and will be removed in future releases 
-#ifdef MESH_DATA_VERSION
-#include "mesh_data.h"
-#endif //MESH_DATA_VERSION
 
 #include "boundary_info.h"
 #include "elem.h"
@@ -20,6 +16,9 @@
 #include <string> //std::string
 #include <algorithm> //std::for_each
 
+/**
+	Implementation of BinaryTree abstract structures based on libMesh library.
+**/
 namespace LibmeshBinary
 {
 /**
@@ -59,11 +58,7 @@ namespace LibmeshBinary
 				If I want to stay general (i.e. library independent) this method is not accessible, since the mesh is passed
 				through file input and it is accessed only through base class BinaryTree::MeshRefiner methods.
 **/
-				void SetMesh(std::shared_ptr<libMesh::MeshBase>
-#ifdef MESH_DATA_VERSION
-								, std::shared_ptr<libMesh::MeshData> data_ptr = nullptr
-#endif //MESH_DATA_VERSION
-								);
+				void SetMesh(std::shared_ptr<libMesh::MeshBase>);
 
 /**
 				Directly extract the mesh as a libMesh object.
@@ -74,11 +69,7 @@ namespace LibmeshBinary
 				If I want to stay general (i.e. library independent) this method is not accessible,
 				since the mesh is exported on output file and it is accessed only through base class BinaryTree::MeshRefiner methods.
 **/				
-				std::shared_ptr<libMesh::MeshBase> GetMesh(
-#ifdef MESH_DATA_VERSION
-																			std::shared_ptr<libMesh::MeshData> data_ptr = nullptr
-#endif //MESH_DATA_VERSION
-																		)	const;
+				std::shared_ptr<libMesh::MeshBase> GetMesh()	const;
 
 /**
 				Simpler Init to avoid to pass the main parameters.
@@ -169,13 +160,6 @@ namespace LibmeshBinary
 				pointer to the mesh object.
 **/
 				std::shared_ptr<libMesh::MeshBase> _mesh_ptr;
-#ifdef MESH_DATA_VERSION
-/**
-				pointer to mesh data object.
-				Methods which need mesh data are deprecated in libmesh.
-**/
-				std::shared_ptr<libMesh::MeshData> _mesh_data_ptr;
-#endif //MESH_DATA_VERSION
 /**
 				pointer to libMesh MeshRefinement object.
 				It's needed to make any refinement on any element of the mesh pointed by _mesh_ptr.
@@ -199,9 +183,6 @@ namespace LibmeshBinary
 		LibmeshRefiner<dim>::LibmeshRefiner(): BinaryTree::MeshRefiner<dim>(),
 															_libmesh_init_ptr (nullptr),
 															_mesh_ptr(nullptr),
-#ifdef MESH_DATA_VERSION
-															_mesh_data_ptr(nullptr),
-#endif //MESH_DATA_VERSION
 															_mesh_refinement_ptr(nullptr),
 															_initialized(false)
 		{};
@@ -224,16 +205,10 @@ namespace LibmeshBinary
 		};
 
 	template <size_t dim>
-		void LibmeshRefiner<dim>::SetMesh( std::shared_ptr<libMesh::MeshBase> mesh_ptr
-#ifdef MESH_DATA_VERSION
-													, std::shared_ptr<libMesh::MeshData> data_ptr = nullptr
-#endif //MESH_DATA_VERSION
-						)
+		void LibmeshRefiner<dim>::SetMesh( std::shared_ptr<libMesh::MeshBase> mesh_ptr)
 		{
 			this->_mesh_ptr = mesh_ptr;
-#ifdef MESH_DATA_VERSION
-			this->_mesh_data_ptr = data_ptr;
-#endif //MESH_DATA_VERSION
+
 			this->_mesh_refinement_ptr = Helpers::MakeUnique<libMesh::MeshRefinement> (*(this->_mesh_ptr));
 			BinarityMap::MakeBinary<dim>(*(this->_mesh_refinement_ptr), this->_objective_function);
 			InitializeGodfather();
@@ -241,11 +216,7 @@ namespace LibmeshBinary
 		};
 
 	template <size_t dim>
-		std::shared_ptr<libMesh::MeshBase> LibmeshRefiner<dim>::GetMesh(
-#ifdef MESH_DATA_VERSION
-																								std::shared_ptr<libMesh::MeshData> data_ptr = nullptr
-#endif //MESH_DATA_VERSION
-																							)	const
+		std::shared_ptr<libMesh::MeshBase> LibmeshRefiner<dim>::GetMesh()	const
 		{
 			CheckInitialization();
 			/* If the libMesh communicator pointer is not null, this means that the mesh has been constructed
@@ -254,10 +225,7 @@ namespace LibmeshBinary
 				null I can't export the mesh as a libMesh object */
 			if (this->_libmesh_init_ptr)
 				throw logic_error("The mesh can't be exported outside the class that owns the LibMeshInit communicator");
-#ifdef MESH_DATA_VERSION
-			if (data_ptr)
-				data_ptr = this->_mesh_data_ptr;
-#endif //MESH_DATA_VERSION
+
 			return this->_mesh_ptr;
 		};
 
@@ -268,14 +236,10 @@ namespace LibmeshBinary
 
 			clog << "\n\n========== reading the mesh ========= \n\n" << endl;
 
-			this->_mesh_ptr->read(input
-#ifdef MESH_DATA_VERSION
-												, this->_mesh_data_ptr
-#endif //MESH_DATA_VERSION
-												);
+			this->_mesh_ptr->read(input);
 
 			//Replacing the libMesh elements with the BinaryTree ones
-			//TODO: maybe it's better to put it at the end of the Init method
+			//TODO: verify if it could be better to put it at the end of the Init method
 			BinarityMap::MakeBinary<dim>(*(this->_mesh_refinement_ptr), this->_objective_function);
 			InitializeGodfather();
 		};
@@ -285,11 +249,7 @@ namespace LibmeshBinary
 		{
 			CheckInitialization();
 
-			this->_mesh_ptr->write	(output
-#ifdef MESH_DATA_VERSION
-											,this->_mesh_data_ptr.get()
-#endif //MESH_DATA_VERSION
-											);
+			this->_mesh_ptr->write	(output);
 			//TODO:	evaluate the other way given by libMesh to write a mesh
 			//TODO:	after the refinement evaluate if it is the case to "unbinarize" the mesh
 			//			remember that the binarization guarantees that also the children are binary elements
@@ -338,9 +298,7 @@ namespace LibmeshBinary
 			this->_libmesh_init_ptr = Helpers::MakeUnique<libMesh::LibMeshInit> (argc, argv);
 
 			_mesh_ptr = std::make_shared<libMesh::Mesh> (this->_libmesh_init_ptr->comm(), static_cast<unsigned char> (dim));
-#ifdef MESH_DATA_VERSION
-			_mesh_data_ptr = std::make_shared<libMesh::MeshData> (*_mesh_ptr);
-#endif //MESH_DATA_VERSION
+
 			_mesh_refinement_ptr = Helpers::MakeUnique<libMesh::MeshRefinement> (*_mesh_ptr);
 
 			this->_initialized = true;

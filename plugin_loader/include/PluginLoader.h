@@ -7,6 +7,9 @@
 #include <memory> //std::unique_ptr
 #include <iostream>
 
+/**
+	Framework to easily manage the runtime load of dynamic objects 
+**/
 namespace PluginLoading
 {
 /**
@@ -50,11 +53,11 @@ namespace PluginLoading
 			bool Load();
 #ifdef TRY_IT
 /**
-			construct from a directory where plugin files are stored
+			Construct from a directory where plugin files are stored
 **/
-			PluginLoader(const std::string& loading_path);
+			PluginLoader(const std::string&);
 /**
-			Loads every plugin contained in a directory
+			Load every plugin contained in a directory
 **/
 			void LoadPath(const std::string&, int mode = RTLD_LAZY);
 #endif //TRY_IT
@@ -75,7 +78,7 @@ namespace PluginLoading
 
 		private:
 /**
-			The vector storage of #Plugin objects
+			The vector storage of #PluginLoading::Plugin objects
 **/
 			std::vector<std::unique_ptr<Plugin>> _plugins;
 /**
