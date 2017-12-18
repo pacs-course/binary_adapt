@@ -202,8 +202,7 @@ $(call TargetFilename,$(1)): $$(Objects_$(1)) $$(JacobiPolLibFile)
 	@echo $(LD): generating '$$(notdir $$@)'
 	$(LD) $(LFlags) $$(LFlags_$(1)) -o $(LibDir)/'$$(notdir $$@)' $$(^:%='%') $(LibPaths:%=$(LibPathFlag)%) $$(LibPaths_$(1):%=$(LibPathFlag)%) $(Libs:%=$(LibraryFlag)%) $$(Libs_$(1):%=$(LibraryFlag)%)
 ifeq ($(LibType), dynamic)
-	cd $(LibDir); \
-	pwd; \
+	cd $(LibDir);
 	ln -s -f $$(notdir $$@) $$(subst $(LibSuffix),.so.$(MajLibVers),$$(notdir $$@)); \
 	ln -s -f $$(notdir $$@) $$(subst $(LibSuffix),.so,$$(notdir $$@)); \
 	cd $(CurrentDir)

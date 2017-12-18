@@ -18,22 +18,22 @@
 **/
 class BasicTest : public ::testing::Test
 {
-	protected:
-/**
+  protected:
+	/**
 		constructor.
-		It simply initialize the _out attribute with "test.log" filename 
-**/
-		BasicTest();
-/**
+		It simply initialize the _out attribute with "test.log" filename
+	**/
+	BasicTest();
+	/**
 		destructor.
 		Destroying _out attribute buffers are redirected to std ones
-**/
-		virtual ~BasicTest();
+	**/
+	virtual ~BasicTest();
 
-		virtual void SetUp()override;
-		virtual void TearDown()override;
+	virtual void SetUp()override;
+	virtual void TearDown()override;
 
-		Helpers::Logfile _out;
+	Helpers::Logfile _out;
 };
 
 //TODO The first test run, whatever it is, print always part of the output to std::cout. Fix it

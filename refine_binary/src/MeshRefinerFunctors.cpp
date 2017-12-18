@@ -4,18 +4,18 @@ using namespace std;
 
 namespace BinaryTree
 {
-	NodeOperator::NodeOperator(){};
-	NodeOperator::~NodeOperator(){};
+	NodeOperator::NodeOperator() {};
+	NodeOperator::~NodeOperator() {};
 
-	ConstOperator::ConstOperator(){};
-	ConstOperator::~ConstOperator(){};
+	ConstOperator::ConstOperator() {};
+	ConstOperator::~ConstOperator() {};
 
-	Counter::Counter() : _counter(0){};
-	Counter::~Counter(){};
+	Counter::Counter() : _counter (0) {};
+	Counter::~Counter() {};
 
-	void Counter::operator()(const BinaryNode*)
+	void Counter::operator() (const BinaryNode*)
 	{
-		++(this->_counter);
+		++ (this->_counter);
 	};
 
 	size_t Counter::GetCount()const
@@ -23,10 +23,13 @@ namespace BinaryTree
 		return this->_counter;
 	};
 
-	ErrorComputer::ErrorComputer(double& error_location) : _error_variable(error_location){};
-	ErrorComputer::~ErrorComputer(){};
+	ErrorComputer::ErrorComputer (double& error_location) : 
+		_error_variable (error_location)
+	{};
 
-	void ErrorComputer::operator()(BinaryNode* node)
+	ErrorComputer::~ErrorComputer() {};
+
+	void ErrorComputer::operator() (BinaryNode* node)
 	{
 		(this->_error_variable) += node->ProjectionError();
 	};
@@ -36,12 +39,12 @@ namespace BinaryTree
 		this->_error_variable = 0;
 	};
 
-	PlevelsExtractor::PlevelsExtractor() : _p_levels(){};
-	PlevelsExtractor::~PlevelsExtractor(){};
+	PlevelsExtractor::PlevelsExtractor() : _p_levels() {};
+	PlevelsExtractor::~PlevelsExtractor() {};
 
-	void PlevelsExtractor::operator()(const BinaryNode* node)
+	void PlevelsExtractor::operator() (const BinaryNode* node)
 	{
-		this->_p_levels.push_back(node->PLevel());
+		this->_p_levels.push_back (node->PLevel());
 	};
 
 	vector<size_t> PlevelsExtractor::GetPLevels() const
@@ -49,14 +52,15 @@ namespace BinaryTree
 		return this->_p_levels;
 	};
 
-	GnuPlotPrinter::GnuPlotPrinter(ofstream& output_file) :	ConstDimOperator<1>(),
-																				_output_file(output_file),
-																				_x_min(0),
-																				_x_max(0),
-																				_p_max(0),
-																				_cont(0)
+	GnuPlotPrinter::GnuPlotPrinter (ofstream& output_file) :
+		ConstDimOperator<1>(),
+		_output_file (output_file),
+		_x_min (0),
+		_x_max (0),
+		_p_max (0),
+		_cont (0)
 	{};
-	GnuPlotPrinter::~GnuPlotPrinter(){};
+	GnuPlotPrinter::~GnuPlotPrinter() {};
 
 	void GnuPlotPrinter::operator() (const DimensionedNode<1>* node)
 	{
@@ -76,43 +80,46 @@ namespace BinaryTree
 		if (p_val > this->_p_max)
 			this->_p_max = p_val;
 
-		string f_s	= "p_"
-						+ to_string(this->_cont++)
-						+ "(x) = x > "
-						+ to_string(x_left)
-						+ " && x <= "
-						+ to_string(x_right)
-						+ "? "
-						+ to_string(p_val)
-						+ " : 1/0";
+		string f_s = "p_"
+				   + to_string (this->_cont++)
+				   + "(x) = x > "
+				   + to_string (x_left)
+				   + " && x <= "
+				   + to_string (x_right)
+				   + "? "
+				   + to_string (p_val)
+				   + " : 1/0";
 
 		(this->_output_file) << f_s << endl;
 	};
 
-	double GnuPlotPrinter::XMin()const
+	double GnuPlotPrinter::XMin() const
 	{
 		return this->_x_min;
 	};
 
-	double GnuPlotPrinter::XMax()const
+	double GnuPlotPrinter::XMax() const
 	{
 		return this->_x_max;
 	};
 
-	size_t GnuPlotPrinter::PMax()const
+	size_t GnuPlotPrinter::PMax() const
 	{
 		return this->_p_max;
 	};
 
-	vector<double> GnuPlotPrinter::XLeftVec()const
+	vector<double> GnuPlotPrinter::XLeftVec() const
 	{
 		return this->_x_left_vec;
 	};
 
-	ProjectionPrinter::ProjectionPrinter(ofstream& output_file, double x_step) :	_output_file(output_file),
-																											_x_step(x_step)
+	ProjectionPrinter::ProjectionPrinter (ofstream& output_file,
+										  double x_step) :
+		_output_file (output_file),
+		_x_step (x_step)
 	{}
-	ProjectionPrinter::~ProjectionPrinter(){};
+
+	ProjectionPrinter::~ProjectionPrinter() {};
 
 	void ProjectionPrinter::operator() (const DimensionedNode<1>* node)
 	{
@@ -121,6 +128,6 @@ namespace BinaryTree
 		double x_left = nodes[0];
 		double x_right = nodes[1];
 		for (; x_left < x_right; x_left += this->_x_step)
-			this->_output_file << x_left << "	" << node->Projection(x_left) << endl;
+			this->_output_file << x_left << "	" << node->Projection (x_left) << endl;
 	};
 } //namespace BinaryTree

@@ -6,12 +6,12 @@ using namespace std;
 
 namespace Functions
 {
-	SqrtX::SqrtX(){};
-	SqrtX::~SqrtX(){};
+	SqrtX::SqrtX() {};
+	SqrtX::~SqrtX() {};
 
 	double SqrtX::operator() (const Geometry::Point<1>& p) const
 	{
-		return sqrt(p);
+		return sqrt (p);
 	};
 	string SqrtX::Formula()const
 	{
@@ -22,8 +22,8 @@ namespace Functions
 		return "sqrt_x";
 	};
 
-	HalfStep::HalfStep(){};
-	HalfStep::~HalfStep(){};
+	HalfStep::HalfStep() {};
+	HalfStep::~HalfStep() {};
 
 	double HalfStep::operator() (const Geometry::Point<1>& p) const
 	{
@@ -41,15 +41,15 @@ namespace Functions
 		return "half_0";
 	};
 
-	HalfX::HalfX(){};
-	HalfX::~HalfX(){};
+	HalfX::HalfX() {};
+	HalfX::~HalfX() {};
 
 	double HalfX::operator() (const Geometry::Point<1>& p) const
 	{
 		double val = p;
 		if (val >= 0.5)
 			return val;
-		
+
 		return 0.0;
 	};
 	string HalfX::Formula()const
@@ -61,15 +61,15 @@ namespace Functions
 		return "half_1";
 	};
 
-	HalfSquare::HalfSquare(){};
-	HalfSquare::~HalfSquare(){};
+	HalfSquare::HalfSquare() {};
+	HalfSquare::~HalfSquare() {};
 
 	double HalfSquare::operator() (const Geometry::Point<1>& p) const
 	{
 		double val = p;
 		if (val > 0.5)
-			return val*val;
-		
+			return val * val;
+
 		return 0.0;
 	};
 	string HalfSquare::Formula()const
@@ -81,15 +81,15 @@ namespace Functions
 		return "half_2";
 	};
 
-	HalfTwenty::HalfTwenty(){};
-	HalfTwenty::~HalfTwenty(){};
+	HalfTwenty::HalfTwenty() {};
+	HalfTwenty::~HalfTwenty() {};
 
 	double HalfTwenty::operator() (const Geometry::Point<1>& p) const
 	{
 		double val = p;
 		if (val >= 0.5)
-			return Helpers::Power<20>(val);
-		
+			return Helpers::Power<20> (val);
+
 		return 0.0;
 	};
 	string HalfTwenty::Formula()const
@@ -101,14 +101,14 @@ namespace Functions
 		return "half_20";
 	};
 
-	HalfSqrt::HalfSqrt(){};
-	HalfSqrt::~HalfSqrt(){};
+	HalfSqrt::HalfSqrt() {};
+	HalfSqrt::~HalfSqrt() {};
 
 	double HalfSqrt::operator() (const Geometry::Point<1>& p) const
 	{
 		double val = p;
 		if (val > 0.5)
-			return sqrt(val);
+			return sqrt (val);
 		return 0.0;
 	};
 	string HalfSqrt::Formula()const
@@ -120,12 +120,12 @@ namespace Functions
 		return "half_sqrt_x";
 	};
 
-	X2PlusY2::X2PlusY2(){};
-	X2PlusY2::~X2PlusY2(){};
+	X2PlusY2::X2PlusY2() {};
+	X2PlusY2::~X2PlusY2() {};
 
 	double X2PlusY2::operator() (const Geometry::Point<2>& x)const
 	{
-		return x[0]*x[0] + x[1]*x[1];
+		return x[0] * x[0] + x[1] * x[1];
 	};
 	std::string X2PlusY2::Formula()const
 	{

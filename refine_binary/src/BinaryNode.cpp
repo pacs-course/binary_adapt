@@ -6,11 +6,12 @@ using namespace std;
 
 namespace BinaryTree
 {
-	BinaryNode::BinaryNode() : _s_element	(this),
-										_E				(numeric_limits<double>::max()),
-										_E_tilde		(numeric_limits<double>::max()),
-										_q				(numeric_limits<double>::max()),
-										_tilde_error(numeric_limits<double>::max())
+	BinaryNode::BinaryNode() :
+		_s_element	(this),
+		_E			(numeric_limits<double>::max()),
+		_E_tilde	(numeric_limits<double>::max()),
+		_q			(numeric_limits<double>::max()),
+		_tilde_error(numeric_limits<double>::max())
 	{};
 
 	BinaryNode::~BinaryNode()
@@ -39,7 +40,7 @@ namespace BinaryTree
 		return _s_element;
 	};
 
-	void BinaryNode::S(BinaryNode* delta)
+	void BinaryNode::S (BinaryNode* delta)
 	{
 		_s_element = delta;
 	};
@@ -49,7 +50,7 @@ namespace BinaryTree
 		return _E;
 	};
 
-	void BinaryNode::E(double val)
+	void BinaryNode::E (double val)
 	{
 		_E = val;
 	};
@@ -61,7 +62,7 @@ namespace BinaryTree
 
 	void BinaryNode::ETilde (double val)
 	{
-			_E_tilde = val;
+		_E_tilde = val;
 	};
 
 	double BinaryNode::Q() const
@@ -69,7 +70,7 @@ namespace BinaryTree
 		return _q;
 	};
 
-	void BinaryNode::Q(double val)
+	void BinaryNode::Q (double val)
 	{
 		_q = val;
 	};
@@ -79,7 +80,7 @@ namespace BinaryTree
 		return _tilde_error;
 	};
 
-	void BinaryNode::TildeError(double val)
+	void BinaryNode::TildeError (double val)
 	{
 		_tilde_error = val;
 	};

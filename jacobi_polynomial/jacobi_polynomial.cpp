@@ -40,17 +40,17 @@ int i4_max ( int i1, int i2 )
 //    Output, int I4_MAX, the larger of I1 and I2.
 //
 {
-  int value;
+	int value;
 
-  if ( i2 < i1 )
-  {
-    value = i1;
-  }
-  else
-  {
-    value = i2;
-  }
-  return value;
+	if ( i2 < i1 )
+	{
+		value = i1;
+	}
+	else
+	{
+		value = i2;
+	}
+	return value;
 }
 //****************************************************************************80
 
@@ -81,17 +81,17 @@ int i4_min ( int i1, int i2 )
 //    Output, int I4_MIN, the smaller of I1 and I2.
 //
 {
-  int value;
+	int value;
 
-  if ( i1 < i2 )
-  {
-    value = i1;
-  }
-  else
-  {
-    value = i2;
-  }
-  return value;
+	if ( i1 < i2 )
+	{
+		value = i1;
+	}
+	else
+	{
+		value = i2;
+	}
+	return value;
 }
 //****************************************************************************80
 
@@ -124,14 +124,14 @@ string i4_to_string ( int i4 )
 //    Output, string I4_TO_STRING, the string.
 //
 {
-  ostringstream fred;
-  string value;
+	ostringstream fred;
+	string value;
 
-  fred << i4;
+	fred << i4;
 
-  value = fred.str ( );
+	value = fred.str ( );
 
-  return value;
+	return value;
 }
 //****************************************************************************80
 
@@ -145,20 +145,20 @@ void imtqlx ( int n, double d[], double e[], double z[] )
 //
 //  Discussion:
 //
-//    This routine is a slightly modified version of the EISPACK routine to 
-//    perform the implicit QL algorithm on a symmetric tridiagonal matrix. 
+//    This routine is a slightly modified version of the EISPACK routine to
+//    perform the implicit QL algorithm on a symmetric tridiagonal matrix.
 //
 //    The authors thank the authors of EISPACK for permission to use this
-//    routine. 
+//    routine.
 //
-//    It has been modified to produce the product Q' * Z, where Z is an input 
-//    vector and Q is the orthogonal matrix diagonalizing the input matrix.  
+//    It has been modified to produce the product Q' * Z, where Z is an input
+//    vector and Q is the orthogonal matrix diagonalizing the input matrix.
 //    The changes consist (essentialy) of applying the orthogonal transformations
 //    directly to Z as they are generated.
 //
 //  Licensing:
 //
-//    This code is distributed under the GNU LGPL license. 
+//    This code is distributed under the GNU LGPL license.
 //
 //  Modified:
 //
@@ -172,7 +172,7 @@ void imtqlx ( int n, double d[], double e[], double z[] )
 //  Reference:
 //
 //    Sylvan Elhay, Jaroslav Kautsky,
-//    Algorithm 655: IQPACK, FORTRAN Subroutines for the Weights of 
+//    Algorithm 655: IQPACK, FORTRAN Subroutines for the Weights of
 //    Interpolatory Quadrature,
 //    ACM Transactions on Mathematical Software,
 //    Volume 13, Number 4, December 1987, pages 399-415.
@@ -189,7 +189,7 @@ void imtqlx ( int n, double d[], double e[], double z[] )
 //    Input/output, double D(N), the diagonal entries of the matrix.
 //    On output, the information in D has been overwritten.
 //
-//    Input/output, double E(N), the subdiagonal entries of the 
+//    Input/output, double E(N), the subdiagonal entries of the
 //    matrix, in entries E(1) through E(N-1).  On output, the information in
 //    E has been overwritten.
 //
@@ -198,134 +198,134 @@ void imtqlx ( int n, double d[], double e[], double z[] )
 //    input symmetric tridiagonal matrix.
 //
 {
-  double b;
-  double c;
-  double f;
-  double g;
-  int i;
-  int ii;
-  int itn = 30;
-  int j;
-  int k;
-  int l;
-  int m;
-  int mml;
-  double p;
-  double prec;
-  double r;
-  double s;
+	double b;
+	double c;
+	double f;
+	double g;
+	int i;
+	int ii;
+	int itn = 30;
+	int j;
+	int k;
+	int l;
+	int m;
+	int mml;
+	double p;
+	double prec;
+	double r;
+	double s;
 
-  prec = r8_epsilon ( );
+	prec = r8_epsilon ( );
 
-  if ( n == 1 )
-  {
-    return;
-  }
+	if ( n == 1 )
+	{
+		return;
+	}
 
-  e[n-1] = 0.0;
+	e[n - 1] = 0.0;
 
-  for ( l = 1; l <= n; l++ )
-  {
-    j = 0;
-    for ( ; ; )
-    {
-      for ( m = l; m <= n; m++ )
-      {
-        if ( m == n )
-        {
-          break;
-        }
+	for ( l = 1; l <= n; l++ )
+	{
+		j = 0;
+		for ( ; ; )
+		{
+			for ( m = l; m <= n; m++ )
+			{
+				if ( m == n )
+				{
+					break;
+				}
 
-        if ( fabs ( e[m-1] ) <= prec * ( fabs ( d[m-1] ) + fabs ( d[m] ) ) )
-        {
-          break;
-        }
-      }
-      p = d[l-1];
-      if ( m == l )
-      {
-        break;
-      }
-      if ( itn <= j )
-      {
-        cout << "\n";
-        cout << "IMTQLX - Fatal error!\n";
-        cout << "  Iteration limit exceeded\n";
-        exit ( 1 );
-      }
-      j = j + 1;
-      g = ( d[l] - p ) / ( 2.0 * e[l-1] );
-      r =  sqrt ( g * g + 1.0 );
-      g = d[m-1] - p + e[l-1] / ( g + fabs ( r ) * r8_sign ( g ) );
-      s = 1.0;
-      c = 1.0;
-      p = 0.0;
-      mml = m - l;
+				if ( fabs ( e[m - 1] ) <= prec * ( fabs ( d[m - 1] ) + fabs ( d[m] ) ) )
+				{
+					break;
+				}
+			}
+			p = d[l - 1];
+			if ( m == l )
+			{
+				break;
+			}
+			if ( itn <= j )
+			{
+				cout << "\n";
+				cout << "IMTQLX - Fatal error!\n";
+				cout << "  Iteration limit exceeded\n";
+				exit ( 1 );
+			}
+			j = j + 1;
+			g = ( d[l] - p ) / ( 2.0 * e[l - 1] );
+			r =  sqrt ( g * g + 1.0 );
+			g = d[m - 1] - p + e[l - 1] / ( g + fabs ( r ) * r8_sign ( g ) );
+			s = 1.0;
+			c = 1.0;
+			p = 0.0;
+			mml = m - l;
 
-      for ( ii = 1; ii <= mml; ii++ )
-      {
-        i = m - ii;
-        f = s * e[i-1];
-        b = c * e[i-1];
+			for ( ii = 1; ii <= mml; ii++ )
+			{
+				i = m - ii;
+				f = s * e[i - 1];
+				b = c * e[i - 1];
 
-        if ( fabs ( g ) <= fabs ( f ) )
-        {
-          c = g / f;
-          r =  sqrt ( c * c + 1.0 );
-          e[i] = f * r;
-          s = 1.0 / r;
-          c = c * s;
-        }
-        else
-        {
-          s = f / g;
-          r =  sqrt ( s * s + 1.0 );
-          e[i] = g * r;
-          c = 1.0 / r;
-          s = s * c;
-        }
-        g = d[i] - p;
-        r = ( d[i-1] - g ) * s + 2.0 * c * b;
-        p = s * r;
-        d[i] = g + p;
-        g = c * r - b;
-        f = z[i];
-        z[i] = s * z[i-1] + c * f;
-        z[i-1] = c * z[i-1] - s * f;
-      }
-      d[l-1] = d[l-1] - p;
-      e[l-1] = g;
-      e[m-1] = 0.0;
-    }
-  }
-//
-//  Sorting.
-//
-  for ( ii = 2; ii <= m; ii++ )
-  {
-    i = ii - 1;
-    k = i;
-    p = d[i-1];
+				if ( fabs ( g ) <= fabs ( f ) )
+				{
+					c = g / f;
+					r =  sqrt ( c * c + 1.0 );
+					e[i] = f * r;
+					s = 1.0 / r;
+					c = c * s;
+				}
+				else
+				{
+					s = f / g;
+					r =  sqrt ( s * s + 1.0 );
+					e[i] = g * r;
+					c = 1.0 / r;
+					s = s * c;
+				}
+				g = d[i] - p;
+				r = ( d[i - 1] - g ) * s + 2.0 * c * b;
+				p = s * r;
+				d[i] = g + p;
+				g = c * r - b;
+				f = z[i];
+				z[i] = s * z[i - 1] + c * f;
+				z[i - 1] = c * z[i - 1] - s * f;
+			}
+			d[l - 1] = d[l - 1] - p;
+			e[l - 1] = g;
+			e[m - 1] = 0.0;
+		}
+	}
+	//
+	//  Sorting.
+	//
+	for ( ii = 2; ii <= m; ii++ )
+	{
+		i = ii - 1;
+		k = i;
+		p = d[i - 1];
 
-    for ( j = ii; j <= n; j++ )
-    {
-      if ( d[j-1] < p )
-      {
-         k = j;
-         p = d[j-1];
-      }
-    }
+		for ( j = ii; j <= n; j++ )
+		{
+			if ( d[j - 1] < p )
+			{
+				k = j;
+				p = d[j - 1];
+			}
+		}
 
-    if ( k != i )
-    {
-      d[k-1] = d[i-1];
-      d[i-1] = p;
-      p = z[i-1];
-      z[i-1] = z[k-1];
-      z[k-1] = p;
-    }
-  }
-  return;
+		if ( k != i )
+		{
+			d[k - 1] = d[i - 1];
+			d[i - 1] = p;
+			p = z[i - 1];
+			z[i - 1] = z[k - 1];
+			z[k - 1] = p;
+		}
+	}
+	return;
 }
 //****************************************************************************80
 
@@ -362,26 +362,26 @@ double j_double_product_integral ( int i, int j, double a, double b )
 //
 //    Output, double VALUE, the value of the integral.
 //
-{ 
-  double i_r8;
-  double value;
+{
+	double i_r8;
+	double value;
 
-  if ( i != j )
-  {
-    value = 0.0;
-  }
-  else
-  {
-    i_r8 = ( double ) ( i );
+	if ( i != j )
+	{
+		value = 0.0;
+	}
+	else
+	{
+		i_r8 = ( double ) ( i );
 
-    value = pow ( 2, a + b + 1.0 ) 
-      / ( 2.0 * i_r8 + a + b + 1.0 ) 
-      * tgamma ( i_r8 + a + 1.0 ) 
-      * tgamma ( i_r8 + b + 1.0 )
-      / r8_factorial ( i ) 
-      / tgamma ( i_r8 + a + b + 1.0 );
-  }
-  return value;
+		value = pow ( 2, a + b + 1.0 )
+				/ ( 2.0 * i_r8 + a + b + 1.0 )
+				* tgamma ( i_r8 + a + 1.0 )
+				* tgamma ( i_r8 + b + 1.0 )
+				/ r8_factorial ( i )
+				/ tgamma ( i_r8 + a + b + 1.0 );
+	}
+	return value;
 }
 //****************************************************************************80
 
@@ -419,22 +419,22 @@ double j_integral ( int n )
 //    Output, double J_INTEGRAL, the value of the integral.
 //
 {
-  double value;
+	double value;
 
-  if ( ( n % 2 ) == 1 )
-  {
-    value = 0.0;
-  }
-  else
-  {
-    value = 2.0 / ( double ) ( n + 1 );
-  }
+	if ( ( n % 2 ) == 1 )
+	{
+		value = 0.0;
+	}
+	else
+	{
+		value = 2.0 / ( double ) ( n + 1 );
+	}
 
-  return value;
+	return value;
 }
 //****************************************************************************80
 
-double *j_polynomial ( int m, int n, double alpha, double beta, double x[] )
+double* j_polynomial ( int m, int n, double alpha, double beta, double x[] )
 
 //****************************************************************************80
 //
@@ -478,7 +478,7 @@ double *j_polynomial ( int m, int n, double alpha, double beta, double x[] )
 //
 //  Licensing:
 //
-//    This code is distributed under the GNU LGPL license. 
+//    This code is distributed under the GNU LGPL license.
 //
 //  Modified:
 //
@@ -514,83 +514,84 @@ double *j_polynomial ( int m, int n, double alpha, double beta, double x[] )
 //    Output, double J_POLYNOMIAL[M*(N+1)], the values.
 //
 {
-  double c1;
-  double c2;
-  double c3;
-  double c4;
-  int i;
-  int j;
-  double *v;
+	double c1;
+	double c2;
+	double c3;
+	double c4;
+	int i;
+	int j;
+	double* v;
 
-  if ( alpha <= -1.0 )
-  {
-    cerr << "\n";
-    cerr << "J_POLYNOMIAL - Fatal error!\n";
-    cerr << "  Illegal input value of ALPHA = " << alpha << "\n";
-    cerr << "  But ALPHA must be greater than -1.\n";
-    exit ( 1 );
-  }
+	if ( alpha <= -1.0 )
+	{
+		cerr << "\n";
+		cerr << "J_POLYNOMIAL - Fatal error!\n";
+		cerr << "  Illegal input value of ALPHA = " << alpha << "\n";
+		cerr << "  But ALPHA must be greater than -1.\n";
+		exit ( 1 );
+	}
 
-  if ( beta <= -1.0 )
-  {
-    cerr << "\n";
-    cerr << "J_POLYNOMIAL - Fatal error!\n";
-    cerr << "  Illegal input value of BETA = " << beta << "\n";
-    cerr << "  But BETA must be greater than -1.\n";
-    exit ( 1 );
-  }
+	if ( beta <= -1.0 )
+	{
+		cerr << "\n";
+		cerr << "J_POLYNOMIAL - Fatal error!\n";
+		cerr << "  Illegal input value of BETA = " << beta << "\n";
+		cerr << "  But BETA must be greater than -1.\n";
+		exit ( 1 );
+	}
 
-  if ( n < 0 )
-  {
-    return NULL;
-  }
+	if ( n < 0 )
+	{
+		return NULL;
+	}
 
-  v = new double[m*(n+1)];
+	v = new double[m * (n + 1)];
 
-  for ( i = 0; i < m; i++ )
-  {
-    v[i+0*m] = 1.0;
-  }
+	for ( i = 0; i < m; i++ )
+	{
+		v[i + 0 * m] = 1.0;
+	}
 
-  if ( n == 0 )
-  {
-    return v;
-  }
+	if ( n == 0 )
+	{
+		return v;
+	}
 
-  for ( i = 0; i < m; i++ )
-  {
-    v[i+1*m] = ( 1.0 + 0.5 * ( alpha + beta ) ) * x[i] 
-      + 0.5 * ( alpha - beta );
-  }
+	for ( i = 0; i < m; i++ )
+	{
+		v[i + 1 * m] = ( 1.0 + 0.5 * ( alpha + beta ) ) * x[i]
+					   + 0.5 * ( alpha - beta );
+	}
 
-  for ( i = 0; i < m; i++ )
-  {
-    for ( j = 2; j <= n; j++ )
-    {
-      c1 = 2.0 * ( double ) ( j ) * ( ( double ) ( j ) + alpha + beta ) 
-        * ( ( double ) ( 2 * j - 2 ) + alpha + beta );
+	for ( i = 0; i < m; i++ )
+	{
+		for ( j = 2; j <= n; j++ )
+		{
+			c1 = 2.0 * ( double ) ( j ) * ( ( double ) ( j ) + alpha + beta )
+				 * ( ( double ) ( 2 * j - 2 ) + alpha + beta );
 
-      c2 = ( ( double ) ( 2 * j - 1 ) + alpha + beta ) 
-        * ( ( double ) ( 2 * j ) + alpha + beta ) 
-        * ( ( double ) ( 2 * j - 2 ) + alpha + beta );
+			c2 = ( ( double ) ( 2 * j - 1 ) + alpha + beta )
+				 * ( ( double ) ( 2 * j ) + alpha + beta )
+				 * ( ( double ) ( 2 * j - 2 ) + alpha + beta );
 
-      c3 = ( ( double ) ( 2 * j - 1 ) + alpha + beta ) 
-        * ( alpha + beta ) * ( alpha - beta );
+			c3 = ( ( double ) ( 2 * j - 1 ) + alpha + beta )
+				 * ( alpha + beta ) * ( alpha - beta );
 
-      c4 = - ( double ) ( 2 ) * ( ( double ) ( j - 1 ) + alpha ) 
-        * ( ( double ) ( j - 1 ) + beta )  
-        * ( ( double ) ( 2 * j ) + alpha + beta );
+			c4 = - ( double ) ( 2 ) * ( ( double ) ( j - 1 ) + alpha )
+				 * ( ( double ) ( j - 1 ) + beta )
+				 * ( ( double ) ( 2 * j ) + alpha + beta );
 
-      v[i+j*m] = ( ( c3 + c2 * x[i] ) * v[i+(j-1)*m] + c4 * v[i+(j-2)*m] ) / c1;
-    }
-  }
+			v[i + j * m] = ( ( c3 + c2 * x[i] ) * v[i + (j - 1) * m] + c4 * v[i +
+																			  (j - 2) * m] ) / c1;
+		}
+	}
 
-  return v;
+	return v;
 }
 //****************************************************************************80
 
-void j_polynomial_values ( int &n_data, int &n, double &a, double &b, double &x,
-  double &fx )
+void j_polynomial_values ( int& n_data, int& n, double& a, double& b, double& x,
+						   double& fx )
 
 //****************************************************************************80
 //
@@ -649,120 +650,130 @@ void j_polynomial_values ( int &n_data, int &n, double &a, double &b, double &x,
 {
 # define N_MAX 26
 
-  static double a_vec[N_MAX] = {
-     0.0, 0.0, 0.0, 0,
-     0.0, 0.0, 1.0, 2,
-     3.0, 4.0, 5.0, 0,
-     0.0, 0.0, 0.0, 0,
-     0.0, 0.0, 0.0, 0,
-     0.0, 0.0, 0.0, 0,
-     0.0, 0.0 };
+	static double a_vec[N_MAX] =
+	{
+		0.0, 0.0, 0.0, 0,
+		0.0, 0.0, 1.0, 2,
+		3.0, 4.0, 5.0, 0,
+		0.0, 0.0, 0.0, 0,
+		0.0, 0.0, 0.0, 0,
+		0.0, 0.0, 0.0, 0,
+		0.0, 0.0
+	};
 
-  static double b_vec[N_MAX] = {
-    1.0, 1.0, 1.0, 1.0,
-    1.0, 1.0, 1.0, 1.0,
-    1.0, 1.0, 1.0, 2.0,
-    3.0, 4.0, 5.0, 1.0,
-    1.0, 1.0, 1.0, 1.0,
-    1.0, 1.0, 1.0, 1.0,
-    1.0, 1.0 };
+	static double b_vec[N_MAX] =
+	{
+		1.0, 1.0, 1.0, 1.0,
+		1.0, 1.0, 1.0, 1.0,
+		1.0, 1.0, 1.0, 2.0,
+		3.0, 4.0, 5.0, 1.0,
+		1.0, 1.0, 1.0, 1.0,
+		1.0, 1.0, 1.0, 1.0,
+		1.0, 1.0
+	};
 
-  static double fx_vec[N_MAX] = {
-      0.1000000000000000E+01,
-      0.2500000000000000E+00,
-     -0.3750000000000000E+00,
-     -0.4843750000000000E+00,
-     -0.1328125000000000E+00,
-      0.2753906250000000E+00,
-     -0.1640625000000000E+00,
-     -0.1174804687500000E+01,
-     -0.2361328125000000E+01,
-     -0.2616210937500000E+01,
-      0.1171875000000000E+00,
-      0.4218750000000000E+00,
-      0.5048828125000000E+00,
-      0.5097656250000000E+00,
-      0.4306640625000000E+00,
-     -0.6000000000000000E+01,
-      0.3862000000000000E-01,
-      0.8118400000000000E+00,
-      0.3666000000000000E-01,
-     -0.4851200000000000E+00,
-     -0.3125000000000000E+00,
-      0.1891200000000000E+00,
-      0.4023400000000000E+00,
-      0.1216000000000000E-01,
-     -0.4396200000000000E+00,
-      0.1000000000000000E+01 };
+	static double fx_vec[N_MAX] =
+	{
+		0.1000000000000000E+01,
+		0.2500000000000000E+00,
+		-0.3750000000000000E+00,
+		-0.4843750000000000E+00,
+		-0.1328125000000000E+00,
+		0.2753906250000000E+00,
+		-0.1640625000000000E+00,
+		-0.1174804687500000E+01,
+		-0.2361328125000000E+01,
+		-0.2616210937500000E+01,
+		0.1171875000000000E+00,
+		0.4218750000000000E+00,
+		0.5048828125000000E+00,
+		0.5097656250000000E+00,
+		0.4306640625000000E+00,
+		-0.6000000000000000E+01,
+		0.3862000000000000E-01,
+		0.8118400000000000E+00,
+		0.3666000000000000E-01,
+		-0.4851200000000000E+00,
+		-0.3125000000000000E+00,
+		0.1891200000000000E+00,
+		0.4023400000000000E+00,
+		0.1216000000000000E-01,
+		-0.4396200000000000E+00,
+		0.1000000000000000E+01
+	};
 
-  static int n_vec[N_MAX] = {
-     0, 1, 2, 3,
-     4, 5, 5, 5,
-     5, 5, 5, 5,
-     5, 5, 5, 5,
-     5, 5, 5, 5,
-     5, 5, 5, 5,
-     5, 5 };
+	static int n_vec[N_MAX] =
+	{
+		0, 1, 2, 3,
+		4, 5, 5, 5,
+		5, 5, 5, 5,
+		5, 5, 5, 5,
+		5, 5, 5, 5,
+		5, 5, 5, 5,
+		5, 5
+	};
 
-  static double x_vec[N_MAX] = {
-      0.5E+00,
-      0.5E+00,
-      0.5E+00,
-      0.5E+00,
-      0.5E+00,
-      0.5E+00,
-      0.5E+00,
-      0.5E+00,
-      0.5E+00,
-      0.5E+00,
-      0.5E+00,
-      0.5E+00,
-      0.5E+00,
-      0.5E+00,
-      0.5E+00,
-     -1.0E+00,
-     -0.8E+00,
-     -0.6E+00,
-     -0.4E+00,
-     -0.2E+00,
-      0.0E+00,
-      0.2E+00,
-      0.4E+00,
-      0.6E+00,
-      0.8E+00,
-      1.0E+00 };
+	static double x_vec[N_MAX] =
+	{
+		0.5E+00,
+		0.5E+00,
+		0.5E+00,
+		0.5E+00,
+		0.5E+00,
+		0.5E+00,
+		0.5E+00,
+		0.5E+00,
+		0.5E+00,
+		0.5E+00,
+		0.5E+00,
+		0.5E+00,
+		0.5E+00,
+		0.5E+00,
+		0.5E+00,
+		-1.0E+00,
+		-0.8E+00,
+		-0.6E+00,
+		-0.4E+00,
+		-0.2E+00,
+		0.0E+00,
+		0.2E+00,
+		0.4E+00,
+		0.6E+00,
+		0.8E+00,
+		1.0E+00
+	};
 
-  if ( n_data < 0 )
-  {
-    n_data = 0;
-  }
+	if ( n_data < 0 )
+	{
+		n_data = 0;
+	}
 
-  n_data = n_data + 1;
+	n_data = n_data + 1;
 
-  if ( N_MAX < n_data )
-  {
-    n_data = 0;
-    n = 0;
-    a = 0.0;
-    b = 0.0;
-    x = 0.0;
-    fx = 0.0;
-  }
-  else
-  {
-    n = n_vec[n_data-1];
-    a = a_vec[n_data-1];
-    b = b_vec[n_data-1];
-    x = x_vec[n_data-1];
-    fx = fx_vec[n_data-1];
-  }
+	if ( N_MAX < n_data )
+	{
+		n_data = 0;
+		n = 0;
+		a = 0.0;
+		b = 0.0;
+		x = 0.0;
+		fx = 0.0;
+	}
+	else
+	{
+		n = n_vec[n_data - 1];
+		a = a_vec[n_data - 1];
+		b = b_vec[n_data - 1];
+		x = x_vec[n_data - 1];
+		fx = fx_vec[n_data - 1];
+	}
 
-  return;
+	return;
 # undef N_MAX
 }
 //****************************************************************************80
 
-double *j_polynomial_zeros ( int n, double alpha, double beta )
+double* j_polynomial_zeros ( int n, double alpha, double beta )
 
 //****************************************************************************80
 //
@@ -800,80 +811,80 @@ double *j_polynomial_zeros ( int n, double alpha, double beta )
 //    Output, double J_POLYNOMIAL_ZEROS[N], the zeros.
 //
 {
-  double a2b2;
-  double ab;
-  double abi;
-  double *bj;
-  int i;
-  double i_r8;
-  double *w;
-  double *x;
-  double zemu;
+	double a2b2;
+	double ab;
+	double abi;
+	double* bj;
+	int i;
+	double i_r8;
+	double* w;
+	double* x;
+	double zemu;
 
-  ab = alpha + beta;
-  abi = 2.0 + ab;
-//
-//  Define the zero-th moment.
-//
-  zemu = pow ( 2.0, ab + 1.0 ) * tgamma ( alpha + 1.0 ) 
-    * tgamma ( beta + 1.0 ) / tgamma ( abi );
-//
-//  Define the Jacobi matrix.
-//
-  x = new double[n];
-  x[0] = ( beta - alpha ) / abi;
-  for ( i = 1; i < n; i++ )
-  {
-    x[i] = 0.0;
-  }
+	ab = alpha + beta;
+	abi = 2.0 + ab;
+	//
+	//  Define the zero-th moment.
+	//
+	zemu = pow ( 2.0, ab + 1.0 ) * tgamma ( alpha + 1.0 )
+		   * tgamma ( beta + 1.0 ) / tgamma ( abi );
+	//
+	//  Define the Jacobi matrix.
+	//
+	x = new double[n];
+	x[0] = ( beta - alpha ) / abi;
+	for ( i = 1; i < n; i++ )
+	{
+		x[i] = 0.0;
+	}
 
-  bj = new double[n];
+	bj = new double[n];
 
-  bj[0] = 4.0 * ( 1.0 + alpha ) * ( 1.0 + beta ) 
-    / ( ( abi + 1.0 ) * abi * abi );
-  for ( i = 1; i < n; i++ )
-  {
-    bj[i] = 0.0;
-  }
+	bj[0] = 4.0 * ( 1.0 + alpha ) * ( 1.0 + beta )
+			/ ( ( abi + 1.0 ) * abi * abi );
+	for ( i = 1; i < n; i++ )
+	{
+		bj[i] = 0.0;
+	}
 
-  a2b2 = beta * beta - alpha * alpha;
+	a2b2 = beta * beta - alpha * alpha;
 
-  for ( i = 1; i < n; i++ )
-  {
-    i_r8 = ( double ) ( i + 1 );
-    abi = 2.0 * i_r8 + ab;
-    x[i] = a2b2 / ( ( abi - 2.0 ) * abi );
-    abi = abi * abi;
-    bj[i] = 4.0 * i_r8 * ( i_r8 + alpha ) * ( i_r8 + beta ) 
-      * ( i_r8 + ab ) / ( ( abi - 1.0 ) * abi );
-  }
+	for ( i = 1; i < n; i++ )
+	{
+		i_r8 = ( double ) ( i + 1 );
+		abi = 2.0 * i_r8 + ab;
+		x[i] = a2b2 / ( ( abi - 2.0 ) * abi );
+		abi = abi * abi;
+		bj[i] = 4.0 * i_r8 * ( i_r8 + alpha ) * ( i_r8 + beta )
+				* ( i_r8 + ab ) / ( ( abi - 1.0 ) * abi );
+	}
 
-  for ( i = 0; i < n; i++ )
-  {
-    bj[i] = sqrt ( bj[i] );
-  }
+	for ( i = 0; i < n; i++ )
+	{
+		bj[i] = sqrt ( bj[i] );
+	}
 
-  w = new double[n];
+	w = new double[n];
 
-  w[0] = sqrt ( zemu );
-  for ( i = 1; i < n; i++ )
-  {
-    w[i] = 0.0;
-  }
-//
-//  Diagonalize the Jacobi matrix.
-//
-  imtqlx ( n, x, bj, w );
+	w[0] = sqrt ( zemu );
+	for ( i = 1; i < n; i++ )
+	{
+		w[i] = 0.0;
+	}
+	//
+	//  Diagonalize the Jacobi matrix.
+	//
+	imtqlx ( n, x, bj, w );
 
-  delete [] bj;
-  delete [] w;
+	delete [] bj;
+	delete [] w;
 
-  return x;
+	return x;
 }
 //****************************************************************************80
 
-void j_quadrature_rule ( int n, double alpha, double beta, double x[], 
-  double w[] )
+void j_quadrature_rule ( int n, double alpha, double beta, double x[],
+						 double w[] )
 
 //****************************************************************************80
 //
@@ -913,74 +924,74 @@ void j_quadrature_rule ( int n, double alpha, double beta, double x[],
 //    Output, double W[N], the weights.
 //
 {
-  double a2b2;
-  double ab;
-  double abi;
-  double *bj;
-  int i;
-  double i_r8;
-  double zemu;
+	double a2b2;
+	double ab;
+	double abi;
+	double* bj;
+	int i;
+	double i_r8;
+	double zemu;
 
-  ab = alpha + beta;
-  abi = 2.0 + ab;
-//
-//  Define the zero-th moment.
-//
-  zemu = pow ( 2.0, ab + 1.0 ) * tgamma ( alpha + 1.0 ) 
-    * tgamma ( beta + 1.0 ) / tgamma ( abi );
-//
-//  Define the Jacobi matrix.
-//
-  x[0] = ( beta - alpha ) / abi;
-  for ( i = 1; i < n; i++ )
-  {
-    x[i] = 0.0;
-  }
+	ab = alpha + beta;
+	abi = 2.0 + ab;
+	//
+	//  Define the zero-th moment.
+	//
+	zemu = pow ( 2.0, ab + 1.0 ) * tgamma ( alpha + 1.0 )
+		   * tgamma ( beta + 1.0 ) / tgamma ( abi );
+	//
+	//  Define the Jacobi matrix.
+	//
+	x[0] = ( beta - alpha ) / abi;
+	for ( i = 1; i < n; i++ )
+	{
+		x[i] = 0.0;
+	}
 
-  bj = new double[n];
+	bj = new double[n];
 
-  bj[0] = 4.0 * ( 1.0 + alpha ) * ( 1.0 + beta ) 
-    / ( ( abi + 1.0 ) * abi * abi );
-  for ( i = 1; i < n; i++ )
-  {
-    bj[i] = 0.0;
-  }
+	bj[0] = 4.0 * ( 1.0 + alpha ) * ( 1.0 + beta )
+			/ ( ( abi + 1.0 ) * abi * abi );
+	for ( i = 1; i < n; i++ )
+	{
+		bj[i] = 0.0;
+	}
 
-  a2b2 = beta * beta - alpha * alpha;
+	a2b2 = beta * beta - alpha * alpha;
 
-  for ( i = 1; i < n; i++ )
-  {
-    i_r8 = ( double ) ( i + 1 );
-    abi = 2.0 * i_r8 + ab;
-    x[i] = a2b2 / ( ( abi - 2.0 ) * abi );
-    abi = abi * abi;
-    bj[i] = 4.0 * i_r8 * ( i_r8 + alpha ) * ( i_r8 + beta ) 
-      * ( i_r8 + ab ) / ( ( abi - 1.0 ) * abi );
-  }
+	for ( i = 1; i < n; i++ )
+	{
+		i_r8 = ( double ) ( i + 1 );
+		abi = 2.0 * i_r8 + ab;
+		x[i] = a2b2 / ( ( abi - 2.0 ) * abi );
+		abi = abi * abi;
+		bj[i] = 4.0 * i_r8 * ( i_r8 + alpha ) * ( i_r8 + beta )
+				* ( i_r8 + ab ) / ( ( abi - 1.0 ) * abi );
+	}
 
-  for ( i = 0; i < n; i++ )
-  {
-    bj[i] = sqrt ( bj[i] );
-  }
+	for ( i = 0; i < n; i++ )
+	{
+		bj[i] = sqrt ( bj[i] );
+	}
 
-  w[0] = sqrt ( zemu );
-  for ( i = 1; i < n; i++ )
-  {
-    w[i] = 0.0;
-  }
-//
-//  Diagonalize the Jacobi matrix.
-//
-  imtqlx ( n, x, bj, w );
+	w[0] = sqrt ( zemu );
+	for ( i = 1; i < n; i++ )
+	{
+		w[i] = 0.0;
+	}
+	//
+	//  Diagonalize the Jacobi matrix.
+	//
+	imtqlx ( n, x, bj, w );
 
-  for ( i = 0; i < n; i++ )
-  {
-    w[i] = w[i] * w[i];
-  }
+	for ( i = 0; i < n; i++ )
+	{
+		w[i] = w[i] * w[i];
+	}
 
-  delete [] bj;
+	delete [] bj;
 
-  return;
+	return;
 }
 //****************************************************************************80
 
@@ -1029,33 +1040,33 @@ double r8_choose ( int n, int k )
 //    things taken K at a time.
 //
 {
-  int i;
-  int mn;
-  int mx;
-  double value;
+	int i;
+	int mn;
+	int mx;
+	double value;
 
-  mn = i4_min ( k, n - k );
+	mn = i4_min ( k, n - k );
 
-  if ( mn < 0 )
-  {
-    value = 0.0;
-  }
-  else if ( mn == 0 )
-  {
-    value = 1.0;
-  }
-  else
-  {
-    mx = i4_max ( k, n - k );
-    value = ( double ) ( mx + 1 );
+	if ( mn < 0 )
+	{
+		value = 0.0;
+	}
+	else if ( mn == 0 )
+	{
+		value = 1.0;
+	}
+	else
+	{
+		mx = i4_max ( k, n - k );
+		value = ( double ) ( mx + 1 );
 
-    for ( i = 2; i <= mn; i++ )
-    {
-      value = ( value * ( double ) ( mx + i ) ) / ( double ) i;
-    }
-  }
+		for ( i = 2; i <= mn; i++ )
+		{
+			value = ( value * ( double ) ( mx + i ) ) / ( double ) i;
+		}
+	}
 
-  return value;
+	return value;
 }
 //****************************************************************************80
 
@@ -1092,9 +1103,9 @@ double r8_epsilon ( )
 //    Output, double R8_EPSILON, the R8 round-off unit.
 //
 {
-  const double value = 2.220446049250313E-016;
+	const double value = 2.220446049250313E-016;
 
-  return value;
+	return value;
 }
 //****************************************************************************80
 
@@ -1130,17 +1141,17 @@ double r8_factorial ( int n )
 //    Output, double R8_FACTORIAL, the factorial of N.
 //
 {
-  int i;
-  double value;
+	int i;
+	double value;
 
-  value = 1.0;
+	value = 1.0;
 
-  for ( i = 1; i <= n; i++ )
-  {
-    value = value * ( double ) ( i );
-  }
+	for ( i = 1; i <= n; i++ )
+	{
+		value = value * ( double ) ( i );
+	}
 
-  return value;
+	return value;
 }
 //****************************************************************************80
 
@@ -1171,17 +1182,17 @@ double r8_max ( double x, double y )
 //    Output, double R8_MAX, the maximum of X and Y.
 //
 {
-  double value;
+	double value;
 
-  if ( y < x )
-  {
-    value = x;
-  }
-  else
-  {
-    value = y;
-  }
-  return value;
+	if ( y < x )
+	{
+		value = x;
+	}
+	else
+	{
+		value = y;
+	}
+	return value;
 }
 //****************************************************************************80
 
@@ -1212,17 +1223,17 @@ double r8_sign ( double x )
 //    Output, double R8_SIGN, the sign of X.
 //
 {
-  double value;
+	double value;
 
-  if ( x < 0.0 )
-  {
-    value = -1.0;
-  }
-  else
-  {
-    value = 1.0;
-  }
-  return value;
+	if ( x < 0.0 )
+	{
+		value = -1.0;
+	}
+	else
+	{
+		value = 1.0;
+	}
+	return value;
 }
 //****************************************************************************80
 
@@ -1255,14 +1266,14 @@ string r8_to_string ( double r8, string format )
 //    Output, string R8_TO_STRING, the string.
 //
 {
-  char r8_char[80];
-  string r8_string;
+	char r8_char[80];
+	string r8_string;
 
-  sprintf ( r8_char, format.c_str ( ), r8 );
+	sprintf ( r8_char, format.c_str ( ), r8 );
 
-  r8_string = string ( r8_char );
+	r8_string = string ( r8_char );
 
-  return r8_string;
+	return r8_string;
 }
 //****************************************************************************80
 
@@ -1304,14 +1315,14 @@ void r8mat_print ( int m, int n, double a[], string title )
 //    Input, string TITLE, a title.
 //
 {
-  r8mat_print_some ( m, n, a, 1, 1, m, n, title );
+	r8mat_print_some ( m, n, a, 1, 1, m, n, title );
 
-  return;
+	return;
 }
 //****************************************************************************80
 
 void r8mat_print_some ( int m, int n, double a[], int ilo, int jlo, int ihi,
-  int jhi, string title )
+						int jhi, string title )
 
 //****************************************************************************80
 //
@@ -1354,66 +1365,66 @@ void r8mat_print_some ( int m, int n, double a[], int ilo, int jlo, int ihi,
 {
 # define INCX 5
 
-  int i;
-  int i2hi;
-  int i2lo;
-  int j;
-  int j2hi;
-  int j2lo;
+	int i;
+	int i2hi;
+	int i2lo;
+	int j;
+	int j2hi;
+	int j2lo;
 
-  cout << "\n";
-  cout << title << "\n";
+	cout << "\n";
+	cout << title << "\n";
 
-  if ( m <= 0 || n <= 0 )
-  {
-    cout << "\n";
-    cout << "  (None)\n";
-    return;
-  }
-//
-//  Print the columns of the matrix, in strips of 5.
-//
-  for ( j2lo = jlo; j2lo <= jhi; j2lo = j2lo + INCX )
-  {
-    j2hi = j2lo + INCX - 1;
-    j2hi = i4_min ( j2hi, n );
-    j2hi = i4_min ( j2hi, jhi );
+	if ( m <= 0 || n <= 0 )
+	{
+		cout << "\n";
+		cout << "  (None)\n";
+		return;
+	}
+	//
+	//  Print the columns of the matrix, in strips of 5.
+	//
+	for ( j2lo = jlo; j2lo <= jhi; j2lo = j2lo + INCX )
+	{
+		j2hi = j2lo + INCX - 1;
+		j2hi = i4_min ( j2hi, n );
+		j2hi = i4_min ( j2hi, jhi );
 
-    cout << "\n";
-//
-//  For each column J in the current range...
-//
-//  Write the header.
-//
-    cout << "  Col:    ";
-    for ( j = j2lo; j <= j2hi; j++ )
-    {
-      cout << setw(7) << j - 1 << "       ";
-    }
-    cout << "\n";
-    cout << "  Row\n";
-    cout << "\n";
-//
-//  Determine the range of the rows in this strip.
-//
-    i2lo = i4_max ( ilo, 1 );
-    i2hi = i4_min ( ihi, m );
+		cout << "\n";
+		//
+		//  For each column J in the current range...
+		//
+		//  Write the header.
+		//
+		cout << "  Col:    ";
+		for ( j = j2lo; j <= j2hi; j++ )
+		{
+			cout << setw (7) << j - 1 << "       ";
+		}
+		cout << "\n";
+		cout << "  Row\n";
+		cout << "\n";
+		//
+		//  Determine the range of the rows in this strip.
+		//
+		i2lo = i4_max ( ilo, 1 );
+		i2hi = i4_min ( ihi, m );
 
-    for ( i = i2lo; i <= i2hi; i++ )
-    {
-//
-//  Print out (up to) 5 entries in row I, that lie in the current strip.
-//
-      cout << setw(5) << i - 1 << ": ";
-      for ( j = j2lo; j <= j2hi; j++ )
-      {
-        cout << setw(12) << a[i-1+(j-1)*m] << "  ";
-      }
-      cout << "\n";
-    }
-  }
+		for ( i = i2lo; i <= i2hi; i++ )
+		{
+			//
+			//  Print out (up to) 5 entries in row I, that lie in the current strip.
+			//
+			cout << setw (5) << i - 1 << ": ";
+			for ( j = j2lo; j <= j2hi; j++ )
+			{
+				cout << setw (12) << a[i - 1 + (j - 1)*m] << "  ";
+			}
+			cout << "\n";
+		}
+	}
 
-  return;
+	return;
 # undef INCX
 }
 //****************************************************************************80
@@ -1451,19 +1462,19 @@ double r8vec_dot_product ( int n, double a1[], double a2[] )
 //    Output, double R8VEC_DOT_PRODUCT, the dot product of the vectors.
 //
 {
-  int i;
-  double value;
+	int i;
+	double value;
 
-  value = 0.0;
-  for ( i = 0; i < n; i++ )
-  {
-    value = value + a1[i] * a2[i];
-  }
-  return value;
+	value = 0.0;
+	for ( i = 0; i < n; i++ )
+	{
+		value = value + a1[i] * a2[i];
+	}
+	return value;
 }
 //****************************************************************************80
 
-double *r8vec_linspace_new ( int n, double a_first, double a_last )
+double* r8vec_linspace_new ( int n, double a_first, double a_last )
 
 //****************************************************************************80
 //
@@ -1496,25 +1507,25 @@ double *r8vec_linspace_new ( int n, double a_first, double a_last )
 //    Output, double R8VEC_LINSPACE_NEW[N], a vector of linearly spaced data.
 //
 {
-  double *a;
-  int i;
+	double* a;
+	int i;
 
-  a = new double[n];
+	a = new double[n];
 
-  if ( n == 1 )
-  {
-    a[0] = ( a_first + a_last ) / 2.0;
-  }
-  else
-  {
-    for ( i = 0; i < n; i++ )
-    {
-      a[i] = ( ( double ) ( n - 1 - i ) * a_first 
-             + ( double ) (         i ) * a_last ) 
-             / ( double ) ( n - 1     );
-    }
-  }
-  return a;
+	if ( n == 1 )
+	{
+		a[0] = ( a_first + a_last ) / 2.0;
+	}
+	else
+	{
+		for ( i = 0; i < n; i++ )
+		{
+			a[i] = ( ( double ) ( n - 1 - i ) * a_first
+					 + ( double ) (         i ) * a_last )
+				   / ( double ) ( n - 1     );
+		}
+	}
+	return a;
 }
 //****************************************************************************80
 
@@ -1551,18 +1562,18 @@ void r8vec_print ( int n, double a[], string title )
 //    Input, string TITLE, a title.
 //
 {
-  int i;
+	int i;
 
-  cout << "\n";
-  cout << title << "\n";
-  cout << "\n";
-  for ( i = 0; i < n; i++ )
-  {
-    cout << "  " << setw(8)  << i
-         << ": " << setw(14) << a[i]  << "\n";
-  }
+	cout << "\n";
+	cout << title << "\n";
+	cout << "\n";
+	for ( i = 0; i < n; i++ )
+	{
+		cout << "  " << setw (8)  << i
+			 << ": " << setw (14) << a[i]  << "\n";
+	}
 
-  return;
+	return;
 }
 //****************************************************************************80
 
@@ -1600,19 +1611,19 @@ void r8vec2_print ( int n, double a1[], double a2[], string title )
 //    Input, string TITLE, a title.
 //
 {
-  int i;
+	int i;
 
-  cout << "\n";
-  cout << title << "\n";
-  cout << "\n";
-  for ( i = 0; i <= n - 1; i++ )
-  {
-    cout << setw(6)  << i
-         << ": " << setw(14) << a1[i]
-         << "  " << setw(14) << a2[i] << "\n";
-  }
+	cout << "\n";
+	cout << title << "\n";
+	cout << "\n";
+	for ( i = 0; i <= n - 1; i++ )
+	{
+		cout << setw (6)  << i
+			 << ": " << setw (14) << a1[i]
+			 << "  " << setw (14) << a2[i] << "\n";
+	}
 
-  return;
+	return;
 }
 //****************************************************************************80
 
@@ -1647,19 +1658,19 @@ void timestamp ( )
 {
 # define TIME_SIZE 40
 
-  static char time_buffer[TIME_SIZE];
-  const struct std::tm *tm_ptr;
-  size_t len;
-  std::time_t now;
+	static char time_buffer[TIME_SIZE];
+	const struct std::tm* tm_ptr;
+	size_t len;
+	std::time_t now;
 
-  now = std::time ( NULL );
-  tm_ptr = std::localtime ( &now );
+	now = std::time ( NULL );
+	tm_ptr = std::localtime ( &now );
 
-  len = std::strftime ( time_buffer, TIME_SIZE, "%d %B %Y %I:%M:%S %p", tm_ptr );
+	len = std::strftime ( time_buffer, TIME_SIZE, "%d %B %Y %I:%M:%S %p", tm_ptr );
 
-  std::cout << time_buffer << "\n";
+	std::cout << time_buffer << "\n";
 
-  return;
+	return;
 # undef TIME_SIZE
 }
 

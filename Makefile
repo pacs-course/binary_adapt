@@ -61,9 +61,16 @@ $(libraries):
 
 #inserire qui eventuali dipendenze fra le librerie
 
+testdir := ./test
+
 .PHONY: check
 check: tests
-	./Test_check.sh
+	@if [ -f "$(testdir)/test.log" ] ; then \
+		echo Removing previous "test.log"; \
+		rm $(testdir)/test.log; \
+	fi
+	@cd $(testdir); \
+	./bin/test;
 
 .PHONY: install
 install:

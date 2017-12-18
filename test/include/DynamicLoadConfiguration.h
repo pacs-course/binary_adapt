@@ -12,22 +12,22 @@
 **/
 class LoadTest : public BasicTest
 {
-	protected:
-/**
+  protected:
+	/**
 		default constructor
-**/
-		LoadTest();
-/**
+	**/
+	LoadTest();
+	/**
 		default destructor
-**/
-		virtual ~LoadTest();
-/**
+	**/
+	virtual ~LoadTest();
+	/**
 		do the loading
-**/
-		virtual void SetUp()override;
-		virtual void TearDown()override;
+	**/
+	virtual void SetUp()override;
+	virtual void TearDown()override;
 
-		PluginLoading::PluginLoader _pl;
+	PluginLoading::PluginLoader _pl;
 };
 
 #endif //__DYNAMIC_LOAD_CONFIGURATION_H

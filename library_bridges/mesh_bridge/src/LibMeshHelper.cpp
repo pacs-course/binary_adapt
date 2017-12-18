@@ -3,28 +3,28 @@
 namespace LibmeshBinary
 {
 	template <>
-		libMesh::ElemType ConvertType<Geometry::IntervalType> ()
-		{
-			return LibmeshIntervalType;
-		};
+	libMesh::ElemType ConvertType<Geometry::IntervalType> ()
+	{
+		return LibmeshIntervalType;
+	};
 
 	template <>
-		libMesh::ElemType ConvertType<Geometry::SquareType> ()
-		{
-			return LibmeshSquareType;
-		};
+	libMesh::ElemType ConvertType<Geometry::SquareType> ()
+	{
+		return LibmeshSquareType;
+	};
 
 	template <>
-		libMesh::ElemType ConvertType<Geometry::TriangleType> ()
-		{
-			return LibmeshTriangleType;
-		};
+	libMesh::ElemType ConvertType<Geometry::TriangleType> ()
+	{
+		return LibmeshTriangleType;
+	};
 
 	template <>
-		libMesh::ElemType ConvertType<Geometry::CubeType> ()
-		{
-			return LibmeshCubeType;
-		};
+	libMesh::ElemType ConvertType<Geometry::CubeType> ()
+	{
+		return LibmeshCubeType;
+	};
 
 	Geometry::ElementType ConvertLibmeshType (libMesh::ElemType type)
 	{

@@ -12,29 +12,29 @@
 **/
 class LibmeshLogFile
 {
-	public:
-/**
+  public:
+	/**
 		constructor
-**/
-		LibmeshLogFile(const std::string&);
-/**
+	**/
+	LibmeshLogFile (const std::string&);
+	/**
 		destructor
-**/
-		virtual ~LibmeshLogFile();
+	**/
+	virtual ~LibmeshLogFile();
 
-	private:
-/**
+  private:
+	/**
 		output file
-**/
-		std::ofstream _ofs;
-/**
+	**/
+	std::ofstream _ofs;
+	/**
 		libMesh error buffer
-**/
-		std::basic_streambuf<char>* _libmesh_err_buf;
-/**
+	**/
+	std::basic_streambuf<char>* _libmesh_err_buf;
+	/**
 		libMesh standar buffer
-**/
-		std::basic_streambuf<char>* _libmesh_out_buf;
+	**/
+	std::basic_streambuf<char>* _libmesh_out_buf;
 };
 
 /**
@@ -44,26 +44,26 @@ class LibmeshLogFile
 **/
 class LibmeshTest : public LoadTest
 {
-	protected:
-/**
-		constructor
-**/
-		LibmeshTest();
-/**
-		destructor
-**/
-		virtual ~LibmeshTest();
-		virtual void SetUp()override;
-		virtual void TearDown()override;
+  protected:
+	/**
+			constructor
+	**/
+	LibmeshTest();
+	/**
+			destructor
+	**/
+	virtual ~LibmeshTest();
+	virtual void SetUp()override;
+	virtual void TearDown()override;
 
-/**
-		LogFile to redirect libMesh buffers
-**/
-		LibmeshLogFile _libmesh_out;
-/**
-		libMesh initializer object
-**/
-		std::unique_ptr<libMesh::LibMeshInit> _mesh_init_ptr;		
+	/**
+			LogFile to redirect libMesh buffers
+	**/
+	LibmeshLogFile _libmesh_out;
+	/**
+			libMesh initializer object
+	**/
+	std::unique_ptr<libMesh::LibMeshInit> _mesh_init_ptr;
 };
 
 #endif //__LIBMESH_CONFIGURATION_H

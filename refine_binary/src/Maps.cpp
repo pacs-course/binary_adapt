@@ -3,24 +3,24 @@
 
 namespace Geometry
 {
-	IntervalMap::IntervalMap(){};
-	IntervalMap::~IntervalMap(){};
+	IntervalMap::IntervalMap() {};
+	IntervalMap::~IntervalMap() {};
 
-	void IntervalMap::Init(const NodesVector<1>& vert)
+	void IntervalMap::Init (const NodesVector<1>& vert)
 	{
 		double a = vert[0][0];
 		double b = vert[1][0];
 
-		this->_mat(0,0) = (b - a) / 2;
-		this->_trasl[0] = (a + b) / 2;
-		this->_jacobian = this->_mat(0,0);
-		this->_inverse(0,0) = 1 / this->_mat(0,0);
+		this->_mat (0,0) = (b - a) / 2;
+		this->_trasl[0]  = (a + b) / 2;
+		this->_jacobian = this->_mat (0, 0);
+		this->_inverse (0,0) = 1 / this->_mat (0, 0);
 	};
 
-	TriMap::TriMap(){};
-	TriMap::~TriMap(){};
+	TriMap::TriMap() {};
+	TriMap::~TriMap() {};
 
-	void TriMap::Init(const NodesVector<2>& vert)
+	void TriMap::Init (const NodesVector<2>& vert)
 	{
 		double x1 = vert[0][0];
 		double y1 = vert[0][1];
@@ -29,10 +29,10 @@ namespace Geometry
 		double x3 = vert[2][0];
 		double y3 = vert[2][1];
 
-		this->_mat(0,0) = (x2 - x1) / 2;
-		this->_mat(0,1) = (x3 - x1) / 2;
-		this->_mat(1,0) = (y2 - y1) / 2;
-		this->_mat(1,1) = (y3 - y1) / 2;
+		this->_mat (0, 0) = (x2 - x1) / 2;
+		this->_mat (0, 1) = (x3 - x1) / 2;
+		this->_mat (1, 0) = (y2 - y1) / 2;
+		this->_mat (1, 1) = (y3 - y1) / 2;
 
 		this->_jacobian = this->_mat.Determinant();
 
@@ -43,33 +43,37 @@ namespace Geometry
 		this->_inverse = this->_mat.Inverse();
 	};
 
-	QuadMap::QuadMap(){};
-	QuadMap::~QuadMap(){};
+	QuadMap::QuadMap() {};
+	QuadMap::~QuadMap() {};
 
-	StdTriMap::StdTriMap(){};
-	StdTriMap::~StdTriMap(){};
+	StdTriMap::StdTriMap() {};
+	StdTriMap::~StdTriMap() {};
 
-	Point<2> StdTriMap::Evaluate (const Point<2>& p)const
+	Point<2> StdTriMap::Evaluate (const Point<2>& p) const
 	{
-		Point<2> result;
 		double csi = p[0];
 		double eta = p[1];
+
+		Point<2> result;
 		result[0] = (1 + csi) * (1 - eta) / 2 - 1;
 		result[1] = eta;
+
 		return result;
 	};
 
-	Point<2> StdTriMap::ComputeInverse (const Point<2>& p)const
+	Point<2> StdTriMap::ComputeInverse (const Point<2>& p) const
 	{
-		Point<2> result;
 		double x = p[0];
 		double y = p[1];
+
+		Point<2> result;
 		result[0] = 2 * ( 1 + x) / (1 - y) - 1;
 		result[1] = y;
+
 		return result;
 	};
 
-	double StdTriMap::EvaluateJacobian (const Point<2>& p)const
+	double StdTriMap::EvaluateJacobian (const Point<2>& p) const
 	{
 		return (1 - p[1]) / 2;
 	};

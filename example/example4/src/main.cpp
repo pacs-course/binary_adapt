@@ -3,8 +3,8 @@
 	and manually adaptation.
 	From binary_tree.conf configuration file are taken:
 
-		* quadrature rule library
-		* functors library
+		 quadrature rule library
+		 functors library
 
 	After the creation of libMesh::Mesh object the algorithm is applied,
 	then the refining mesh can be used inside libMesh.
@@ -14,7 +14,7 @@
 	suggested by:
 
 		"C. Schwab. P- and Hp- Finite Element Methods: Theory and Applications in
-Solid and Fluid Mechanics . G.H.Golub and others. Clarendon Press, 1998." p. 90
+    Solid and Fluid Mechanics . G.H.Golub and others. Clarendon Press, 1998." p. 90
 
 	Results about the comparison are stored in ./results directory.
 **/
@@ -54,26 +54,26 @@ using namespace LibmeshBinary;
 		5 4 4 3 3 13 3
 	to
 		8 7 7 4 4 1  4
-		
+
 **/
 //TODO:	make the example more general, if anything changes in the algo result
 //			this example becomes meaningless
 class ManualAdapter : public NodeOperator
 {
-	public:
-		/** constructor **/
-		ManualAdapter() : p_levels({8, 7, 7, 4, 4, 1, 4}), index(0){};
-		/** destructor **/
-		~ManualAdapter(){};
+  public:
+	/** constructor **/
+	ManualAdapter() : p_levels ( {8, 7, 7, 4, 4, 1, 4}), index (0) {};
+	/** destructor **/
+	~ManualAdapter() {};
 
-		virtual void operator()(BinaryNode* node) override
-		{
-			auto p = p_levels[index++];
-			node->PLevel(p);
-		};
-	protected:
-		vector<double> p_levels;
-		size_t index;
+	virtual void operator() (BinaryNode* node) override
+	{
+		auto p = p_levels[index++];
+		node->PLevel (p);
+	};
+  protected:
+	vector<double> p_levels;
+	size_t index;
 };
 
 /**
@@ -84,7 +84,7 @@ class ManualAdapter : public NodeOperator
 		  from the theory ["p- and hp- Finite Element Methods", Ch. Schwab]
 		  is supposed to be nearer to the optimal option
 **/
-int main(int argc, char** argv)
+int main (int argc, char** argv)
 {
 	cout << endl << "Starting sqrt comparison example" << endl;
 
@@ -97,13 +97,13 @@ int main(int argc, char** argv)
 	cout << "Starting the algorithm with " << max_iter << " iterations" << endl;
 
 
-	unique_ptr<LibmeshBinary::LibmeshRefiner<1>> binary_refiner_ptr(nullptr);
+	unique_ptr<LibmeshBinary::LibmeshRefiner<1>> binary_refiner_ptr (nullptr);
 	try
 	{
 		auto ptr = Helpers::MakeUnique<LibmeshBinary::LibmeshRefiner<1>>();
-		binary_refiner_ptr = move(ptr);
+		binary_refiner_ptr = move (ptr);
 	}
-	catch(exception& ex)
+	catch (exception& ex)
 	{
 		cerr << "Refiner construction failed" << endl;
 		cerr << ex.what() << endl;
@@ -114,10 +114,10 @@ int main(int argc, char** argv)
 
 	try
 	{
-		binary_refiner_ptr->Init(func_name);
-		cout << "Refiner correctly initialized with "<< func_name << endl;
+		binary_refiner_ptr->Init (func_name);
+		cout << "Refiner correctly initialized with " << func_name << endl;
 	}
-	catch(exception& ex)
+	catch (exception& ex)
 	{
 		cerr << ex.what() << endl;
 		cerr << "Refiner initialization failed" << endl;
@@ -128,62 +128,68 @@ int main(int argc, char** argv)
 
 	struct stat st;
 
-	if (stat(results_dir.c_str(), &st) == -1 && mkdir(results_dir.c_str(), 0777) != 0)
+	if (stat (results_dir.c_str(), &st) == -1 &&
+		mkdir (results_dir.c_str(), 0777) != 0)
 	{
-		cerr << "Failed while constructing " << results_dir << " directory" << endl;
+		cerr << "Failed while constructing "
+			 << results_dir
+			 << " directory"
+			 << endl;
 		return 1;
 	}
 
 	string log_filename = results_dir + "/example.log";
 
-	if (stat(log_filename.c_str(), &st) != -1 && remove(log_filename.c_str()) != 0)
+	if (stat (log_filename.c_str(), &st) != -1 &&
+		remove (log_filename.c_str()) != 0)
 	{
 		cerr << "Error removing " << log_filename << endl;
 		return 1;
 	}
 
 	//I redirect the standard buffers to file
-	Helpers::Logfile logfile(log_filename);
+	Helpers::Logfile logfile (log_filename);
 
 	auto mesh_ptr = make_shared<libMesh::Mesh> (init.comm());
 
 	int n = 1;
 	double x_min = 0;
 	double x_max = 1;
-	libMesh::MeshTools::Generation::build_line(*mesh_ptr, n, x_min, x_max, LibmeshIntervalType);
+	libMesh::MeshTools::Generation::build_line (*mesh_ptr, n, x_min, x_max,
+												LibmeshIntervalType);
 
-	binary_refiner_ptr->SetMesh(mesh_ptr);
+	binary_refiner_ptr->SetMesh (mesh_ptr);
 
-	binary_refiner_ptr->Refine(max_iter);
+	binary_refiner_ptr->Refine (max_iter);
 
 	double algo_error = binary_refiner_ptr->GlobalError();
 
 	string p_levels_script_name = results_dir + "/p_levels_script_algo";
-	binary_refiner_ptr->ExportGnuPlot(p_levels_script_name);
+	binary_refiner_ptr->ExportGnuPlot (p_levels_script_name);
 
 	size_t n_points = 1000;
 	double step = (x_max - x_min) / n_points;
 	string projected_fun_name = results_dir + "/projection_data_algo";
-	binary_refiner_ptr->ExportProjection(projected_fun_name, step);
+	binary_refiner_ptr->ExportProjection (projected_fun_name, step);
 
 	clog << "Binary tree algorithm successfully executed" << endl;
 
-	/* now I manually construct the mesh to be compared with the previously computed one
+	/*  now I manually construct the mesh to be compared with the previously computed one
 		I keep the h adaptation unchanged, while I modify the p levels:
 		I want the minimum p level near the singularity in 0,
 		so I redistribute those degrees of freedom among the other elements, increasing their p level */
 
 	ManualAdapter adapter;
 	clog << "ManualAdapter constructed" << endl;
-	binary_refiner_ptr->IterateActiveNodes(adapter);
+	binary_refiner_ptr->IterateActiveNodes (adapter);
 
 	double manual_error = binary_refiner_ptr->GlobalError();
 
 	string manual_p_levels_script_name = results_dir + "/p_levels_script_manual";
-	binary_refiner_ptr->ExportGnuPlot(manual_p_levels_script_name);
+	binary_refiner_ptr->ExportGnuPlot (manual_p_levels_script_name);
 
 	string manual_projected_fun_name = results_dir + "/projection_data_manual";
-	binary_refiner_ptr->ExportProjection(manual_projected_fun_name, step);
+	binary_refiner_ptr->ExportProjection (manual_projected_fun_name, step);
 
 	logfile.~Logfile();
 	cout << "Projection error on the resulting mesh" << endl;
@@ -196,7 +202,7 @@ int main(int argc, char** argv)
 	cout << "E - e = " << algo_error - manual_error << endl;
 
 	//I make the refined mesh usable in libmesh
-	mesh_ptr->prepare_for_use(/*skip_renumber =*/ false);
+	mesh_ptr->prepare_for_use (/*skip_renumber =*/ false);
 
 
 	cout << endl << "sqrt comparison example ended" << endl;
