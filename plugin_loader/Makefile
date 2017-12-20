@@ -11,14 +11,14 @@
 # LIBNAME Specific Part #
 #########################
 LIBNAME		:= plugin_loader
-Modes			:= Debug Release
-#LibType		:= static
+Modes		:= Debug Release
+#LibType	:= static
 LibType		:= dynamic
 MajLibVers	:= 1
 MinLibVers	:= 0
 LibVers		:= $(MajLibVers).$(MinLibVers)
 
-BaseDir 		= ..
+BaseDir = ..
 # I include the external libraries paths
 -include $(BaseDir)/Makefile.inc
 
@@ -33,50 +33,51 @@ ObjDir	= $(CurrentDir)/obj
 
 ObjDirs	= $(ObjDir)
 LibDirs	= $(LibDir)
-Dirs		= $(ObjDirs) $(LibDirs)
+Dirs	= $(ObjDirs) $(LibDirs)
 
 
 RefineInclude := $(BaseDir)/refine_binary/include
 
 
 # Search Path For Include Files (InclPaths is included before mode specific InclPaths_MODE)
-InclPaths			:= $(IncludeDir) $(RefineInclude)
-InclPaths_Debug	:=
-InclPaths_Release	:=
+InclPaths		  := $(IncludeDir) $(RefineInclude)
+InclPaths_Debug	  :=
+InclPaths_Release :=
 # Defined values used by CPP preprocessor (Defines is included before mode specific Defines_MODE)
-Defines				:= $(GlobalDefines)
-Defines_Debug		:= DEBUG _GLIBCXX_DEBUG
+Defines			:= $(GlobalDefines)
+Defines_Debug	:= DEBUG _GLIBCXX_DEBUG
 Defines_Release	:= RELEASE
 # Compiler specific flags (CXXFlags is included before mode specific CXXFlags_MODE)
-CXXFlags				:= -march=native -Wall -Wextra
-CXXFlags_Debug		:= -g -std=gnu++11 -felide-constructors -funroll-loops -fstrict-aliasing -Wdisabled-optimization -Wno-variadic-macros -DNDEBUG
-CXXFlags_Release	:= -O3 -std=c++14
+CXXFlags		 := -march=native -Wall -Wextra
+CXXFlags_Debug	 := -g -std=gnu++11 -felide-constructors -funroll-loops -fstrict-aliasing \
+					-Wdisabled-optimization -Wno-variadic-macros -DNDEBUG
+CXXFlags_Release := -O3 -std=c++14
 
 
 ifeq ($(LibType), static)
-CXXFlags		+= -fPIC
-LibSuffix	:= .a
-LD				:= ar
+CXXFlags  += -fPIC
+LibSuffix := .a
+LD		  := ar
 # Linker specific flags (LFlags is included before mode specific LFlags_MODE)
-LFlags			:= -r
-LFlags_Debug	:=
-LFlags_Release	:=
+LFlags		   := -r
+LFlags_Debug   :=
+LFlags_Release :=
 else
-CXXFlags		+= -fPIC -rdynamic
-LibSuffix	:= .so.$(LibVers)
-LD				:= g++
+CXXFlags  += -fPIC -rdynamic
+LibSuffix := .so.$(LibVers)
+LD		  := g++
 # List of Library Names (Libs is included before mode specific Libs_MODE)
-Libs				:= dl
-Libs_Debug		:=
-Libs_Release	:=
+Libs		 := dl
+Libs_Debug	 :=
+Libs_Release :=
 # Search Paths for Libraries (LibPaths is included before mode specific LibPaths_MODE)
-LibPaths				:=
-LibPaths_Debug		:=
-LibPaths_Release	:=
+LibPaths		 :=
+LibPaths_Debug	 :=
+LibPaths_Release :=
 # Linker specific flags (LFlags is included before mode specific LFlags_MODE)
-LFlags			:= -shared
-LFlags_Debug	:= -g -Wl,-soname,lib$(LIBNAME)_Debug.so.$(MajLibVers)
-LFlags_Release	:= -O3 -Wl,-soname,lib$(LIBNAME).so.$(MajLibVers)
+LFlags		   := -shared
+LFlags_Debug   := -g -Wl,-soname,lib$(LIBNAME)_Debug.so.$(MajLibVers)
+LFlags_Release := -O3 -Wl,-soname,lib$(LIBNAME).so.$(MajLibVers)
 endif
 
 
@@ -113,9 +114,9 @@ ifeq ($(LibType), dynamic)
 	cd $(InstallDir); \
 	pwd; \
 	ln -s -f ./lib$(LIBNAME)$(subst _install,,$(subst _Release,,_$@))$(LibSuffix) \
-				./lib$(LIBNAME)$(subst _install,,$(subst _Release,,_$@)).so.$(MajLibVers); \
+			 ./lib$(LIBNAME)$(subst _install,,$(subst _Release,,_$@)).so.$(MajLibVers); \
 	ln -s -f ./lib$(LIBNAME)$(subst _install,,$(subst _Release,,_$@))$(LibSuffix) \
-				./lib$(LIBNAME)$(subst _install,,$(subst _Release,,_$@)).so; \
+			 ./lib$(LIBNAME)$(subst _install,,$(subst _Release,,_$@)).so; \
 	cd $(CurrentDir)
 endif
 
@@ -176,16 +177,15 @@ endef
 define TargetTemplate
 CXX_$(1) := $(CXX) $(Defines:%=$(DefineFlag)%) $$(Defines_$(1):%=$(DefineFlag)%) $(InclPaths:%=$(IncPathFlag)%) $$(InclPaths_$(1):%=$(IncPathFlag)%) $(CXXFlags) $$(CXXFlags_$(1))
 
-Objects_$(1)  := $(foreach file,$(SRC),$(call ObjectFilename,$(1),$(file)))
+Objects_$(1) := $(foreach file,$(SRC),$(call ObjectFilename,$(1),$(file)))
 
-$(1):	init_$(1) $(call TargetFilename,$(1))
+$(1): init_$(1) $(call TargetFilename,$(1))
 
 $(call TargetFilename,$(1)): $$(Objects_$(1))
 	@echo $(LD): generating '$$(notdir $$@)'
 	$(LD) $(LFlags) $$(LFlags_$(1)) -o $(LibDir)/'$$(notdir $$@)' $$(^:%='%') $(LibPaths:%=$(LibPathFlag)%) $$(LibPaths_$(1):%=$(LibPathFlag)%) $(Libs:%=$(LibraryFlag)%) $$(Libs_$(1):%=$(LibraryFlag)%)
 ifeq ($(LibType), dynamic)
 	cd $(LibDir); \
-	pwd; \
 	ln -s -f $$(notdir $$@) $$(subst $(LibSuffix),.so.$(MajLibVers),$$(notdir $$@)); \
 	ln -s -f $$(notdir $$@) $$(subst $(LibSuffix),.so,$$(notdir $$@)); \
 	cd $(CurrentDir)

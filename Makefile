@@ -6,36 +6,36 @@ Whoami = $(ID)_$(Name)_$(Surname)
 #####################################################
 
 
-bridges_libs_path		:= ./library_bridges
-quadrature_libs_path	:= ./quadrature_rules
-examples_path			:= ./example
+bridges_libs_path	 := ./library_bridges
+quadrature_libs_path := ./quadrature_rules
+examples_path		 := ./example
 
 lib_interpolating_functions	:= ./interpolating_functions
-lib_mesh_bridge					:= $(bridges_libs_path)/mesh_bridge
-lib_plugin_loader					:= ./plugin_loader
-lib_mesh_quadrature				:= $(quadrature_libs_path)/mesh_quadrature
-lib_sandia_quadrature			:= $(quadrature_libs_path)/sandia_quadrature
-lib_refine_binary					:= ./refine_binary
+lib_mesh_bridge				:= $(bridges_libs_path)/mesh_bridge
+lib_plugin_loader			:= ./plugin_loader
+lib_mesh_quadrature			:= $(quadrature_libs_path)/mesh_quadrature
+lib_sandia_quadrature		:= $(quadrature_libs_path)/sandia_quadrature
+lib_refine_binary			:= ./refine_binary
 
 example	:= $(examples_path)/example1 \
-				$(examples_path)/example2 \
-				$(examples_path)/example3 \
-				$(examples_path)/example4
+		   $(examples_path)/example2 \
+		   $(examples_path)/example3 \
+		   $(examples_path)/example4
 
 test := ./test
 
 lib_sub_dirs := $(bridges_libs_path) \
-					 $(quadrature_libs_path)
+				$(quadrature_libs_path)
 
-libraries	:=	$(lib_interpolating_functions) \
-					$(lib_mesh_bridge) \
-					$(lib_plugin_loader) \
-					$(lib_mesh_quadrature) \
-					$(lib_sandia_quadrature) \
-					$(lib_refine_binary)
+libraries := $(lib_interpolating_functions) \
+			 $(lib_mesh_bridge) \
+			 $(lib_plugin_loader) \
+			 $(lib_mesh_quadrature) \
+			 $(lib_sandia_quadrature) \
+			 $(lib_refine_binary)
 
-binaries	:= $(example) \
-				$(test)
+binaries :=	$(example) \
+			$(test)
 
 docdir := ./doc
 

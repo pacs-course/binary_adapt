@@ -8,7 +8,7 @@
 # additional compiler and linker flags with "CXXFlags_mymode := " and "LFlags_mymode := ".
 
 EXENAME	:= test
-Modes		:= Opt Debug
+Modes	:= Opt Debug
 
 BaseDir = ..
 # I include the external libraries paths
@@ -30,18 +30,18 @@ ResultsDir	= $(CurrentDir)/results
 ObjDirs		= $(ObjDir)
 BinDirs		= $(BinDir)
 ResultsDirs	= $(ResultsDir)
-Dirs			= $(ObjDirs) $(BinDirs) $(ResultsDirs)
+Dirs		= $(ObjDirs) $(BinDirs) $(ResultsDirs)
 
 
 DynamicLibraries =	\
-							$(RootDir)/library_bridges/mesh_bridge \
-							$(RootDir)/refine_binary \
-							$(RootDir)/interpolating_functions \
-							$(RootDir)/plugin_loader \
+					$(RootDir)/library_bridges/mesh_bridge \
+					$(RootDir)/refine_binary \
+					$(RootDir)/interpolating_functions \
+					$(RootDir)/plugin_loader \
 
 RunTimeLibraries =	\
-							$(RootDir)/quadrature_rules/mesh_quadrature \
-							$(RootDir)/quadrature_rules/sandia_quadrature \
+					$(RootDir)/quadrature_rules/mesh_quadrature \
+					$(RootDir)/quadrature_rules/sandia_quadrature \
 
 StaticLibraries =	\
 
@@ -75,41 +75,41 @@ RunTimeLibsPath := $(patsubst %,%/lib,$(RunTimeLibraries))
 
 
 Includes := $(IncludeDir) \
-				$(patsubst %,%/include,$(LinkedLibraries))
+			$(patsubst %,%/include,$(LinkedLibraries))
 
 # Search Path For Include Files (InclPaths is included before mode specific InclPaths_MODE)
 InclPaths		:=	$(Includes) $(LibMeshInclude) $(EigenInclude) $(GTestInclude) $(GetPotInclude) $(MuParserInclude) $(SandiaRuleInclude)
-InclPaths_Debug:=
+InclPaths_Debug	:=
 InclPaths_Opt	:=
 # Defined values used by CPP preprocessor (Defines is included before mode specific Defines_MODE)
 Defines			:= $(GlobalDefines)
 Defines_Debug	:= DEBUG _GLIBCXX_DEBUG
 Defines_Opt		:= OPT
 # Compiler specific flags (CXXFlags is included before mode specific CXXFlags_MODE)
-CXXFlags			:= -march=native -Wall -Wextra
+CXXFlags		:= -march=native -Wall -Wextra
 CXXFlags_Debug	:= -g -std=gnu++11 -felide-constructors -funroll-loops -fstrict-aliasing -Wdisabled-optimization -Wno-variadic-macros -DNDEBUG
 CXXFlags_Opt	:= -std=c++14 -O3
 
 # Linker specific flags (LFlags is included before mode specific LFlags_MODE)
-LFlags			:= $(DynamicLibsPath:%=-Wl,-rpath,%) $(RunTimeLibsPath:%=-Wl,-rpath,%) -Wl,-rpath,$(LibMeshDir)
-LFlags_Debug	:=
-LFlags_Opt		:= 
+LFlags		 := $(DynamicLibsPath:%=-Wl,-rpath,%) $(RunTimeLibsPath:%=-Wl,-rpath,%) -Wl,-rpath,$(LibMeshDir)
+LFlags_Debug :=
+LFlags_Opt	 := 
 
 
 LibMeshLib		:= mesh_opt
-LibMeshLibDebug:= mesh_dbg
+LibMeshLibDebug := mesh_dbg
 
-GTestLib	:= gtest
+GTestLib := gtest
 
 # List of Library Names (Libs is included before mode specific Libs_MODE)
-Libs			:= $(GTestLib) pthread
-Libs_Debug	:= $(LibMeshLibDebug)
-Libs_Opt		:= $(LibMeshLib)
+Libs	   := $(GTestLib) pthread
+Libs_Debug := $(LibMeshLibDebug)
+Libs_Opt   := $(LibMeshLib)
 
 # Search Paths for Libraries (LibPaths is included before mode specific LibPaths_MODE)
-LibPaths			:= $(LibMeshDir) $(GTestDir)
-LibPaths_Debug	:=
-LibPaths_Opt	:=
+LibPaths	   := $(LibMeshDir) $(GTestDir)
+LibPaths_Debug :=
+LibPaths_Opt   :=
 
 LD := g++
 
@@ -131,8 +131,8 @@ CXX         := g++
 EXECUTABLES = $(BinDir)/$(EXENAME)
 
 # Libraries
-DynamicLibsExt	:= .so
-StaticLibsExt	:= .a
+DynamicLibsExt := .so
+StaticLibsExt  := .a
 
 
 #########################
@@ -198,7 +198,7 @@ CXX_$(1) := $(CXX) $(Defines:%=$(DefineFlag)%) $$(Defines_$(1):%=$(DefineFlag)%)
 
 Objects_$(1) := $(foreach file,$(SRC),$(call ObjectFilename,$(1),$(file)))
 
-$(1):	init_$(1) $(call TargetFilename,$(1))
+$(1): init_$(1) $(call TargetFilename,$(1))
 
 $(call TargetFilename,$(1)): $$(Objects_$(1)) $(StaticLibsFiles_$(1))
 	@echo $(LD): generating '$$(notdir $$@)'
