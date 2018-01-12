@@ -114,7 +114,12 @@ namespace LibmeshBinary
 					  << std::endl;
 		}
 
-		_quadrature_rule = libMesh::QBase::build (libMesh::QGAUSS, dim, mesh_order);
+		std::string type_id = "type";
+		std::string type = cl (type_id.c_str(), "");
+
+		libMesh::QuadratureType quad_type = ConvertQuadType (type);
+
+		_quadrature_rule = libMesh::QBase::build (quad_type, dim, mesh_order);
 		_quadrature_rule->init (ConvertType<Type>());
 	};
 

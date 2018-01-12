@@ -3,6 +3,7 @@
 
 #include "libmesh/enum_elem_type.h" //libMesh::ElemType
 #include "libmesh/point.h" //libmesh::point
+#include "libmesh/enum_quadrature_type.h" //libMesh::QuadratureType
 
 #include "TypeEnumerations.h"
 #include "LinearAlgebra.h"
@@ -18,11 +19,11 @@ namespace LibmeshBinary
 		"using" syntax cannot be used to rename enumerators, only for types.
 	**/
 	//TODO: use a more c++ style way to do it
-#define LibmeshInvalidType libMesh::INVALID_ELEM
+#define LibmeshInvalidType	libMesh::INVALID_ELEM
 #define LibmeshIntervalType libMesh::EDGE2
 #define LibmeshTriangleType libMesh::TRI3
-#define LibmeshSquareType libMesh::QUAD4
-#define LibmeshCubeType libMesh::HEX8
+#define LibmeshSquareType	libMesh::QUAD4
+#define LibmeshCubeType		libMesh::HEX8
 
 	/**
 		Conversion from Geometry::ElementType to correspondent libMesh::ElemType.
@@ -70,6 +71,12 @@ namespace LibmeshBinary
 
 		return result;
 	};
+
+	/**
+		Conversion from string to enum type
+	**/
+	libMesh::QuadratureType ConvertQuadType (std::string);
+
 
 } //namespace LibmeshBinary
 #endif //__LIBMESH_HELPER_H
