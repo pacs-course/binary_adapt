@@ -17,10 +17,12 @@ lib_mesh_quadrature			:= $(quadrature_libs_path)/mesh_quadrature
 lib_sandia_quadrature		:= $(quadrature_libs_path)/sandia_quadrature
 lib_refine_binary			:= ./refine_binary
 
-example	:= $(examples_path)/example1 \
-		   $(examples_path)/example2 \
-		   $(examples_path)/example3 \
-		   $(examples_path)/example4
+example_list := example1 \
+				example2 \
+				example3 \
+				example4 \
+
+examples := $(subst example,$(examples_path)/example,$(example_list))
 
 test := ./test
 
@@ -34,7 +36,7 @@ libraries := $(lib_interpolating_functions) \
 			 $(lib_sandia_quadrature) \
 			 $(lib_refine_binary)
 
-binaries :=	$(example) \
+binaries :=	$(examples) \
 			$(test)
 
 docdir := ./doc
@@ -45,8 +47,15 @@ all: $(libraries)
 .PHONY: navigate
 navigate: $(libraries) $(binaries)
 
-.PHONY: examples
-examples : $(example)
+.PHONY: example_all
+example_all : $(example_list)
+
+define ExampleDep
+$(1) : $(examples_path)/$(1)
+endef
+
+.PHONY: $(example_list)
+$(foreach example,$(example_list),$(eval $(call ExampleDep,$(example))))
 
 .PHONY: tests
 tests: $(test)
@@ -59,7 +68,7 @@ $(libraries):
 	$(MAKE) --directory=$@ init
 	$(MAKE) -j3 --directory=$@ $(TARGET)
 
-#inserire qui eventuali dipendenze fra le librerie
+#insert here any dependency between libraries
 
 testdir := ./test
 

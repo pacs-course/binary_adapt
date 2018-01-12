@@ -1,5 +1,5 @@
-#!/bin/sh
-clear ;make examples;
-cd ./example/example$1;
-./bin/example;
-cd ../..
+#!/bin/bash
+clear ;make example$1
+pushd ./example/example$1
+./bin/example $2
+popd

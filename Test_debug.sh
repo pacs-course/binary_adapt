@@ -1,5 +1,5 @@
 #!/bin/sh
-clear ;make tests;
-cd ./test;
+clear ;make tests
+pushd ./test
 ./bin/test_Debug
-cd ..;
+popd
