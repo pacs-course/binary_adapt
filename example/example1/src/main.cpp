@@ -58,12 +58,17 @@ int main (int argc, char** argv)
 		return 1;
 	}
 
+	GetPot cl (conf_file.c_str());
+
+	string mesh_refiner = "binary_tree/mesh/mesh_refiner";
+	string refiner_key	= cl (mesh_refiner.c_str(), "");
+
 	auto& mrf (BinaryTree::MeshRefinerFactory<2>::Instance());
 
 	unique_ptr<BinaryTree::MeshRefiner<2>> refiner = nullptr;
 	try
 	{
-		refiner = move (mrf.create ("libmesh"));
+		refiner = move (mrf.create (refiner_key));
 	}
 	catch (exception& ex)
 	{
@@ -73,8 +78,6 @@ int main (int argc, char** argv)
 	}
 
 	cerr << "Refiner correctly constructed" << endl;
-
-	GetPot cl (conf_file.c_str());
 
 	string func_ID = "binary_tree/functions/functor";
 	string func_name = cl (func_ID.c_str(), "");
@@ -86,20 +89,30 @@ int main (int argc, char** argv)
 	}
 	catch (exception& ex)
 	{
-		cerr << ex.what() << endl;
 		cerr << "Refiner initialization failed" << endl;
+		cerr << ex.what() << endl;
 		return 1;
 	}
 
-
 	string input_mesh = "binary_tree/algorithm/input_mesh";
 	string mesh_filename = cl (input_mesh.c_str(), "");
+
 	if (mesh_filename == "")
 	{
 		cerr << "Missing mesh file name in configuration file" << endl;
 		return 1;
 	}
-	refiner->LoadMesh (mesh_filename);
+
+	try
+	{
+		refiner->LoadMesh (mesh_filename);
+	}
+	catch (exception& ex)
+	{
+		cerr << "Mesh loading from " << mesh_filename << " failed" << endl;
+		cerr << ex.what() << endl;
+		return 1;
+	}
 
 	string iteration_number = "binary_tree/algorithm/iteration_number";
 	size_t n_iter = cl (iteration_number.c_str(), 0);
@@ -111,6 +124,12 @@ int main (int argc, char** argv)
 
 	string output_mesh = "binary_tree/algorithm/output_mesh";
 	string output_filename = cl (output_mesh.c_str(), "");
+
+	if (output_filename == "")
+	{
+		cerr << "Missing output file name in configuration file" << endl;
+		return 1;
+	}
 
 	refiner->ExportMesh (output_filename);
 
