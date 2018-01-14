@@ -23,7 +23,7 @@ namespace GenericFactory
 		Factory for affine maps between an element and its correspondent std one.
 		The key is the type of the element corresponding std element has to be mapped to.
 	**/
-	template <std::size_t dim>
+	template <size_t dim>
 	using AffineMapFactory = ObjectFactory <Geometry::AffineMap<dim>,
 											Geometry::ElementType>;
 
@@ -43,7 +43,7 @@ namespace GenericFactory
 		The key is the type of the element corresponding standard ipercube has to be mapped to.
 		For the 1D case no map between standard elements is needed, since the standard element is already the ipercube.
 	**/
-	template <std::size_t dim>
+	template <size_t dim>
 	using StdMapFactory = ObjectFactory <Geometry::Map<dim>,
 										 Geometry::ElementType>;
 
@@ -58,7 +58,7 @@ namespace GenericFactory
 		Factory for basis needed by StdFElement objects.
 		The key is the type of the basis.
 	**/
-	template <std::size_t dim>
+	template <size_t dim>
 	using TensorialBasisFactory = ObjectFactory <FiniteElements::TensorialBasis<dim>,
 												 FiniteElements::BasisType>;
 
@@ -80,7 +80,7 @@ namespace GenericFactory
 		The key is the ElementType denoting the geometry of the object.
 		The factory ensures that only one standard element is constructed.
 	**/
-	template <std::size_t dim, FiniteElements::BasisType FeType>
+	template <size_t dim, FiniteElements::BasisType FeType>
 	using StdFElementFactory =
 		  SingletonFactory <FiniteElements::StdFElementInterface<dim, FeType>,
 							Geometry::ElementType>;

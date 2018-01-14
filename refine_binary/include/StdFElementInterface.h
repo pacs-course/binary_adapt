@@ -32,17 +32,17 @@ namespace FiniteElements
 			destructor.
 		**/
 		virtual ~StdFElementInterface();
-		/*
-			AbstractSpaceInterface methods
-		*/
-		virtual double	EvaluateBasisFunction (size_t ind,
-											   const Geometry::Point<dim>&)const = 0;
-		virtual size_t	BasisSize (size_t)const = 0;
-		virtual BasisType GetFeType ()const = 0;
 
-		/*
-			AbstractElement methods
-		*/
+		/* AbstractSpaceInterface methods */
+		virtual double EvaluateBasisFunction(
+				size_t,
+				const Geometry::Point<dim>&) const = 0;
+
+		virtual size_t BasisSize (size_t) const = 0;
+
+		virtual BasisType GetFeType () const = 0;
+
+		/* AbstractElement methods */
 		virtual Geometry::ElementType GetType() const = 0;
 		virtual Geometry::QuadPointVec<dim> GetQuadPoints() const = 0;
 		virtual Geometry::QuadWeightVec GetQuadWeights() const = 0;

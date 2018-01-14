@@ -11,7 +11,7 @@ namespace BinaryTree
 		Binary elements take as input a shared_ptr to Functor.
 		Concrete functor objects are implemented in dynamic library, so they can be loaded at runtime.
 	**/
-	template <std::size_t dim>
+	template <size_t dim>
 	class Functor
 	{
 	  public:
@@ -44,11 +44,11 @@ namespace BinaryTree
 		The key is a string which identifies the function.
 		The registration is done at runtime by the dynamic library implementing the concrete functors.
 	**/
-	template <std::size_t dim>
+	template <size_t dim>
 	using FunctionsFactory =
 		GenericFactory::ObjectFactory <Functor<dim>, std::string>;
 
-	template <std::size_t dim>
+	template <size_t dim>
 	using FunctionPtr = std::shared_ptr<Functor<dim>>;
 
 } //namespace BinaryTree

@@ -215,8 +215,10 @@ namespace Functions
 				"Error reading the configuration file in ParserFunctor: \
 				 empty string expression");
 
-		/*	I try to call the _parser operator() to check the correctness of the expression
-			I don't want to make this check every time I call ParserFunctor::operator()
+		/*	I try to call the _parser operator()
+			to check the correctness of the expression
+			I don't want to make this check
+			every time I call ParserFunctor::operator()
 			I do it once here */
 		CheckExpressionValidity();
 	};

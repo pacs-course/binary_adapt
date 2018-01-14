@@ -24,7 +24,8 @@ namespace FiniteElements
 		so the class is virtual.
 	**/
 	template <size_t dim, BasisType FeType = InvalidFeType>
-	class	AbstractFElement : public Geometry::AbstractElement<dim>,
+	class AbstractFElement : 
+		public Geometry::AbstractElement<dim>,
 		public AbstractSpaceInterface<dim>
 	{
 	  public:

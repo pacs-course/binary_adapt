@@ -97,7 +97,7 @@ namespace LibmeshBinary
 		*/
 		if (mesh.mesh_dimension() != dim)
 			throw invalid_argument (
-				"In MakeBinary dim parameter is different from mesh dimension!");
+				"In MakeBinary dim parameter is different from mesh dimensionality!");
 
 		for (auto iter (mesh.elements_begin()); iter != mesh.elements_end(); ++iter)
 		{

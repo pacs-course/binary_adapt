@@ -22,9 +22,12 @@ namespace BinaryTree
 		This is a wrapper for external libraries that practically implement the tree structure and the mesh management.
 		The mesh can be set from file through LoadMesh() method, then refined by calling Refine() method,
 		finally exported to file through ExportMesh() method.
+		Before performing any operation the Init() method has to be called.
+		Trying to access a method of the class before the Init() method has been called
+		can cause the raise of an exception.
 		Mesh elements can be iterated through IterateActiveNodes() method.
 	**/
-	template <std::size_t dim>
+	template <size_t dim>
 	class MeshRefiner
 	{
 	  public:
@@ -56,21 +59,23 @@ namespace BinaryTree
 
 		/**
 			Load mesh from file.
-			It depends on the underlying mesh implementation, defined in derived classes.
+			It calls the derived implementation of the loading process,
+			then initializes the #_godfather attribute.
 		**/
-		virtual void LoadMesh (std::string input) = 0;
+		void LoadMesh (std::string);
+
 		/**
 			Export refined mesh to file.
 			It depends on the underlying mesh implementation, defined in derived classes.
 		**/
-		virtual void ExportMesh (std::string output) const = 0;
+		virtual void ExportMesh (std::string) const = 0;
 
 		/**
 			It produces a gnuplot script which plots the mesh with the p level associated to each element.
 			The string parameter is the name of the output file.
 			It is available only for 1D meshes, other dim values have to be implemented.
 		**/
-		template <std::size_t dummy = dim,
+		template <size_t dummy = dim,
 				  typename std::enable_if< (dummy == 1), size_t>::type = 0>
 		void ExportGnuPlot (const std::string&) const;
 
@@ -80,7 +85,7 @@ namespace BinaryTree
 			The first parameter is the name of the output file, the second one the x-sampling length.
 			It is available only for 1D meshes, other dim values have to be implemented
 		**/
-		template <std::size_t dummy = dim,
+		template <size_t dummy = dim,
 				  typename std::enable_if< (dummy == 1), size_t>::type = 0>
 		void ExportProjection (const std::string&, double) const;
 
@@ -89,7 +94,7 @@ namespace BinaryTree
 			in a file named points_file
 		*/
 		//TODO define it
-//		template <std::size_t dummy = dim,
+//		template <size_t dummy = dim,
 //				  typename std::enable_if< (dummy == 1), size_t>::type = 0>
 //		void ExportProjection(const std::string& output_filename, const std::string& points_file) const;
 
@@ -104,7 +109,7 @@ namespace BinaryTree
 			Purpose for them being created is to store partial info of the algorithm execution
 		**/
 		template <typename... Args>
-		void Refine (std::size_t n_iter, double tol, Args... funcs);
+		void Refine (size_t n_iter, double tol, Args... funcs);
 
 		/**
 			As in the template version, but it simply executes the algorithm as described in Binev paper.
@@ -113,7 +118,7 @@ namespace BinaryTree
 			so some computation can be avoided during the execution of the algorithm,
 			i.e. trim of the tree at every iteration is not needed in this case
 		**/
-		void Refine (std::size_t n_iter);
+		void Refine (size_t n_iter);
 
 		/**
 			Extract the projection error on refined mesh.
@@ -196,6 +201,12 @@ namespace BinaryTree
 
 	  protected:
 		/**
+			Load mesh from file.
+			It depends on the underlying mesh implementation, defined in derived classes.
+		**/
+		virtual void MeshDerivedLoading (std::string input) = 0;
+
+		/**
 			Called by Init method.
 			It implements the initialization needed by classes derived from this one.
 		**/
@@ -222,6 +233,11 @@ namespace BinaryTree
 		**/
 		void Init (std::unique_ptr<Functor<dim>> f_ptr);
 
+		/**
+			Method raising an exception if the object has not been initialized.
+		**/
+		void CheckInitialization() const;
+
 	  protected:
 		/**
 			The objective function based on which the interpolation error
@@ -246,6 +262,14 @@ namespace BinaryTree
 			UpdateGlobalError() is the only method that does _error_updated = true.
 		**/
 		bool _error_updated;
+
+		/**
+			Flag telling if the refiner has been initialized.
+			The usage of the refiner not previously initialized
+			(i.e. the objective function has not been set)
+			causes the raise of an exception.
+		**/
+		bool _initialized;
 	};
 
 	/**
@@ -258,7 +282,7 @@ namespace BinaryTree
 		GenericFactory::ObjectFactory <MeshRefiner<dim>, std::string>;
 
 
-	template <std::size_t dim>
+	template <size_t dim>
 	void MeshRefiner<dim>::Init (std::string functor, int argc, char** argv)
 	{
 		auto& f_factory (FunctionsFactory<dim>::Instance());
@@ -267,17 +291,35 @@ namespace BinaryTree
 		Init (move (f_ptr));
 
 		DerivedInitialization (argc, argv);
+
+		this->_initialized = true;
 	};
 
-	template <std::size_t dim>
+	template <size_t dim>
 	void MeshRefiner<dim>::Init (std::unique_ptr<Functor<dim>> f_ptr)
 	{
 		/*  I convert the unique_ptr in a shared_ptr,
 		    since I need to share it with the BinaryNode elements */
 		this->_objective_function = FunctionPtr<dim> (f_ptr.release());
+		this->_initialized = true;
 	};
 
-	template <std::size_t dim>
+	template <size_t dim>
+	void MeshRefiner<dim>::CheckInitialization() const
+	{
+		if (! (this->_initialized))
+			throw std::runtime_error ("Trying to use an uninitialized refiner");
+	};
+
+	template <size_t dim>
+	void MeshRefiner<dim>::LoadMesh(std::string input)
+	{
+		this->CheckInitialization();
+		this->MeshDerivedLoading(input);
+		this->InitializeGodfather();
+	};
+
+	template <size_t dim>
 	void MeshRefiner<dim>::UpdateGlobalError()
 	{
 		ErrorComputer err_cp (this->_global_error);
@@ -314,12 +356,14 @@ namespace BinaryTree
 	};
 
 
-	template <std::size_t dim>
+	template <size_t dim>
 	template <typename... Args>
-	void MeshRefiner<dim>::Refine (std::size_t max_iter,
+	void MeshRefiner<dim>::Refine (size_t max_iter,
 								   double tol,
 								   Args... funcs)
 	{
+		CheckInitialization();
+
 		double total_error = this->GlobalError();
 		Execute (funcs...);
 		size_t n_iter = 0;
@@ -363,9 +407,11 @@ namespace BinaryTree
 	};
 
 	template <size_t dim>
-	void MeshRefiner<dim>::Refine (std::size_t max_iter)
+	void MeshRefiner<dim>::Refine (size_t max_iter)
 	{
-		std::size_t n_iter = 0;
+		CheckInitialization();
+
+		size_t n_iter = 0;
 		while (n_iter <= max_iter)
 		{
 			BinaryNode* leaf_dad = this->_godfather.MakeBisection();
@@ -416,44 +462,54 @@ namespace BinaryTree
 		} //while(daddy)
 	};
 
-	template <std::size_t dim>
+	template <size_t dim>
 	double MeshRefiner<dim>::GlobalError()
 	{
+		CheckInitialization();
+
 		if (! (this->_error_updated))
 			UpdateGlobalError();
 
 		return this->_global_error;
 	};
 
-	template <std::size_t dim>
+	template <size_t dim>
 	std::vector<size_t> MeshRefiner<dim>::ExtractPLevels() const
 	{
+		CheckInitialization();
+
 		PlevelsExtractor p_ex;
 		this->IterateActiveNodes (p_ex);
 		return p_ex.GetPLevels();
 	};
 
-	template <std::size_t dim>
+	template <size_t dim>
 	size_t MeshRefiner<dim>::ActiveNodesNumber() const
 	{
+		CheckInitialization();
+
 		Counter cont;
 		this->IterateActiveNodes (cont);
 		return cont.GetCount();
 	};
 
-	template <std::size_t dim>
+	template <size_t dim>
 	const Functor<dim>& MeshRefiner<dim>::GetFunctor() const
 	{
+		CheckInitialization();
+
 		return * (this->_objective_function);
 	};
 
 
-	template <std::size_t dim>
-	template <std::size_t dummy,
+	template <size_t dim>
+	template <size_t dummy,
 			  typename std::enable_if< (dummy == 1), size_t>::type>
 	void MeshRefiner<dim>
 	::ExportGnuPlot (const std::string& script_name) const
 	{
+		CheckInitialization();
+
 		std::ofstream output_file (script_name);
 		output_file	<< "#It produces the plot of the plevels of the binary refined mesh"
 					<< std::endl
@@ -496,12 +552,14 @@ namespace BinaryTree
 		output_file << "p_" << i << "(x)" << "lw 6" << std::endl;
 	};
 
-	template <std::size_t dim>
-	template <std::size_t dummy,
+	template <size_t dim>
+	template <size_t dummy,
 			  typename std::enable_if< (dummy == 1), size_t>::type>
 	void MeshRefiner<dim>::ExportProjection (const std::string& output_filename,
 											 double x_step) const
 	{
+		CheckInitialization();
+
 		std::ofstream output_file (output_filename);
 		output_file	<< "# Interpolation data for function: " <<
 					this->_objective_function->Formula() << std::endl;

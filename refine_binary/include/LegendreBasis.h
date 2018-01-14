@@ -16,13 +16,13 @@ namespace FiniteElements
 		/**
 			Evaluate basis function at some point.
 			Evaluation based on jacobi_polynomial library
-			if #INTERNAL_LEGENDRE is not defined
+			if INTERNAL_LEGENDRE is not defined
 		**/
 		static double SingleEvaluation (size_t, double);
 		/**
 			Evaluate each basis function until fixed degree.
 			Evaluation based on jacobi_polynomial library
-			if #INTERNAL_LEGENDRE is not defined
+			if INTERNAL_LEGENDRE is not defined
 		**/
 		static unique_ptr<double[]> Evaluate (size_t, double);
 	  protected:

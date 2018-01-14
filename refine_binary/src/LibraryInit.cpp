@@ -14,20 +14,19 @@ using namespace std;
 namespace BinaryTree
 {
 	//TODO:	maybe add a different behaviour (throw exception, do nothing, do something else...)
-	//			if this function is called more than once
+	//		if this function is called more than once
 	bool Init (string conf_filename)
 	{
-
 		GetPot cl (conf_filename.c_str());
 
-		//TODO:
-		//if two different libraries try to register with the same key,
-		//the item available will be the one of the last library loaded;
-		//because of this, if two libraries both register two items with
-		//the two same keys (i.e. both sandia and libMesh register their rule
-		//for intervals and their one for squares), it will be impossible to use
-		//one library for the first key and the other library for the second one,
-		//since the first two ones registered by the first library will be overwritten
+		/* TODO:
+		if two different libraries try to register with the same key,
+		the item available will be the one of the last library loaded;
+		because of this, if two libraries both register two items with
+		the two same keys (i.e. both sandia and libMesh register their rule
+		for intervals and their one for squares), it will be impossible to use
+		one library for the first key and the other library for the second one,
+		since the first two ones registered by the first library will be overwritten */
 
 		string ipercube_quad_library = "binary_tree/quadrature/ipercube/quad_library";
 		string tri_quad_library		 = "binary_tree/quadrature/triangle/quad_library";
@@ -37,24 +36,24 @@ namespace BinaryTree
 
 		string tri_quad_so_file	 = "lib"
 								 + string (cl (tri_quad_library.c_str(),
-											    "mesh_quadrature"));
+											   "mesh_quadrature"));
 		string iper_quad_so_file = "lib"
 								 + string (cl (ipercube_quad_library.c_str(),
-												"sandia_quadrature"));
+											   "sandia_quadrature"));
 		string func_so_file = "lib"
 							+ string (cl (func_library.c_str(),
 										  "interpolating_functions"));
 		string mesh_so_file = "lib"
 							+ string (cl (mesh_library.c_str(),
-									  	  "mesh_library"));
+									  	  "mesh_bridge"));
 
 #ifdef DEBUG
-		tri_quad_so_file += "_Debug";
+		tri_quad_so_file  += "_Debug";
 		iper_quad_so_file += "_Debug";
 		func_so_file += "_Debug";
 		mesh_so_file += "_Debug";
 #endif //DEBUG
-		tri_quad_so_file += ".so";
+		tri_quad_so_file  += ".so";
 		iper_quad_so_file += ".so";
 		func_so_file += ".so";
 		mesh_so_file += ".so";
@@ -74,8 +73,9 @@ namespace BinaryTree
 		//I don't want to register two times the same builders
 		if (tri_quad_so_file != iper_quad_so_file)
 			/*	I'm giving priority to ipercube quadratures,
-				i.e. if tri_quad_so_file makes some registration for quadratures for
-				ipercube objects (interval, square, ...) iper_quad_so_file will overwrite them */
+				i.e. if tri_quad_so_file makes some registration for quadratures
+				for ipercube objects (interval, square, ...)
+				iper_quad_so_file will overwrite them */
 			pl.Add (iper_quad_so_file);
 
 		if (!pl.Load())
@@ -91,6 +91,8 @@ namespace BinaryTree
 		string iteration_number = "binary_tree/algorithm/iteration_number";
 		size_t n_iter = cl (iteration_number.c_str(), 0);
 
+		//TODO: call only the initialization of the norms
+		//		effectively needed by the specific run of the program
 		StdFElementInterface<1, LegendreType>::InitNorms (n_iter);
 		StdFElementInterface<2, LegendreType>::InitNorms (n_iter);
 		StdFElementInterface<2, WarpedType>::InitNorms (n_iter);

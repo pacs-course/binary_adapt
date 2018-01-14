@@ -82,7 +82,7 @@ namespace FiniteElements
 	  protected:
 		/**
 			The basis functions.
-			In multiple dimensionality they are obtained by tensorization of 1D counterparts.
+			In multiple dimensions they are obtained by tensorization of 1D counterparts.
 		**/
 		unique_ptr<TensorialBasis<dim>> _basis;
 		/**

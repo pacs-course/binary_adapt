@@ -26,18 +26,19 @@ namespace FiniteElements
 				- the index of the basis function to be evaluated;
 				- the point where the basis function has to be evaluated.
 		**/
-		virtual double	EvaluateBasisFunction (std::size_t ind,
-											   const Geometry::Point<dim>& point) const = 0;
+		virtual double	EvaluateBasisFunction (
+				size_t ind,
+				const Geometry::Point<dim>& point) const = 0;
 
 		/**
 			The number of functions of the underlying basis
 		**/
-		virtual std::size_t BasisSize (std::size_t)const = 0;
+		virtual size_t BasisSize (size_t) const = 0;
 
 		/**
 			The identifier of the underlying basis type
 		**/
-		virtual BasisType GetFeType()const = 0;
+		virtual BasisType GetFeType() const = 0;
 	};
 
 } //namespace FiniteElements

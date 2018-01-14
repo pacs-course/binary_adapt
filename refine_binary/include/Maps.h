@@ -12,8 +12,8 @@ namespace Geometry
 {
 	/**
 		Abstract class for map function.
-		It represent a map function from R^@pdim to R^@pdim;
-		it maps points between elements with dimensionality @pdim.
+		It represent a map function from R^@p dim to R^@p dim;
+		it maps points between elements with dimensionality @p dim.
 	**/
 	template <size_t dim>
 	class Map

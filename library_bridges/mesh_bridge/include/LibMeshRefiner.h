@@ -84,12 +84,6 @@ namespace LibmeshBinary
 		void Init (std::string);
 
 		/**
-			Implementation of mesh import from file.
-			Declared pure virtual in base class.
-		**/
-		virtual void LoadMesh (std::string) override;
-
-		/**
 			Implementation of mesh export on file.
 			Declared pure virtual in base class.
 		**/
@@ -127,6 +121,12 @@ namespace LibmeshBinary
 		virtual void IterateActive (BinaryTree::DimOperator<dim>&) override;
 
 		/**
+			Implementation of mesh import from file.
+			Declared pure virtual in base class.
+		**/
+		virtual void MeshDerivedLoading (std::string) override;
+
+		/**
 			Initialization of libMesh objects.
 			The LibMeshInit communicator is constructed with main arguments passed as input;
 			the Mesh attribute is initialized, even if the mesh has to be built yet;
@@ -143,7 +143,7 @@ namespace LibmeshBinary
 		/**
 			Method raising an exception if the object has not been initialized.
 		**/
-		void CheckInitialization() const;
+		void CheckMeshInitialization() const;
 
 	  protected:
 		/**
@@ -168,14 +168,14 @@ namespace LibmeshBinary
 		/**
 			Flag telling if libMesh has been initialized.
 			libMesh needs a LibMeshInit object which has to be constructed before the mesh and destructed after mesh destruction.
-			To make _initialized true there are two ways:
+			To make _mesh_initialized true there are two ways:
 				-	the DerivedInitialization() method is called (this means that the Init(f, argc, argv) has been called);
 					in this case the LibMeshInit object is an attribute of this class;
 				-	the SetMesh() method is called;
 					in this case the LibMeshInit object has been constructed outside this class (where the mesh has been constructed)
 					and so _libmesh_init if left as nullptr, since another communicator is not needed.
 		**/
-		bool _initialized;
+		bool _mesh_initialized;
 
 	};
 
@@ -185,7 +185,7 @@ namespace LibmeshBinary
 		_libmesh_init_ptr (nullptr),
 		_mesh_ptr (nullptr),
 		_mesh_refinement_ptr (nullptr),
-		_initialized (false)
+		_mesh_initialized (false)
 	{};
 
 	template <size_t dim>
@@ -217,13 +217,13 @@ namespace LibmeshBinary
 		BinarityMap::MakeBinary<dim> (* (this->_mesh_refinement_ptr),
 									  this->_objective_function);
 		InitializeGodfather();
-		this->_initialized = true;
+		this->_mesh_initialized = true;
 	};
 
 	template <size_t dim>
 	std::shared_ptr<libMesh::MeshBase> LibmeshRefiner<dim>::GetMesh() const
 	{
-		CheckInitialization();
+		CheckMeshInitialization();
 
 		/*  If the libMesh communicator pointer is not null, this means that the mesh has been constructed
 			inside this class, and not outside; since libMesh requires that libMesh objects are created and
@@ -238,26 +238,29 @@ namespace LibmeshBinary
 	};
 
 	template <size_t dim>
-	void LibmeshRefiner<dim>::LoadMesh (std::string input)
+	void LibmeshRefiner<dim>::MeshDerivedLoading (std::string input)
 	{
-		CheckInitialization();
-
 		clog << "\n\n========== reading the mesh ========= \n\n" << endl;
 
-		this->_mesh_ptr->read (input);
-
+		try
+		{
+			this->_mesh_ptr->read (input);
+		}
+		catch (libMesh::LogicError& ex)
+		{
+			throw logic_error(ex.what());
+		}
 		//Replacing the libMesh elements with the BinaryTree ones
 		//TODO: verify if it could be better to put it at the end of the Init method
 		BinarityMap::MakeBinary<dim> (* (this->_mesh_refinement_ptr),
 									  this->_objective_function);
-		InitializeGodfather();
 	};
 
 	template <size_t dim>
 	void LibmeshRefiner<dim>::ExportMesh (std::string output) const
 	{
-		CheckInitialization();
-
+		CheckMeshInitialization();
+		
 		this->_mesh_ptr->write	(output);
 		/* TODO:evaluate the other way given by libMesh to write a mesh
 		   TODO:after the refinement evaluate if it is the case to "unbinarize" the mesh
@@ -324,8 +327,7 @@ namespace LibmeshBinary
 		_mesh_refinement_ptr =
 			Helpers::MakeUnique<libMesh::MeshRefinement> (*_mesh_ptr);
 
-		this->_initialized = true;
-
+		this->_mesh_initialized = true;
 	};
 
 	template <size_t dim>
@@ -337,13 +339,12 @@ namespace LibmeshBinary
 			[]												//*NOPAD*
 			(Iterator iter)									//*NOPAD*
 			{return BinarityMap::AsBinary<dim> (*iter);} );	//*NOPAD*
-
 	};
 
 	template <size_t dim>
-	void LibmeshRefiner<dim>::CheckInitialization() const
+	void LibmeshRefiner<dim>::CheckMeshInitialization() const
 	{
-		if (! (this->_initialized))
+		if (! (this->_mesh_initialized))
 			throw runtime_error ("Trying to use an uninitialized mesh");
 	};
 

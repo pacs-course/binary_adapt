@@ -120,11 +120,11 @@ namespace BinaryTree
 		/**
 			set the p refinement level of the element
 		**/
-		virtual void PLevel (std::size_t) = 0;
+		virtual void PLevel (size_t) = 0;
 		/**
 			get the p refinement level of the element
 		**/
-		virtual std::size_t PLevel() const = 0;
+		virtual size_t PLevel() const = 0;
 
 		/**
 			Make this node an active element of the mesh.
