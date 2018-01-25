@@ -2,12 +2,7 @@
 #include "PluginLoader.h"
 #include "StdFElementInterface.h"
 #include "MeshRefiner.h"
-
-#ifdef LIBMESH_BUG_FIXED
-	#include <GetPot>
-#else
-	#include "libmesh/getpot.h"
-#endif
+#include "BinaryTreeHelper.h" //Cfgfile
 
 using namespace std;
 
@@ -17,7 +12,7 @@ namespace BinaryTree
 	//		if this function is called more than once
 	bool Init (string conf_filename)
 	{
-		GetPot cl (conf_filename.c_str());
+		Helpers::Cfgfile cl(conf_filename);
 
 		/* TODO:
 		if two different libraries try to register with the same key,
@@ -89,7 +84,7 @@ namespace BinaryTree
 
 		using namespace FiniteElements;
 		string iteration_number = "binary_tree/algorithm/iteration_number";
-		size_t n_iter = cl (iteration_number.c_str(), 0);
+		size_t n_iter = cl (iteration_number, 0);
 
 		//TODO: call only the initialization of the norms
 		//		effectively needed by the specific run of the program

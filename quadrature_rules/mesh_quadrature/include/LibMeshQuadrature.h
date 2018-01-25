@@ -92,10 +92,10 @@ namespace LibmeshBinary
 				  << std::endl;
 #endif //DEBUG
 
-		GetPot cl (conf_file.c_str());
+		Helpers::Cfgfile cl(conf_file);
 		std::string order = "order";
 
-		this->_order = cl (order.c_str(), 0);
+		this->_order = cl (order, 0);
 		if (!this->_order)
 			throw std::runtime_error (
 				"Unable to read the configuration file in LibmeshQuadratureRule");
@@ -115,7 +115,7 @@ namespace LibmeshBinary
 		}
 
 		std::string type_id = "type";
-		std::string type = cl (type_id.c_str(), "");
+		std::string type = cl (type_id, "");
 
 		libMesh::QuadratureType quad_type = ConvertQuadType (type);
 

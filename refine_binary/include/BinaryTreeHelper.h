@@ -3,31 +3,41 @@
 
 #include "TypeEnumerations.h"
 
-#include <memory>//std::shared_ptr, std::make_shared, std::make_unique
-#include <functional> //std::function
-#include <fstream> //std::basic_streambuf, std::ostream
+#include <memory>//shared_ptr, make_shared, make_unique
+#include <functional> //function
+#include <fstream> //basic_streambuf, ostream
 #include <iostream>
-#include <string> //std::string
+#include <string> //string
+
+
+#ifdef LIBMESH_BUG_FIXED
+	#include <GetPot>
+#else
+	#include "libmesh/getpot.h"
+#endif
+
 
 /**
 	Helpful tools, classes and functions needed by the library objects.
 **/
 namespace Helpers
 {
+	using namespace std;
+
 	/**
-		Function behaving as std::make_unique.
+		Function behaving as make_unique.
 		MakeUnique gives an interface for a function which behaves exactly as
-		std::make_unique [available since standard c++14].
-		If the compiling options make available the std::make_unique,
+		make_unique [available since standard c++14].
+		If the compiling options make available the make_unique,
 		it simply returns its output.
 	**/
 	template <class T, class... Args>
-	std::unique_ptr<T> MakeUnique (Args&& ... args)
+	unique_ptr<T> MakeUnique (Args&& ... args)
 	{
 #ifdef __cpp_lib_make_unique
-		return std::make_unique<T> (args...);
+		return make_unique<T> (args...);
 #else
-		return std::unique_ptr<T> (new T (std::forward<Args> (args)...));
+		return unique_ptr<T> (new T (forward<Args> (args)...));
 #endif
 	};
 
@@ -43,11 +53,11 @@ namespace Helpers
 		/**
 			constructor.
 			The constructor of a Logfile objects redirects
-			std::cout, std::clog, std::cerr to file;
+			cout, clog, cerr to file;
 			the file name is passed as input.
 			Each std buffer is stored in correspondent Logfile attribute
 		**/
-		Logfile (const std::string&);
+		Logfile (const string&);
 		/**
 			destructor.
 			When the Logfile object is destroyed buffers are redirected to std ones
@@ -58,19 +68,90 @@ namespace Helpers
 		/**
 			The output file stream where buffers are redirected
 		**/
-		std::ofstream _ofs;
+		ofstream _ofs;
 		/**
-			Attribute to store std::cout
+			Attribute to store cout
 		**/
-		std::basic_streambuf<char>* _out_buf;
+		basic_streambuf<char>* _out_buf;
 		/**
-			Attribute to store std::clog
+			Attribute to store clog
 		**/
-		std::basic_streambuf<char>* _log_buf;
+		basic_streambuf<char>* _log_buf;
 		/**
-			Attribute to store std::cerr
+			Attribute to store cerr
 		**/
-		std::basic_streambuf<char>* _err_buf;
+		basic_streambuf<char>* _err_buf;
+	};
+
+	/**
+		Proxy class wrapping access to GetPot.
+		Provides a string interface to the GetPot methods,
+		and checks for existence of the input configuration file before creating the GetPot object.
+	**/
+	class Cfgfile
+	{
+	  public:
+		/**
+			constructor from filename.
+			If the file in input does not exist, raises an exception
+		**/
+		Cfgfile (const string&);
+
+		/**
+			constructor from main parameters.
+		**/
+		Cfgfile (int argc, char** argv);
+
+		/**
+			destructor.
+		**/
+		~Cfgfile();
+
+		/**
+			Find the int value of the input string ID
+		**/
+		int					operator()(const string, int) const;
+		/**
+			Find the double value of the input string ID
+		**/
+		double				operator()(const string, const double&) const;
+		/**
+			Find the string value of the input string ID
+		**/
+		const string	operator()(const string, const string) const;
+
+//		template <typename T>
+//		T operator() (const string var_name, const T& default_val) const
+//		{
+//			if (_ok)
+//				return _cl(var_name.c_str(), default_val);
+//			else
+//				return default_val;
+//		};
+
+		/**
+			Return true if -h or --help option is found in GetPot object
+		**/
+		bool HasHelp() const;
+
+		/**
+			Return true if the configuration file has been found
+		**/
+		operator bool();
+		/**
+			Explicit cast to GetPot type object
+		**/
+		operator GetPot();
+
+	  private:
+		/**
+			The GetPot object handling the configuration
+		**/
+		GetPot _cl;
+		/**
+			Flag telling if configuration file has been found 
+		**/
+		bool _ok;
 	};
 
 	/**
@@ -82,14 +163,14 @@ namespace Helpers
 		/**
 			It makes sure that only one element is constructed.
 		**/
-		static std::shared_ptr<AbstractProduct> BuildSingleton()
+		static shared_ptr<AbstractProduct> BuildSingleton()
 		{
-			static std::shared_ptr<AbstractProduct> ptr =
-				std::make_shared<ConcreteProduct>();
+			static shared_ptr<AbstractProduct> ptr =
+				make_shared<ConcreteProduct>();
 			return ptr;
 		};
 
-		static std::unique_ptr<AbstractProduct> BuildObject()
+		static unique_ptr<AbstractProduct> BuildObject()
 		{
 			return MakeUnique<ConcreteProduct>();
 		};
@@ -98,11 +179,11 @@ namespace Helpers
 	/**
 		Function to convert BasisType enum into string
 	**/
-	std::string BasisTypeConverter (FiniteElements::BasisType const& id);
+	string BasisTypeConverter (FiniteElements::BasisType const& id);
 	/**
 		Function to convert ElementType enum into string
 	**/
-	std::string ElementTypeConverter (Geometry::ElementType const& id);
+	string ElementTypeConverter (Geometry::ElementType const& id);
 
 	/**
 		An optimized function to compute powers when the exponent is

@@ -18,16 +18,11 @@
 
 #include "MeshRefiner.h"
 #include "LibraryInit.h"
+#include "BinaryTreeHelper.h" //Cfgfile
 
 #include <iostream>
 #include <memory> //std::unique_ptr
 #include <utility> //std::move
-
-#ifdef LIBMESH_BUG_FIXED
-	#include <GetPot>
-#else
-	#include "libmesh/getpot.h"
-#endif
 
 using namespace std;
 
@@ -42,8 +37,8 @@ void PrintHelp()
 int main (int argc, char** argv)
 {
 	cerr << "Example started" << endl;
-	GetPot main_input (argc, argv);
-	if (main_input.search (2, "--help", "-h"))
+	Helpers::Cfgfile main_input (argc, argv);
+	if (main_input.HasHelp())
 	{
 		PrintHelp();
 		exit (0);
@@ -58,10 +53,10 @@ int main (int argc, char** argv)
 		return 1;
 	}
 
-	GetPot cl (conf_file.c_str());
+	Helpers::Cfgfile cl (conf_file);
 
 	string mesh_refiner = "binary_tree/mesh/mesh_refiner";
-	string refiner_key	= cl (mesh_refiner.c_str(), "");
+	string refiner_key	= cl (mesh_refiner, "");
 
 	auto& mrf (BinaryTree::MeshRefinerFactory<2>::Instance());
 
@@ -80,7 +75,7 @@ int main (int argc, char** argv)
 	cerr << "Refiner correctly constructed" << endl;
 
 	string func_ID = "binary_tree/functions/functor";
-	string func_name = cl (func_ID.c_str(), "");
+	string func_name = cl (func_ID, "");
 
 	try
 	{
@@ -95,7 +90,7 @@ int main (int argc, char** argv)
 	}
 
 	string input_mesh = "binary_tree/algorithm/input_mesh";
-	string mesh_filename = cl (input_mesh.c_str(), "");
+	string mesh_filename = cl (input_mesh, "");
 
 	if (mesh_filename == "")
 	{
@@ -115,15 +110,15 @@ int main (int argc, char** argv)
 	}
 
 	string iteration_number = "binary_tree/algorithm/iteration_number";
-	size_t n_iter = cl (iteration_number.c_str(), 0);
+	size_t n_iter = cl (iteration_number, 0);
 
 	string s_tol = "binary_tree/algorithm/tolerance";
-	double tol = cl (s_tol.c_str(), 0.0);
+	double tol = cl (s_tol, 0.0);
 
 	refiner->Refine (n_iter, tol);
 
 	string output_mesh = "binary_tree/algorithm/output_mesh";
-	string output_filename = cl (output_mesh.c_str(), "");
+	string output_filename = cl (output_mesh, "");
 
 	if (output_filename == "")
 	{

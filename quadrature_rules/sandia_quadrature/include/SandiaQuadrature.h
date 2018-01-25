@@ -4,12 +4,7 @@
 #include "sandia_rules.hpp" //jacobi_compute
 
 #include "Quadrature.h" //ElementType
-
-#ifdef LIBMESH_BUG_FIXED
-	#include <GetPot>
-#else
-	#include "libmesh/getpot.h"
-#endif
+#include "BinaryTreeHelper.h" //Cfgfile
 
 /**
 	Quadrature rule implementation based on sandia_rules library
@@ -109,10 +104,10 @@ namespace SandiaQuadrature
 			 << endl;
 #endif //DEBUG
 
-		GetPot cl (conf_file.c_str());
+		Helpers::Cfgfile cl(conf_file);
 		string order = "order";
 
-		this->_order = cl (order.c_str(), 0);
+		this->_order = cl (order, 0);
 		if (!this->_order)
 			throw runtime_error (
 				"Unable to read the configuration file in SandiaQuadratureRule");

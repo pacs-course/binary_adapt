@@ -5,19 +5,11 @@
 #include "MuParserInterface.h"
 #include "BinaryTreeHelper.h"
 
-#ifdef LIBMESH_BUG_FIXED
-	#include <GetPot>
-#else
-	#include "libmesh/getpot.h"
-#endif
-
 /**
 	It contains implementation of functor objects that can be interpolated by the binary tree algorithm
 **/
 namespace Functions
 {
-	using namespace std;
-
 	/**
 		Functor for mathematical expression parsed from file.
 	**/
@@ -199,19 +191,19 @@ namespace Functions
 	template <size_t dim>
 	ParserFunctor<dim>::ParserFunctor()
 	{
-		string thisfile = __FILE__;
-		string conf_file = thisfile.substr (0, thisfile.find_last_of ('/'))
+		std::string thisfile = __FILE__;
+		std::string conf_file = thisfile.substr (0, thisfile.find_last_of ('/'))
 						 + "/interpolating_functions.conf";
 #ifdef DEBUG
-		cerr << "ParserFunctor: opening configuration file " << conf_file << endl;
+		std::cerr << "ParserFunctor: opening configuration file " << conf_file << std::endl;
 #endif //DEBUG
-		GetPot cl (conf_file.c_str());
-		string expr = std::to_string (dim) + "D/mu_parser_expr";
+		Helpers::Cfgfile cl (conf_file);
+		std::string expr = std::to_string (dim) + "D/mu_parser_expr";
 
-		this->_parser.Expression (cl (expr.c_str(), ""));
+		this->_parser.Expression (cl (expr, ""));
 
 		if (this->_parser.Expression() == "")
-			throw runtime_error (
+			throw std::runtime_error (
 				"Error reading the configuration file in ParserFunctor: \
 				 empty string expression");
 
@@ -236,7 +228,7 @@ namespace Functions
 	template <size_t dim>
 	double ParserFunctor<dim>::operator() (const Geometry::Point<dim>& p) const
 	{
-		return (this->_parser) (static_cast<array<double, dim>> (p));
+		return (this->_parser) (static_cast<std::array<double, dim>> (p));
 	};
 
 	template <size_t dim>
