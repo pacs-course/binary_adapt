@@ -15,16 +15,16 @@ namespace LibmeshBinary
 		vertices.Insert (1, v2);
 		vertices.Insert (2, v3);
 		_std_map.Init (vertices);
-	};
+	}
 
 	ModifiedTriangleRule::~ModifiedTriangleRule()
-	{};
+	{}
 
 	Geometry::QuadPointVec<2> ModifiedTriangleRule::GetPoints()
 	{
 		auto points = LibmeshQuadratureRule<2, Geometry::TriangleType>::GetPoints();
 		return this->_std_map.ComputeInverse (points);
-	};
+	}
 
 	Geometry::QuadWeightVec ModifiedTriangleRule::GetWeights()
 	{
@@ -34,6 +34,6 @@ namespace LibmeshBinary
 			weights[i] /= this->_std_map.Jacobian();
 
 		return weights;
-	};
+	}
 
 } //namespace LibmeshBinary

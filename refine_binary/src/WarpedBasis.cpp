@@ -8,13 +8,13 @@ using namespace std;
 
 namespace FiniteElements
 {
-	WarpedBasis::WarpedBasis() : TensorialBasis<2>() {};
-	WarpedBasis::~WarpedBasis() {};
+	WarpedBasis::WarpedBasis() : TensorialBasis<2>() {}
+	WarpedBasis::~WarpedBasis() {}
 
 	WarpedBasis::WarpedBasis (const WarpedBasis& input_basis)
 	{
 		*this = input_basis;
-	};
+	}
 
 	WarpedBasis& WarpedBasis::operator= (const WarpedBasis& input_basis)
 	{
@@ -23,13 +23,13 @@ namespace FiniteElements
 			TensorialBasis<2>::Copy (input_basis);
 		}
 		return *this;
-	};
+	}
 
 	double WarpedBasis::OneDEvaluation (size_t, double) const
 	{
 		throw logic_error(
 			"Trying to call the meaningless 1d evaluation of the warped basis");
-	};
+	}
 
 	double WarpedBasis::Evaluate (size_t ind, const Geometry::Point<2>& p)
 	{
@@ -51,7 +51,7 @@ namespace FiniteElements
 
 		Geometry::Vector full_evaluation = WarpedBasis::EvaluateBasis (degree, p);
 		return full_evaluation[ind];
-	};
+	}
 
 	/* Thanks to the jacobi_polynomial working principle I can optimize this method */
 	Geometry::Vector WarpedBasis::EvaluateBasis (size_t degree,
@@ -93,6 +93,6 @@ namespace FiniteElements
 		};
 
 		return result;
-	};
+	}
 
 } //namespace FiniteElements

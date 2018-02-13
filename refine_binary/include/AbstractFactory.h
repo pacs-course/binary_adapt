@@ -58,7 +58,7 @@ namespace GenericFactory
 	{
 		return M_identifierAsString <is_convertible<Identifier, string>::value,
 									 Identifier>::value (id);
-	};
+	}
 
 	/**
 		Full specialization for geometric types enum

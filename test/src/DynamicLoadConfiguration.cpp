@@ -3,10 +3,10 @@
 using namespace std;
 
 LoadTest::LoadTest() : BasicTest(), _pl()
-{};
+{}
 
 LoadTest::~LoadTest()
-{};
+{}
 
 void LoadTest::SetUp()
 {
@@ -28,9 +28,9 @@ void LoadTest::SetUp()
 	if (!_pl.Load())
 		throw runtime_error (
 			"Houston we have a problem: something went wrong loading plugins");
-};
+}
 
 void LoadTest::TearDown()
 {
 	BasicTest::TearDown();
-};
+}

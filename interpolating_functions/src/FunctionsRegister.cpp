@@ -9,7 +9,7 @@ namespace Functions
 {
 	__attribute__ ((destructor))
 	static void ExitFunction()
-	{};
+	{}
 
 	/**
 		Function doing the functor builders registrations at plugin loading.
@@ -76,6 +76,6 @@ namespace Functions
 							 &Helpers::Builders <X2PlusY2,
 												 BinaryTree::Functor<2>
 												>::BuildObject);
-	};
+	}
 }
 

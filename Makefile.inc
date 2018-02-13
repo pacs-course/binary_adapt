@@ -10,26 +10,26 @@
 #	path to Eigen directory									#
 #	"#include <Eigen/Dense>" will be called in the software	#
 #-----------------------------------------------------------#
-EigenInclude := /usr/local/include/eigen3
+EigenInclude :=
 
 
 #-----------------------------------------------------------------------#
 #	path to libmesh directory											#
 #	"#include "libmesh/libmesh_header.h" will be called in the software	#
 #-----------------------------------------------------------------------#
-LibMeshInclude := /usr/local/include
-LibMeshDir	   := /usr/local/lib
+LibMeshInclude :=
+LibMeshDir	   :=
 
 
-GTestInclude := /usr/include
-GTestDir	 := /usr/lib
+GTestInclude :=
+GTestDir	 :=
 
 #until libMesh is not patched libMesh getpot has to be used 
 GetPotInclude  := $(LibMeshInclude)
-#GetPotInclude := /usr/local/include
+#GetPotInclude :=
 
-MuParserInclude	:= /usr/local/include
-MuParserDir		:= /usr/local/lib
+MuParserInclude	:=
+MuParserDir		:=
 
 #-----------------------------------------------------------#
 #	libraries released as sources.							#

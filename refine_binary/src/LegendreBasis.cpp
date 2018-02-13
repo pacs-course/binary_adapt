@@ -61,7 +61,7 @@ namespace FiniteElements
 		}
 
 		return move (result);
-	};
+	}
 #endif //INTERNAL_LEGENDRE
 
 }

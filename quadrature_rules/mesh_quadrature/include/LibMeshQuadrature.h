@@ -5,6 +5,7 @@
 #include "Quadrature.h" //ElementType
 #include "LibMeshHelper.h" //ConvertType
 #include "Maps.h" //TriMap
+#include "HelpFile.h" //Cfgfile
 
 #include "libmesh/quadrature.h" //libMesh::QBase
 #include "libmesh/getpot.h"
@@ -121,11 +122,11 @@ namespace LibmeshBinary
 
 		_quadrature_rule = libMesh::QBase::build (quad_type, dim, mesh_order);
 		_quadrature_rule->init (ConvertType<Type>());
-	};
+	}
 
 	template <size_t dim, Geometry::ElementType Type>
 	LibmeshQuadratureRule<dim, Type>::~LibmeshQuadratureRule()
-	{};
+	{}
 
 	template <size_t dim, Geometry::ElementType Type>
 	Geometry::QuadPointVec<dim> LibmeshQuadratureRule<dim, Type>::GetPoints()
@@ -141,7 +142,7 @@ namespace LibmeshBinary
 		}
 
 		return result;
-	};
+	}
 
 	template <size_t dim, Geometry::ElementType Type>
 	Geometry::QuadWeightVec LibmeshQuadratureRule<dim, Type>::GetWeights()
@@ -153,7 +154,7 @@ namespace LibmeshBinary
 			result[i++] = static_cast<double> (w);
 
 		return result;
-	};
+	}
 
 } //namespace LibmeshBinary
 

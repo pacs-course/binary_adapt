@@ -92,11 +92,11 @@ namespace FiniteElements
 
 	template <size_t dim>
 	LegendreBasis<dim>::LegendreBasis() : TensorialBasis<dim>()
-	{};
+	{}
 
 	template <size_t dim>
 	LegendreBasis<dim>::~LegendreBasis()
-	{};
+	{}
 
 	template <size_t dim>
 	LegendreBasis<dim>& LegendreBasis<dim>::operator = (const LegendreBasis<dim>&
@@ -107,13 +107,13 @@ namespace FiniteElements
 			TensorialBasis<dim>::Copy (input_basis);
 		}
 		return *this;
-	};
+	}
 
 	template <size_t dim>
 	LegendreBasis<dim>::LegendreBasis (const LegendreBasis& input_basis)
 	{
 		*this = input_basis;
-	};
+	}
 
 	template <size_t dim>
 	Geometry::Vector LegendreBasis<dim>::EvaluateBasis (size_t degree,
@@ -139,13 +139,13 @@ namespace FiniteElements
 		};
 
 		return result;
-	};
+	}
 
 	template <size_t dim>
 	double LegendreBasis<dim>::OneDEvaluation (size_t index, double x) const
 	{
 		return LegendreEvaluator::SingleEvaluation (index, x);
-	};
+	}
 
 } //namespace FiniteElements
 #endif //__LEGENDRE_BASIS_H

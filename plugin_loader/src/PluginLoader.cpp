@@ -12,10 +12,10 @@ using namespace std;
 
 namespace PluginLoading
 {
-	PluginLoader::PluginLoader() : _plugins(), _loaded (false) {};
+	PluginLoader::PluginLoader() : _plugins(), _loaded (false) {}
 
 	PluginLoader::~PluginLoader()
-	{};
+	{}
 
 	void PluginLoader::Add (std::string full_path,
 							const std::string& so_file,
@@ -23,7 +23,7 @@ namespace PluginLoading
 	{
 		full_path += so_file;
 		this->Add (full_path, mode);
-	};
+	}
 
 	void PluginLoader::Add (const std::string& full_path_so_file, int mode)
 	{
@@ -40,7 +40,7 @@ namespace PluginLoading
 #ifdef VERBOSE
 		clog << "Added plugin : " << full_path_so_file << endl;
 #endif //VERBOSE
-	};
+	}
 
 	bool PluginLoader::Load()
 	{
@@ -61,14 +61,14 @@ namespace PluginLoading
 		this->_loaded = true;
 
 		return ok;
-	};
+	}
 
 #ifdef TRY_IT
 	/*	Plugin loading from a directory */
 	PluginLoader::PluginLoader (const string& loading_path) : PluginLoader()
 	{
 		this->LoadPath (loading_path);
-	};
+	}
 
 	//TODO: test it
 	void PluginLoader::LoadPath (const string& loading_path, int mode)
@@ -94,11 +94,11 @@ namespace PluginLoading
 		{
 			cerr << "Warning: unable to open the directory: " << loading_path << endl;
 		}
-	};
+	}
 #endif //TRY_IT
 	size_t PluginLoader::Size() const
 	{
 		return this->_plugins.size();
-	};
+	}
 
 } //namespace PluginLoading

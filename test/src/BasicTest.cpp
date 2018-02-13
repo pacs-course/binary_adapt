@@ -49,7 +49,7 @@ TEST_F (BasicTest, PointTest)
 	//TODO: test other member functions
 
 	clog << "PointTest ended" << endl << endl;
-};
+}
 
 TEST_F (BasicTest, MapsTest)
 {
@@ -314,6 +314,6 @@ TEST_F (BasicTest, MapsTest)
 							   << ")";
 
 	clog << "MapsTest ended" << endl << endl;
-};
+}
 
 

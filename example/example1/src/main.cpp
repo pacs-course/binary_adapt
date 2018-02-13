@@ -18,7 +18,7 @@
 
 #include "MeshRefiner.h"
 #include "LibraryInit.h"
-#include "BinaryTreeHelper.h" //Cfgfile
+#include "HelpFile.h" //Cfgfile
 
 #include <iostream>
 #include <memory> //std::unique_ptr
@@ -32,7 +32,7 @@ void PrintHelp()
 	cout << "If you don't want to use the default configuration file, "
 		 << "manually set it typing:" << endl;
 	cout << "	conf_file = path/to/file" << endl;
-};
+}
 
 int main (int argc, char** argv)
 {
@@ -131,5 +131,5 @@ int main (int argc, char** argv)
 	cerr << "Example 1 ended" << endl;
 
 	return 0;
-};
+}
 

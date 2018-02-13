@@ -143,11 +143,11 @@ namespace BinaryTree
 		_projection_error (numeric_limits<double>::max()),
 		_error_updated (false),
 		_coeff ()
-	{};
+	{}
 
 	template <size_t dim, BasisType FeType>
 	AbstractBinaryElement<dim, FeType>::~AbstractBinaryElement()
-	{};
+	{}
 
 	template <size_t dim, BasisType FeType>
 	void AbstractBinaryElement<dim, FeType>::Init()
@@ -166,7 +166,7 @@ namespace BinaryTree
 		this->_E		= this->_projection_error;
 		this->_E_tilde	= this->_tilde_error;
 		this->_q		= this->_tilde_error;
-	};
+	}
 
 	template <size_t dim, BasisType FeType>
 	double AbstractBinaryElement<dim, FeType>::ProjectionError()
@@ -175,7 +175,7 @@ namespace BinaryTree
 			UpdateProjectionError();
 
 		return this->_projection_error;
-	};
+	}
 
 	template <size_t dim, BasisType FeType>
 	void AbstractBinaryElement<dim, FeType>::PrintCoefficients() const
@@ -184,39 +184,39 @@ namespace BinaryTree
 		for (size_t i = 0; i < this->_coeff.Size(); ++i)
 			cout << (this->_coeff)[i] << "	";
 		cout << endl;
-	};
+	}
 
 	template <size_t dim, BasisType FeType>
 	void AbstractBinaryElement<dim, FeType>::PLevel (size_t val)
 	{
 		this->_f_element->PLevel (val);
 		this->_error_updated = false;
-	};
+	}
 
 	template <size_t dim, BasisType FeType>
 	size_t AbstractBinaryElement<dim, FeType>::PLevel() const
 	{
 		return this->_f_element->PLevel();
-	};
+	}
 
 	template <size_t dim, BasisType FeType>
 	const AbstractFElement<dim, FeType>&
 	AbstractBinaryElement<dim, FeType>::GetFElement()const
 	{
 		return * (this->_f_element);
-	};
+	}
 
 	template <size_t dim, BasisType FeType>
 	Geometry::NodesVector<dim> AbstractBinaryElement<dim, FeType>::Nodes() const
 	{
 		return this->_f_element->GetNodes();
-	};
+	}
 
 	template <size_t dim, BasisType FeType>
 	void AbstractBinaryElement<dim, FeType>::ProjectionError (const double& val)
 	{
 		this->_projection_error = val;
-	};
+	}
 
 	template <size_t dim, BasisType FeType>
 	void AbstractBinaryElement<dim, FeType>::UpdateProjectionError()
@@ -236,7 +236,7 @@ namespace BinaryTree
 
 		this->ProjectionError (err);
 		this->_error_updated = true;
-	};
+	}
 
 	template <size_t dim, BasisType FeType>
 	double AbstractBinaryElement<dim, FeType>::Projection
@@ -254,7 +254,7 @@ namespace BinaryTree
 		auto needed_coeff = (this->_coeff).Head (basis_size);
 
 		return basis_evaluation.Dot (needed_coeff);
-	};
+	}
 
 	template <size_t dim, BasisType FeType>
 	void AbstractBinaryElement<dim, FeType>::ComputeCoefficients() const
@@ -288,7 +288,7 @@ namespace BinaryTree
 
 			(this->_coeff)[cursor] /= norm_squared;
 		}
-	};
+	}
 
 } //namespace BinaryTree
 

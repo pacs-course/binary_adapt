@@ -4,7 +4,7 @@
 #include "sandia_rules.hpp" //jacobi_compute
 
 #include "Quadrature.h" //ElementType
-#include "BinaryTreeHelper.h" //Cfgfile
+#include "HelpFile.h" //Cfgfile
 
 /**
 	Quadrature rule implementation based on sandia_rules library
@@ -113,38 +113,38 @@ namespace SandiaQuadrature
 				"Unable to read the configuration file in SandiaQuadratureRule");
 
 		Init();
-	};
+	}
 
 	template <size_t dim>
 	SandiaQuadratureRule<dim>::SandiaQuadratureRule (size_t order)
 	{
 		this->_order = order;
 		Init();
-	};
+	}
 
 	template <size_t dim>
 	SandiaQuadratureRule<dim>::~SandiaQuadratureRule()
-	{};
+	{}
 
 	template <size_t dim>
 	Geometry::QuadPointVec<dim> SandiaQuadratureRule<dim>::GetPoints()
 	{
 		return this->_points;
-	};
+	}
 
 	template <size_t dim>
 	Geometry::QuadWeightVec SandiaQuadratureRule<dim>::GetWeights()
 	{
 		return this->_weights;
-	};
+	}
 
 	template <size_t dim>
 	void SandiaQuadratureRule<dim>::Init()
 	{
 		_n = NodesNumber (this->_order);
 
-		double x[_n];
-		double w[_n];
+		double* x = new double[_n];
+		double* w = new double[_n];
 		webbur::jacobi_compute (_n, 0.0, 0.0, x, w);
 
 		//I convert x and w to my type
@@ -160,13 +160,16 @@ namespace SandiaQuadrature
 		//I tensorize to get a dim-dimensional quadrature rule
 		_points = TensorizePoints<dim> (one_d_points);
 		_weights = TensorizeWeights<dim> (one_d_weights);
-	};
+
+		delete[] x;
+		delete[] w;
+	}
 
 	template <size_t dim>
 	size_t SandiaQuadratureRule<dim>::NodesNumber (size_t order)
 	{
 		return ceil ((static_cast<double> (order) + 1) / 2);
-	};
+	}
 
 	template <size_t dim>
 	Geometry::QuadPointVec<dim> TensorizePoints (
@@ -187,7 +190,7 @@ namespace SandiaQuadrature
 				result.Insert (cont++, p);
 			}
 		return result;
-	};
+	}
 
 	/* End of the recursion */
 	template <>
@@ -211,7 +214,7 @@ namespace SandiaQuadrature
 			for (size_t j = 0; j < length2; ++j)
 				result[k++] = temp[i] * one_d_w[j];
 		return result;
-	};
+	}
 
 	/* End of recursion */
 	template <>

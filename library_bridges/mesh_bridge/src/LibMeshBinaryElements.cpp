@@ -110,10 +110,10 @@ namespace LibmeshBinary
 				this->_longest_side = i;
 			}
 		}
-	};
+	}
 
 	Triangle::~Triangle()
-	{};
+	{}
 
 	float	Triangle::embedding_matrix (const unsigned int child_num,
 										const unsigned int child_node_num,
@@ -123,15 +123,15 @@ namespace LibmeshBinary
 										  [child_num]
 										  [child_node_num]
 										  [parent_node_num];
-	};
+	}
 
 	unsigned int Triangle::embedding_matrix_version () const
 	{
 		return this->_longest_side;
-	};
+	}
 
 	unsigned int Triangle::n_children () const
 	{
 		return 2;
-	};
-};
+	}
+}//namespace LibmeshBinary

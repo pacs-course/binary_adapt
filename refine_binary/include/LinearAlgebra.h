@@ -503,7 +503,7 @@ namespace Geometry
 	{
 		EigVector<dim> p = A._mat * b._vec;
 		return Point<dim> (p);
-	};
+	}
 
 	/**
 		Matrix times matrix product
@@ -513,7 +513,7 @@ namespace Geometry
 	{
 		EigSemiDynamicMat<dim> M = A._mat * B._mat;
 		return VectorPoint<dim> (M);
-	};
+	}
 
 	/**
 		Add vector to every column
@@ -526,7 +526,7 @@ namespace Geometry
 			result._mat.col (i) += b._vec;
 
 		return result;
-	};
+	}
 
 	/**
 		Subtract vector from every column
@@ -539,39 +539,39 @@ namespace Geometry
 			result._mat.col (i) -= b._vec;
 
 		return result;
-	};
+	}
 
 
 	template <size_t dim>
 	typename Point<dim>::iterator Point<dim>::begin()
 	{
 		return _vec.data();
-	};
+	}
 
 	template <size_t dim>
 	typename Point<dim>::iterator Point<dim>::end()
 	{
 		return _vec.data() + dim;
-	};
+	}
 
 	template <size_t dim>
 	typename Point<dim>::const_iterator Point<dim>::begin()const
 	{
 		return _vec.data();
-	};
+	}
 
 	template <size_t dim>
 	typename Point<dim>::const_iterator Point<dim>::end()const
 	{
 		return _vec.data() + dim;
-	};
+	}
 
 	template <size_t dim>
 	Point<dim>::Point (double value)
 	{
 		for (size_t i = 0; i < dim; ++i)
 			(this->_vec)[i] = value;
-	};
+	}
 
 	template <size_t dim>
 	Point<dim>::Point (const initializer_list<double>& coor)
@@ -588,17 +588,17 @@ namespace Geometry
 			for (const auto& val : coor)
 				(this->_vec)[i++] = val;
 		}
-	};
+	}
 
 	template <size_t dim>
 	Point<dim>::Point (const EigVector<dim>& v) : _vec (v)
-	{};
+	{}
 
 	template <size_t dim>
 	Point<dim>::Point (const Point<dim>& x)
 	{
 		*this = x;
-	};
+	}
 
 	template <size_t dim>
 	Point<dim>& Point<dim>::operator= (const Point<dim>& x)
@@ -607,14 +607,14 @@ namespace Geometry
 			this->_vec = x._vec;
 
 		return *this;
-	};
+	}
 
 	template <size_t dim>
 	template <size_t dummy, typename enable_if< (dummy == 1), int>::type>
 	Point<dim>::operator double() const
 	{
 		return (this->_vec)[0];
-	};
+	}
 
 	template <size_t dim>
 	Point<dim>::operator array<double, dim> () const
@@ -623,45 +623,45 @@ namespace Geometry
 		for (size_t i = 0; i < dim; ++i)
 			result[i] = (this->_vec)[i];
 		return result;
-	};
+	}
 
 	template <size_t dim>
 	Point<dim> Point<dim>::operator * (double alfa) const
 	{
 		return Point<dim> (this->_vec * alfa);
-	};
+	}
 
 	template <size_t dim>
 	Point<dim>& Point<dim>::operator *= (double alfa)
 	{
 		this->_vec *= alfa;
 		return *this;
-	};
+	}
 
 	template <size_t dim>
 	Point<dim> Point<dim>::operator - (const Point<dim>& x) const
 	{
 		return Point<dim> (this->_vec - x._vec);
-	};
+	}
 
 	template <size_t dim>
 	Point<dim> Point<dim>::operator + (const Point<dim>& x) const
 	{
 		return Point<dim> (this->_vec + x._vec);
-	};
+	}
 
 
 	template <size_t dim>
 	double& Point<dim>::operator[] (size_t ind)
 	{
 		return (this->_vec) (ind);
-	};
+	}
 
 	template <size_t dim>
 	const double& Point<dim>::operator[] (size_t ind)const
 	{
 		return (this->_vec) (ind);
-	};
+	}
 
 	template <size_t dim>
 	template <size_t N>
@@ -676,20 +676,20 @@ namespace Geometry
 			result[dim + j] = p2[j];
 
 		return result;
-	};
+	}
 
 	template <size_t dim>
 	double Point<dim>::Abs() const
 	{
 		double result = (this->_vec).dot (this->_vec);
 		return sqrt (result);
-	};
+	}
 
 	template <size_t dim>
 	double Point<dim>::distance (Point<dim> const& x) const
 	{
 		return (*this - x).Abs();
-	};
+	}
 
 
 	template <size_t dim>
@@ -698,13 +698,13 @@ namespace Geometry
 		cout << *this;
 		if (newline)
 			cout << endl;
-	};
+	}
 
 	template <size_t dim>
 	Matrix<dim>::Matrix (const Matrix<dim>& m)
 	{
 		*this = m;
-	};
+	}
 
 	template <size_t dim>
 	Matrix<dim>& Matrix<dim>::operator= (const Matrix<dim>& m)
@@ -714,37 +714,37 @@ namespace Geometry
 			this->_mat = m._mat;
 		}
 		return *this;
-	};
+	}
 
 	template <size_t dim>
 	double& Matrix<dim>::operator() (size_t i, size_t j)
 	{
 		return (this->_mat) (i, j);
-	};
+	}
 
 	template <size_t dim>
 	const double& Matrix<dim>::operator() (size_t i, size_t j) const
 	{
 		return (this->_mat) (i, j);
-	};
+	}
 
 	template <size_t dim>
 	double Matrix<dim>::Determinant() const
 	{
 		return this->_mat.determinant();
-	};
+	}
 
 	template <size_t dim>
 	Matrix<dim> Matrix<dim>::Inverse() const
 	{
 		return Matrix<dim> (this->_mat.inverse());
-	};
+	}
 
 	template <size_t dim>
 	VectorPoint<dim>::VectorPoint (const VectorPoint<dim>& m)
 	{
 		*this = m;
-	};
+	}
 
 	template <size_t dim>
 	VectorPoint<dim>& VectorPoint<dim>::operator= (const VectorPoint<dim>& m)
@@ -754,19 +754,19 @@ namespace Geometry
 			this->_mat = m._mat;
 		}
 		return *this;
-	};
+	}
 
 	template <size_t dim>
 	size_t VectorPoint<dim>::Size() const
 	{
 		return this->_mat.cols();
-	};
+	}
 
 	template <size_t dim>
 	Point<dim> VectorPoint<dim>::operator[] (size_t c) const
 	{
 		return Point<dim> (_mat.col (c));
-	};
+	}
 
 	template <size_t dim>
 	void VectorPoint<dim>::Insert (size_t c, const Point<dim>& p)
@@ -792,7 +792,7 @@ namespace Geometry
 #endif //TRY_IT
 		}
 		_mat.col (c) = p._vec;
-	};
+	}
 
 } //namespace Geometry
 #endif //__POINT__HH

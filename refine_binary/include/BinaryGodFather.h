@@ -115,7 +115,7 @@ namespace BinaryTree
 			this->_elements.push_back (extract (begin));
 
 		SortElements();
-	};
+	}
 
 
 	template <size_t dim>
@@ -123,7 +123,7 @@ namespace BinaryTree
 	{
 		RecursiveSelector rs;
 		std::for_each (_elements.begin(), _elements.end(), rs);
-	};
+	}
 
 	template <size_t dim>
 	BinaryNode* DimensionedGodFather<dim>::MakeBisection()
@@ -141,7 +141,7 @@ namespace BinaryTree
 
 		gonna_be_divided->Bisect();
 		return gonna_be_divided;
-	};
+	}
 
 	template <size_t dim>
 	void DimensionedGodFather<dim>::SortElements()
@@ -155,7 +155,7 @@ namespace BinaryTree
 			{return n1->S()->Q() > n2->S()->Q();}
 		);
 //*INDENT-ON*
-	};
+	}
 
 }
 #endif //__BINARY_GOD_FATHER_H

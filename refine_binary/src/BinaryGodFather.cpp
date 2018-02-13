@@ -4,13 +4,13 @@ using namespace std;
 
 namespace BinaryTree
 {
-	RecursiveSelector::RecursiveSelector() {};
-	RecursiveSelector::~RecursiveSelector() {};
+	RecursiveSelector::RecursiveSelector() {}
+	RecursiveSelector::~RecursiveSelector() {}
 
 	void RecursiveSelector::operator() (BinaryNode* node)
 	{
 		SelectActiveNodesRecursively (node);
-	};
+	}
 
 	void RecursiveSelector::SelectActiveNodesRecursively (BinaryNode* node)
 	{
@@ -34,7 +34,7 @@ namespace BinaryTree
 				node->Deactivate();
 			}
 		}
-	};
+	}
 
 	void RecursiveSelector::DeactivateSubTree (BinaryNode* node)
 	{
@@ -44,6 +44,6 @@ namespace BinaryTree
 			DeactivateSubTree (node->Left());
 			DeactivateSubTree (node->Right());
 		}
-	};
+	}
 
 } //namespace BinaryTree

@@ -285,17 +285,17 @@ namespace FiniteElements
 			GenericFactory::TensorialBasisFactory<dim>::Instance());
 
 		_basis = move (basis_factory.create (FeType));
-	};
+	}
 
 	template <size_t dim, BasisType FeType>
 	AlmostStdFIperCube<dim, FeType>::~AlmostStdFIperCube()
-	{};
+	{}
 
 	template <size_t dim, BasisType FeType>
 	BasisType AlmostStdFIperCube<dim, FeType>::GetFeType() const
 	{
 		return FeType;
-	};
+	}
 
 	//TODO: optimize storing already evaluated points
 	template <size_t dim, BasisType FeType>
@@ -304,7 +304,7 @@ namespace FiniteElements
 							 const Geometry::Point<dim>& point) const
 	{
 		return this->_basis->Evaluate (ind, point);
-	};
+	}
 
 	template <size_t dim, BasisType FeType>
 	Geometry::Vector AlmostStdFIperCube<dim, FeType>
@@ -312,47 +312,47 @@ namespace FiniteElements
 					 const Geometry::Point<dim>& point) const
 	{
 		return this->_basis->EvaluateBasis (degree, point);
-	};
+	}
 
 	template <size_t dim, BasisType FeType>
 	size_t AlmostStdFIperCube<dim, FeType>::BasisSize (size_t degree) const
 	{
 		return this->_basis->ComputeSize (degree);
-	};
+	}
 
 	template <size_t dim, BasisType FeType>
 	Geometry::ElementType AlmostStdFIperCube<dim, FeType>::GetType() const
 	{
 		return this->_std_geometry->GetType();
-	};
+	}
 
 	template <size_t dim, BasisType FeType>
 	Geometry::QuadPointVec<dim> AlmostStdFIperCube<dim, FeType>
 	::GetQuadPoints() const
 	{
 		return this->_std_geometry->GetQuadPoints();
-	};
+	}
 
 	template <size_t dim, BasisType FeType>
 	Geometry::QuadWeightVec AlmostStdFIperCube<dim, FeType>
 	::GetQuadWeights() const
 	{
 		return this->_std_geometry->GetQuadWeights();
-	};
+	}
 
 	template <size_t dim, BasisType FeType>
 	size_t AlmostStdFIperCube<dim, FeType>::QuadratureOrder() const
 	{
 		return this->_std_geometry->QuadratureOrder();
-	};
+	}
 
 	template <size_t dim, BasisType FeType>
 	StdFIperCube<dim, FeType>::StdFIperCube() : AlmostStdFIperCube<dim, FeType>()
-	{};
+	{}
 
 	template <size_t dim, BasisType FeType>
 	StdFIperCube<dim, FeType>::~StdFIperCube()
-	{};
+	{}
 
 	template <size_t dim, BasisType FeType>
 	double StdFIperCube<dim, FeType>::ComputeNormSquared (size_t ind)
@@ -367,16 +367,16 @@ namespace FiniteElements
 								{return this->EvaluateBasisFunction (ind, p);}
 			 				);
 //*INDENT-ON*
-	};
+	}
 
 	template <size_t dim>
 	StdFIperCube<dim, LegendreType>::StdFIperCube() :
 		AlmostStdFIperCube<dim, LegendreType>()
-	{};
+	{}
 
 	template <size_t dim>
 	StdFIperCube<dim, LegendreType>::~StdFIperCube()
-	{};
+	{}
 
 	template <size_t dim>
 	double StdFIperCube<dim, LegendreType>::ComputeNormSquared (size_t ind)
@@ -387,7 +387,7 @@ namespace FiniteElements
 			inverse_norm *= static_cast<double> (k) + 0.5;
 
 		return 1 / inverse_norm;
-	};
+	}
 
 	template <size_t dim, Geometry::ElementType Type, BasisType FeType>
 	StdFElement<dim, Type, FeType>::StdFElement()
@@ -400,17 +400,17 @@ namespace FiniteElements
 
 		auto& std_map_factory (GenericFactory::StdMapFactory<dim>::Instance());
 		_ipercube_map = std_map_factory.create (Type);
-	};
+	}
 
 	template <size_t dim, Geometry::ElementType Type, BasisType FeType>
 	StdFElement<dim, Type, FeType>::~StdFElement()
-	{};
+	{}
 
 	template <size_t dim, Geometry::ElementType Type, BasisType FeType>
 	BasisType StdFElement<dim, Type, FeType>::GetFeType() const
 	{
 		return FeType;
-	};
+	}
 
 	//TODO: optimize storing already evaluated points
 	template <size_t dim, Geometry::ElementType Type, BasisType FeType>
@@ -419,7 +419,7 @@ namespace FiniteElements
 							 const Geometry::Point<dim>& point) const
 	{
 		return this->_std_cube->EvaluateBasisFunction (ind, MapBackward (point));
-	};
+	}
 
 	template <size_t dim, Geometry::ElementType Type, BasisType FeType>
 	Geometry::Vector StdFElement<dim, Type, FeType>
@@ -427,60 +427,60 @@ namespace FiniteElements
 					 const Geometry::Point<dim>& point) const
 	{
 		return this->_std_cube->EvaluateBasis (degree, MapBackward (point));
-	};
+	}
 
 	template <size_t dim, Geometry::ElementType Type, BasisType FeType>
 	size_t StdFElement<dim, Type, FeType>::BasisSize (size_t degree) const
 	{
 		return this->_std_cube->BasisSize (degree);
-	};
+	}
 
 	template <size_t dim, Geometry::ElementType Type, BasisType FeType>
 	Geometry::ElementType StdFElement<dim, Type, FeType>::GetType() const
 	{
 		return this->_std_geometry->GetType();
-	};
+	}
 
 	template <size_t dim, Geometry::ElementType Type, BasisType FeType>
 	Geometry::QuadPointVec<dim> StdFElement<dim, Type, FeType>
 	::GetQuadPoints() const
 	{
 		return this->_std_geometry->GetQuadPoints();
-	};
+	}
 
 	template <size_t dim, Geometry::ElementType Type, BasisType FeType>
 	Geometry::QuadWeightVec StdFElement<dim, Type, FeType>
 	::GetQuadWeights() const
 	{
 		return this->_std_geometry->GetQuadWeights();
-	};
+	}
 
 	template <size_t dim, Geometry::ElementType Type, BasisType FeType>
 	size_t StdFElement<dim, Type, FeType>::QuadratureOrder() const
 	{
 		return this->_std_geometry->QuadratureOrder();
-	};
+	}
 
 	template <size_t dim, Geometry::ElementType Type, BasisType FeType>
 	Geometry::Point<dim> StdFElement<dim, Type, FeType>
 	::MapBackward (const Geometry::Point<dim>& p) const
 	{
 		return this->_ipercube_map->ComputeInverse (p);
-	};
+	}
 
 	template <size_t dim, Geometry::ElementType Type, BasisType FeType>
 	Geometry::Point<dim> StdFElement<dim, Type, FeType>
 	::MapForward (const Geometry::Point<dim>& p) const
 	{
 		return this->_ipercube_map->Evaluate (p);
-	};
+	}
 
 	template <size_t dim, Geometry::ElementType Type, BasisType FeType>
 	double StdFElement<dim, Type, FeType>
 	::Jacobian (const Geometry::Point<dim>& p) const
 	{
 		return this->_ipercube_map->EvaluateJacobian (p);
-	};
+	}
 
 	template <size_t dim, Geometry::ElementType Type, BasisType FeType>
 	double StdFElement<dim, Type, FeType>::ComputeNormSquared (size_t ind)
@@ -495,7 +495,7 @@ namespace FiniteElements
 								{return this->EvaluateBasisFunction (ind, p);}
 							);
 //*INDENT-ON*
-	};
+	}
 
 	template <size_t dim, Geometry::ElementType Type, BasisType FeType>
 	void StdFElement<dim, Type, FeType>::UpdateNorms()
@@ -523,7 +523,7 @@ namespace FiniteElements
 								 	);
 //*INDENT-ON*
 		}
-	};
+	}
 
 } //namespace FiniteElements
 

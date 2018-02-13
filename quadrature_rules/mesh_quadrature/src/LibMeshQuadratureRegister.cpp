@@ -8,7 +8,7 @@ namespace LibmeshBinary
 {
 	__attribute__ ((destructor))
 	static void ExitFunction()
-	{};
+	{}
 
 	/**
 		Function doing quadrature rules builders registrations at plugin loading.
@@ -37,6 +37,6 @@ namespace LibmeshBinary
 												 Geometry::QuadratureRuleInterface<2>
 												>::BuildObject);
 
-	};
+	}
 } //namespace LibmeshBinary
 

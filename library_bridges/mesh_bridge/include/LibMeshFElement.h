@@ -110,7 +110,7 @@ namespace LibmeshBinary
 		std::cerr << "Warning: "
 				  << "I'm calling the LibmeshGeometry constructor without parameters"
 				  << std::endl;
-	};
+	}
 
 	template < size_t dim,
 			   FiniteElements::BasisType FeType,
@@ -129,7 +129,7 @@ namespace LibmeshBinary
 		std::unique_ptr<LibmeshGeometry> int_ptr (libmesh_interval);
 		_geom = std::move (int_ptr);
 		element = nullptr;
-	};
+	}
 
 	template < size_t dim,
 			   FiniteElements::BasisType FeType,
@@ -137,14 +137,14 @@ namespace LibmeshBinary
 	FElement<dim, FeType, LibmeshGeometry>
 	::FElement (std::unique_ptr<LibmeshGeometry> element) :
 		_geom (std::move (element))
-	{};
+	{}
 
 	template < size_t dim,
 			   FiniteElements::BasisType FeType,
 			   class LibmeshGeometry >
 	FElement<dim, FeType, LibmeshGeometry>
 	::~FElement()
-	{};
+	{}
 
 	template < size_t dim,
 			   FiniteElements::BasisType FeType,
@@ -153,7 +153,7 @@ namespace LibmeshBinary
 	::GetType() const
 	{
 		return ConvertLibmeshType (_geom->type());
-	};
+	}
 
 	template < size_t dim,
 			   FiniteElements::BasisType FeType,
@@ -172,7 +172,7 @@ namespace LibmeshBinary
 			result.Insert (i, p);
 		}
 		return result;
-	};
+	}
 
 	template < size_t dim,
 			   FiniteElements::BasisType FeType,
@@ -181,7 +181,7 @@ namespace LibmeshBinary
 	::GetGeometry() const
 	{
 		return *_geom;
-	};
+	}
 
 	template < size_t dim,
 			   FiniteElements::BasisType FeType,
@@ -190,7 +190,7 @@ namespace LibmeshBinary
 	::ReleaseGeometry()
 	{
 		return _geom.release();
-	};
+	}
 
 } //namespace LibmeshBinary
 #endif //__F_ELEMENT_H

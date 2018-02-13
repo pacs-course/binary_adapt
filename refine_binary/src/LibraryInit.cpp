@@ -2,7 +2,7 @@
 #include "PluginLoader.h"
 #include "StdFElementInterface.h"
 #include "MeshRefiner.h"
-#include "BinaryTreeHelper.h" //Cfgfile
+#include "HelpFile.h" //Cfgfile
 
 using namespace std;
 
@@ -93,5 +93,5 @@ namespace BinaryTree
 		StdFElementInterface<2, WarpedType>::InitNorms (n_iter);
 
 		return 0;
-	};
+	}
 } //namespace BinaryTree

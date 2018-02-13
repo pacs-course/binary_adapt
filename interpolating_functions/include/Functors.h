@@ -3,7 +3,7 @@
 
 #include "Functor.h"
 #include "MuParserInterface.h"
-#include "BinaryTreeHelper.h"
+#include "HelpFile.h" //Cfgfile
 
 /**
 	It contains implementation of functor objects that can be interpolated by the binary tree algorithm
@@ -213,35 +213,35 @@ namespace Functions
 			every time I call ParserFunctor::operator()
 			I do it once here */
 		CheckExpressionValidity();
-	};
+	}
 
 	template <size_t dim>
 	ParserFunctor<dim>::~ParserFunctor()
-	{};
+	{}
 
 	template <size_t dim>
 	ParserFunctor<dim>::ParserFunctor (const std::string& s) : _parser (s)
 	{
 		CheckExpressionValidity();
-	};
+	}
 
 	template <size_t dim>
 	double ParserFunctor<dim>::operator() (const Geometry::Point<dim>& p) const
 	{
 		return (this->_parser) (static_cast<std::array<double, dim>> (p));
-	};
+	}
 
 	template <size_t dim>
 	std::string ParserFunctor<dim>::Formula() const
 	{
 		return this->_parser.Expression();
-	};
+	}
 
 	template <size_t dim>
 	std::string ParserFunctor<dim>::ID() const
 	{
 		return "RENAME_ME_parsed_functor";
-	};
+	}
 
 
 	template <size_t dim>
@@ -265,61 +265,61 @@ namespace Functions
 			//I prefer to throw a runtime_error, since outside this plugin I don't see the mu:: namespace
 			throw std::runtime_error (error);
 		}
-	};
+	}
 
 	template <size_t exp>
 	XExpBeta<exp>::XExpBeta()
-	{};
+	{}
 
 	template <size_t exp>
 	XExpBeta<exp>::~XExpBeta()
-	{};
+	{}
 
 	template <size_t exp>
 	double XExpBeta<exp>::operator() (const Geometry::Point<1>& p) const
 	{
 		return Helpers::Power<exp> (p);
-	};
+	}
 
 	template <size_t exp>
 	std::string XExpBeta<exp>::Formula() const
 	{
 		return "x^" + std::to_string (exp);
-	};
+	}
 
 	template <size_t exp>
 	std::string XExpBeta<exp>::ID() const
 	{
 		return "x_" + std::to_string (exp);
-	};
+	}
 
 	template <int b_mu>
 	AdvectionDiffusionSolution<b_mu>::AdvectionDiffusionSolution()
-	{};
+	{}
 
 	template <int b_mu>
 	AdvectionDiffusionSolution<b_mu>::~AdvectionDiffusionSolution()
-	{};
+	{}
 
 	template <int b_mu>
 	double AdvectionDiffusionSolution<b_mu>
 	::operator() (const Geometry::Point<1>& p) const
 	{
 		return (exp (b_mu * static_cast<double> (p)) - 1) / (exp (b_mu) - 1);
-	};
+	}
 
 	template <int b_mu>
 	std::string AdvectionDiffusionSolution<b_mu>::Formula() const
 	{
 		return "(exp(" + std::to_string (b_mu) + "*x) - 1 ) / (exp("
 			+ std::to_string (b_mu) + ") - 1)";
-	};
+	}
 
 	template <int b_mu>
 	std::string AdvectionDiffusionSolution<b_mu>::ID() const
 	{
 		return "adv_diff_" + std::to_string (b_mu);
-	};
+	}
 
 } //namespace Functions
 

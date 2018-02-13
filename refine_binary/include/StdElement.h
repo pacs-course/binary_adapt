@@ -65,17 +65,17 @@ namespace Geometry
 	{
 		auto& quad_factory = QuadratureFactory<dim>::Instance();
 		_quadrature_rule = move (quad_factory.create (Type));
-	};
+	}
 
 	template <size_t dim, ElementType Type>
 	StdElement<dim, Type>::~StdElement()
-	{};
+	{}
 
 	template <size_t dim, ElementType Type>
 	ElementType StdElement<dim, Type>::GetType() const
 	{
 		return Type;
-	};
+	}
 
 	template <size_t dim, ElementType Type>
 	QuadPointVec<dim> StdElement<dim, Type>::GetQuadPoints() const
@@ -83,19 +83,19 @@ namespace Geometry
 		//TODO: verify if it's convenient to store
 		//the quadrature nodes and weights as an attribute of the element
 		return _quadrature_rule->GetPoints();
-	};
+	}
 
 	template <size_t dim, ElementType Type>
 	QuadWeightVec StdElement<dim, Type>::GetQuadWeights() const
 	{
 		return _quadrature_rule->GetWeights();
-	};
+	}
 
 	template <size_t dim, ElementType Type>
 	size_t StdElement<dim, Type>::QuadratureOrder() const
 	{
 		return _quadrature_rule->Order();
-	};
+	}
 
 
 	/*
@@ -160,5 +160,5 @@ namespace Geometry
 	template <size_t dim>
 	using StdIperCube = typename detail::alias<dim>::AliasIperCube;
 
-};//namespace Geometry
+}//namespace Geometry
 #endif //__STD_ELEMENT_H

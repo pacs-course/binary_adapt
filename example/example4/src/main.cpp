@@ -25,7 +25,7 @@
 #include <stdio.h> //remove
 
 #include "LibraryInit.h"
-#include "BinaryTreeHelper.h"
+#include "HelpFile.h" //Logfile
 
 #include "LibMeshRefiner.h"
 #include "LibMeshBinaryElements.h"

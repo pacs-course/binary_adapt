@@ -15,7 +15,7 @@ namespace LibmeshBinary
 		   it insert the new key in the container calling the default constructor
 		   for the bool type mapped value, which is false */
 		return _boolean_map[&mesh];
-	};
+	}
 
 	template <>
 	libMesh::Elem* BinarityMap::BinarizeNode<1> (
@@ -39,7 +39,7 @@ namespace LibmeshBinary
 					+ " type node");
 		}
 		return result;
-	};
+	}
 
 	template <>
 	libMesh::Elem* BinarityMap
@@ -63,7 +63,7 @@ namespace LibmeshBinary
 					+ " type node");
 		}
 		return result;
-	};
+	}
 
 } //namespace LibmeshBinary
 

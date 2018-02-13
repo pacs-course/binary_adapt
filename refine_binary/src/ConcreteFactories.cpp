@@ -21,7 +21,7 @@ namespace GenericFactory
 				AffineMap<1>
 				>::BuildObject
 			);
-	};
+	}
 
 	template <>
 	Factory <AffineMap<2>,
@@ -34,7 +34,7 @@ namespace GenericFactory
 				AffineMap<2>
 				>::BuildObject
 			);
-	};
+	}
 
 	template <>
 	Factory <Map<2>,
@@ -47,7 +47,7 @@ namespace GenericFactory
 				Map<2>
 				>::BuildObject
 			);
-	};
+	}
 
 	template <>
 	Factory <TensorialBasis<1>,
@@ -60,7 +60,7 @@ namespace GenericFactory
 				TensorialBasis<1>
 				>::BuildObject
 			);
-	};
+	}
 
 	template <>
 	Factory <TensorialBasis<2>,
@@ -80,7 +80,7 @@ namespace GenericFactory
 				TensorialBasis<2>
 				>::BuildObject
 			);
-	};
+	}
 
 	template <>
 	Factory <StdFElementInterface<1, LegendreType>,
@@ -93,7 +93,7 @@ namespace GenericFactory
 				StdFElementInterface<1, LegendreType>
 				>::BuildSingleton
 			);
-	};
+	}
 
 	template <>
 	Factory <StdFElementInterface<2, LegendreType>,
@@ -106,7 +106,7 @@ namespace GenericFactory
 				StdFElementInterface<2, LegendreType>
 				>::BuildSingleton
 			);
-	};
+	}
 
 	template <>
 	Factory <StdFElementInterface<2, WarpedType>,
@@ -119,7 +119,7 @@ namespace GenericFactory
 				StdFElementInterface<2, WarpedType>
 				>::BuildSingleton
 			);
-	};
+	}
 
 } //namespace GenericFactory
 

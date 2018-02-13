@@ -3,7 +3,7 @@
 
 #include "gtest/gtest.h"
 
-#include "BinaryTreeHelper.h" //Logfile
+#include "HelpFile.h" //Logfile
 
 /**
 	Configuration class redirecting buffers.

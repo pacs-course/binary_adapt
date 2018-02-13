@@ -6,25 +6,25 @@ namespace LibmeshBinary
 	libMesh::ElemType ConvertType<Geometry::IntervalType> ()
 	{
 		return LibmeshIntervalType;
-	};
+	}
 
 	template <>
 	libMesh::ElemType ConvertType<Geometry::SquareType> ()
 	{
 		return LibmeshSquareType;
-	};
+	}
 
 	template <>
 	libMesh::ElemType ConvertType<Geometry::TriangleType> ()
 	{
 		return LibmeshTriangleType;
-	};
+	}
 
 	template <>
 	libMesh::ElemType ConvertType<Geometry::CubeType> ()
 	{
 		return LibmeshCubeType;
-	};
+	}
 
 	Geometry::ElementType ConvertLibmeshType (libMesh::ElemType type)
 	{
@@ -52,7 +52,7 @@ namespace LibmeshBinary
 				break;
 		};
 		return result;
-	};
+	}
 
 	libMesh::QuadratureType ConvertQuadType (std::string type)
 	{
@@ -70,7 +70,7 @@ namespace LibmeshBinary
 		if (type == "QCOMPOSITE")		 return libMesh::QCOMPOSITE;
 
 		return libMesh::INVALID_Q_RULE;
-	};
+	}
 
 } //namespace LibmeshBinary
 

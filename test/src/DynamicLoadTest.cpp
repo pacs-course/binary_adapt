@@ -15,7 +15,7 @@ TEST_F (LoadTest, IsRegistered)
 	EXPECT_NE (quad_ptr.get(), nullptr);
 
 	clog << "IsRegisterd ended" << endl << endl;
-};
+}
 
 
 TEST_F (LoadTest, StdIntegration)
@@ -257,7 +257,7 @@ TEST_F (LoadTest, StdIntegration)
 
 	//TODO : check other integrals
 	clog << "StdIntegration ended" << endl << endl;
-};
+}
 
 TEST_F (LoadTest, IntervalLegendreOrthonormality)
 {
@@ -323,8 +323,7 @@ TEST_F (LoadTest, IntervalLegendreOrthonormality)
 	//TODO: add automated checks on values not exactly integrated
 
 	clog << "IntervalLegendreOrthonormality ended" << endl << endl;
-
-};
+}
 
 TEST_F (LoadTest, SquareLegendreOrthonormality)
 {
@@ -403,8 +402,7 @@ TEST_F (LoadTest, SquareLegendreOrthonormality)
 	//TODO: add automated checks on values not exactly integrated
 
 	clog << "SquareLegendreOrthonormality ended" << endl << endl;
-
-};
+}
 
 TEST_F (LoadTest, WarpedOrthogonality)
 {
@@ -444,5 +442,5 @@ TEST_F (LoadTest, WarpedOrthogonality)
 	//TODO: add automated checks on values not exactly integrated
 
 	clog << "WarpedOrthogonality ended" << endl << endl;
-};
+}
 

@@ -12,7 +12,7 @@ namespace GenericFactory
 	FactoryBase& InstanceHolder::FactoryInstance (const string& factory_name)
 	{
 		return * (_holder.at (factory_name));
-	};
+	}
 
 	FactoryBase& InstanceHolder::AddInstance (const string& factory_name,
 											  unique_ptr<FactoryBase> instance)
@@ -20,5 +20,5 @@ namespace GenericFactory
 		auto& ptr = _holder[factory_name];
 		ptr = move (instance);
 		return * (ptr);
-	};
+	}
 } //namespace GenericFactory

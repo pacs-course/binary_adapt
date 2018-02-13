@@ -154,13 +154,13 @@ namespace LibmeshBinary
 				f,
 				new FElement <dim, FeType, LibmeshGeometry> (move (element_ptr))),
 			_mesh_refinement (mesh_refinement)
-	{};
+	{}
 
 	template < size_t dim,
 			   FiniteElements::BasisType FeType,
 			   class LibmeshGeometry >
 	BinaryTreeElement<dim, FeType, LibmeshGeometry>::~BinaryTreeElement()
-	{};
+	{}
 
 	template < size_t dim,
 			   FiniteElements::BasisType FeType,
@@ -172,7 +172,7 @@ namespace LibmeshBinary
 			return BinarityMap::AsBinary<dim> (this->child (0));
 
 		return nullptr;
-	};
+	}
 
 	template < size_t dim,
 			   FiniteElements::BasisType FeType,
@@ -184,7 +184,7 @@ namespace LibmeshBinary
 			return BinarityMap::AsBinary<dim> (this->child (1));
 
 		return nullptr;
-	};
+	}
 
 	template < size_t dim,
 			   FiniteElements::BasisType FeType,
@@ -193,7 +193,7 @@ namespace LibmeshBinary
 	::Dad()
 	{
 		return BinarityMap::AsBinary<dim> (this->parent());
-	};
+	}
 
 	template < size_t dim,
 			   FiniteElements::BasisType FeType,
@@ -202,7 +202,7 @@ namespace LibmeshBinary
 	::NodeID()
 	{
 		return static_cast<size_t> (this->id());
-	};
+	}
 
 	template < size_t dim,
 			   FiniteElements::BasisType FeType,
@@ -220,7 +220,7 @@ namespace LibmeshBinary
 		libMesh::Elem::refine (this->_mesh_refinement);
 
 		BinarityMap::MakeBinary<dim> (this->_mesh_refinement, this->_f);
-	};
+	}
 
 	template < size_t dim,
 			   FiniteElements::BasisType FeType,
@@ -234,7 +234,7 @@ namespace LibmeshBinary
 
 		if (! (this->active()))
 			this->set_refinement_flag (libMesh::Elem::JUST_REFINED);
-	};
+	}
 
 	template < size_t dim,
 			   FiniteElements::BasisType FeType,
@@ -244,8 +244,8 @@ namespace LibmeshBinary
 	{
 		if (this->active())
 			this->set_refinement_flag (libMesh::Elem::INACTIVE);
-	};
+	}
 
-}; //namespace LibmeshBinary
+} //namespace LibmeshBinary
 
 #endif //__LIBMESH_BINARY_ELEMENT_H

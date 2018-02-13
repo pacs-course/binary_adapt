@@ -174,11 +174,11 @@ namespace FiniteElements
 	template <size_t dim, BasisType FeType>
 	AbstractFElement<dim, FeType>::AbstractFElement() : _p_level (0),
 		_initialized (false), _ref_felement (nullptr)
-	{};
+	{}
 
 	template <size_t dim, BasisType FeType>
 	AbstractFElement<dim, FeType>::~AbstractFElement()
-	{};
+	{}
 
 	template <size_t dim, BasisType FeType>
 	void AbstractFElement<dim, FeType>::Init()
@@ -197,13 +197,13 @@ namespace FiniteElements
 			this->_map -> Init (GetNodes());
 			this->_initialized = true;
 		}
-	};
+	}
 
 	template <size_t dim, BasisType FeType>
 	BasisType AbstractFElement<dim, FeType>::GetFeType() const
 	{
 		return FeType;
-	};
+	}
 
 	//TODO: verify if it's convenient to store the quadrature nodes and weights as an attribute of the element
 	template <size_t dim, BasisType FeType>
@@ -215,7 +215,7 @@ namespace FiniteElements
 		auto points = _ref_felement->GetQuadPoints();
 
 		return _map->Evaluate (points);
-	};
+	}
 
 	template <size_t dim, BasisType FeType>
 	Geometry::QuadWeightVec AbstractFElement<dim, FeType>
@@ -234,14 +234,14 @@ namespace FiniteElements
 			weights[i] *= jac;
 
 		return weights;
-	};
+	}
 
 	template <size_t dim, BasisType FeType>
 	size_t AbstractFElement<dim, FeType>::QuadratureOrder() const
 	{
 		CheckInitialization();
 		return _ref_felement->QuadratureOrder();
-	};
+	}
 
 	//TODO: optimize storing already evaluated points
 	template <size_t dim, BasisType FeType>
@@ -251,7 +251,7 @@ namespace FiniteElements
 	{
 		CheckInitialization();
 		return _ref_felement->EvaluateBasisFunction (ind, _map->ComputeInverse (point));
-	};
+	}
 
 	//TODO: optimize storing already evaluated points
 	template <size_t dim, BasisType FeType>
@@ -261,33 +261,33 @@ namespace FiniteElements
 		CheckInitialization();
 		return this->_ref_felement->EvaluateBasis (this->_p_level,
 												   _map->ComputeInverse (point));
-	};
+	}
 
 	template <size_t dim, BasisType FeType>
 	size_t AbstractFElement<dim, FeType>::BasisSize (size_t degree) const
 	{
 		CheckInitialization();
 		return _ref_felement->BasisSize (degree);
-	};
+	}
 
 	template <size_t dim, BasisType FeType>
 	size_t AbstractFElement<dim, FeType>::BasisSize() const
 	{
 		CheckInitialization();
 		return _ref_felement->BasisSize (this->_p_level);
-	};
+	}
 
 	template <size_t dim, BasisType FeType>
 	size_t AbstractFElement<dim, FeType>::PLevel() const
 	{
 		return this->_p_level;
-	};
+	}
 
 	template <size_t dim, BasisType FeType>
 	void AbstractFElement<dim, FeType>::PLevel (size_t new_p)
 	{
 		this->_p_level = new_p;
-	};
+	}
 
 	template <size_t dim, BasisType FeType>
 	double AbstractFElement<dim, FeType>::BasisNormSquared (size_t ind) const
@@ -295,22 +295,22 @@ namespace FiniteElements
 		double std_norm = this->_ref_felement->BasisNormSquared (ind);
 		double J = this->_map->Jacobian();
 		return std_norm * J;
-	};
+	}
 
 	template <size_t dim, BasisType FeType>
 	const Geometry::AffineMap<dim>& AbstractFElement<dim, FeType>::UseMap() const
 	{
 		CheckInitialization();
 		return * (this->_map);
-	};
+	}
 
 	template <size_t dim, BasisType FeType>
 	void AbstractFElement<dim, FeType>::CheckInitialization() const
 	{
 		if (!_initialized)
 			throw runtime_error ("Trying to use uninitialized element");
-	};
+	}
 
-};//namespace FiniteElements
+}//namespace FiniteElements
 
 #endif //__ABSTRACT_F_ELEMENT_H

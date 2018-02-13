@@ -21,7 +21,7 @@
 #include <stdio.h> //remove
 
 #include "LibraryInit.h"
-#include "BinaryTreeHelper.h"
+#include "HelpFile.h" //Logfile
 
 #include "LibMeshRefiner.h"
 #include "LibMeshBinaryElements.h"
@@ -43,7 +43,7 @@ void PrintHelp()
 	cout << "All info are in the README file" << endl;
 	cout << "Manually set the configuration file with" << endl;
 	cout << "	conf_file = path/to/file" << endl;
-};
+}
 
 
 int main (int argc, char** argv)

@@ -34,7 +34,7 @@ namespace LibmeshBinary
 	libMesh::ElemType ConvertType()
 	{
 		return LibmeshInvalidType;
-	};
+	}
 
 	template <>
 	libMesh::ElemType ConvertType<Geometry::IntervalType> ();
@@ -69,7 +69,7 @@ namespace LibmeshBinary
 			iter = point (i++);
 
 		return result;
-	};
+	}
 
 } //namespace LibmeshBinary
 #endif //__LIBMESH_HELPER_H

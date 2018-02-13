@@ -186,17 +186,17 @@ namespace LibmeshBinary
 		_mesh_ptr (nullptr),
 		_mesh_refinement_ptr (nullptr),
 		_mesh_initialized (false)
-	{};
+	{}
 
 	template <size_t dim>
 	LibmeshRefiner<dim>::~LibmeshRefiner()
-	{};
+	{}
 
 	template <size_t dim>
 	void LibmeshRefiner<dim>::Init (std::unique_ptr<BinaryTree::Functor<dim>> f)
 	{
 		BinaryTree::MeshRefiner<dim>::Init (std::move (f));
-	};
+	}
 
 	template <size_t dim>
 	void LibmeshRefiner<dim>::Init (std::string functor_id)
@@ -204,7 +204,7 @@ namespace LibmeshBinary
 		auto& f_factory (BinaryTree::FunctionsFactory<dim>::Instance());
 		BinaryTree::MeshRefiner<dim>::Init (
 			std::move (f_factory.create (functor_id)));
-	};
+	}
 
 	template <size_t dim>
 	void LibmeshRefiner<dim>::SetMesh (std::shared_ptr<libMesh::MeshBase> mesh_ptr)
@@ -218,7 +218,7 @@ namespace LibmeshBinary
 									  this->_objective_function);
 		InitializeGodfather();
 		this->_mesh_initialized = true;
-	};
+	}
 
 	template <size_t dim>
 	std::shared_ptr<libMesh::MeshBase> LibmeshRefiner<dim>::GetMesh() const
@@ -235,7 +235,7 @@ namespace LibmeshBinary
 				the class that owns the LibMeshInit communicator");
 
 		return this->_mesh_ptr;
-	};
+	}
 
 	template <size_t dim>
 	void LibmeshRefiner<dim>::MeshDerivedLoading (std::string input)
@@ -254,7 +254,7 @@ namespace LibmeshBinary
 		//TODO: verify if it could be better to put it at the end of the Init method
 		BinarityMap::MakeBinary<dim> (* (this->_mesh_refinement_ptr),
 									  this->_objective_function);
-	};
+	}
 
 	template <size_t dim>
 	void LibmeshRefiner<dim>::ExportMesh (std::string output) const
@@ -269,7 +269,7 @@ namespace LibmeshBinary
 				(binarize a boundary object is meaningless in our
 				context. Note that, since the pointer to the non binary element is stored inside the binary one, probably the
 				"unbinarization" does not request much effort */
-	};
+	}
 
 	template <size_t dim>
 	void LibmeshRefiner<dim>::IterateActiveNodes (BinaryTree::ConstOperator& func)
@@ -280,7 +280,7 @@ namespace LibmeshBinary
 						[&func]													//*NOPAD*
 						(const libMesh::Elem * el_ptr)							//*NOPAD*
 						{return func (BinarityMap::AsBinary<dim> (el_ptr));});	//*NOPAD*
-	};
+	}
 
 	template <size_t dim>
 	void LibmeshRefiner<dim>
@@ -291,7 +291,7 @@ namespace LibmeshBinary
 						[&func]													//*NOPAD*
 						(const libMesh::Elem * el_ptr)							//*NOPAD*
 						{return func (BinarityMap::AsBinary<dim> (el_ptr));});	//*NOPAD*
-	};
+	}
 
 
 	template <size_t dim>
@@ -302,7 +302,7 @@ namespace LibmeshBinary
 						[&func]													//*NOPAD*
 						(libMesh::Elem * el_ptr)								//*NOPAD*
 						{return func (BinarityMap::AsBinary<dim> (el_ptr));});	//*NOPAD*
-	};
+	}
 
 	template <size_t dim>
 	void LibmeshRefiner<dim>::IterateActive (BinaryTree::DimOperator<dim>& func)
@@ -312,7 +312,7 @@ namespace LibmeshBinary
 						[&func]													//*NOPAD*
 						(libMesh::Elem * el_ptr)								//*NOPAD*
 						{return func (BinarityMap::AsBinary<dim> (el_ptr));});	//*NOPAD*
-	};
+	}
 
 
 	template <size_t dim>
@@ -328,7 +328,7 @@ namespace LibmeshBinary
 			Helpers::MakeUnique<libMesh::MeshRefinement> (*_mesh_ptr);
 
 		this->_mesh_initialized = true;
-	};
+	}
 
 	template <size_t dim>
 	void LibmeshRefiner<dim>::InitializeGodfather()
@@ -339,14 +339,14 @@ namespace LibmeshBinary
 			[]												//*NOPAD*
 			(Iterator iter)									//*NOPAD*
 			{return BinarityMap::AsBinary<dim> (*iter);} );	//*NOPAD*
-	};
+	}
 
 	template <size_t dim>
 	void LibmeshRefiner<dim>::CheckMeshInitialization() const
 	{
 		if (! (this->_mesh_initialized))
 			throw runtime_error ("Trying to use an uninitialized mesh");
-	};
+	}
 
 } //namespace LibmeshBinary
 #endif //__LIBMESH_REFINER_H

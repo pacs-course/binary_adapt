@@ -4,53 +4,53 @@ using namespace std;
 
 namespace BinaryTree
 {
-	NodeOperator::NodeOperator() {};
-	NodeOperator::~NodeOperator() {};
+	NodeOperator::NodeOperator() {}
+	NodeOperator::~NodeOperator() {}
 
-	ConstOperator::ConstOperator() {};
-	ConstOperator::~ConstOperator() {};
+	ConstOperator::ConstOperator() {}
+	ConstOperator::~ConstOperator() {}
 
-	Counter::Counter() : _counter (0) {};
-	Counter::~Counter() {};
+	Counter::Counter() : _counter (0) {}
+	Counter::~Counter() {}
 
 	void Counter::operator() (const BinaryNode*)
 	{
 		++ (this->_counter);
-	};
+	}
 
 	size_t Counter::GetCount()const
 	{
 		return this->_counter;
-	};
+	}
 
 	ErrorComputer::ErrorComputer (double& error_location) : 
 		_error_variable (error_location)
-	{};
+	{}
 
-	ErrorComputer::~ErrorComputer() {};
+	ErrorComputer::~ErrorComputer() {}
 
 	void ErrorComputer::operator() (BinaryNode* node)
 	{
 		(this->_error_variable) += node->ProjectionError();
-	};
+	}
 
 	void ErrorComputer::ResetError()
 	{
 		this->_error_variable = 0;
-	};
+	}
 
-	PlevelsExtractor::PlevelsExtractor() : _p_levels() {};
-	PlevelsExtractor::~PlevelsExtractor() {};
+	PlevelsExtractor::PlevelsExtractor() : _p_levels() {}
+	PlevelsExtractor::~PlevelsExtractor() {}
 
 	void PlevelsExtractor::operator() (const BinaryNode* node)
 	{
 		this->_p_levels.push_back (node->PLevel());
-	};
+	}
 
 	vector<size_t> PlevelsExtractor::GetPLevels() const
 	{
 		return this->_p_levels;
-	};
+	}
 
 	GnuPlotPrinter::GnuPlotPrinter (ofstream& output_file) :
 		ConstDimOperator<1>(),
@@ -59,8 +59,8 @@ namespace BinaryTree
 		_x_max (0),
 		_p_max (0),
 		_cont (0)
-	{};
-	GnuPlotPrinter::~GnuPlotPrinter() {};
+	{}
+	GnuPlotPrinter::~GnuPlotPrinter() {}
 
 	void GnuPlotPrinter::operator() (const DimensionedNode<1>* node)
 	{
@@ -91,27 +91,27 @@ namespace BinaryTree
 				   + " : 1/0";
 
 		(this->_output_file) << f_s << endl;
-	};
+	}
 
 	double GnuPlotPrinter::XMin() const
 	{
 		return this->_x_min;
-	};
+	}
 
 	double GnuPlotPrinter::XMax() const
 	{
 		return this->_x_max;
-	};
+	}
 
 	size_t GnuPlotPrinter::PMax() const
 	{
 		return this->_p_max;
-	};
+	}
 
 	vector<double> GnuPlotPrinter::XLeftVec() const
 	{
 		return this->_x_left_vec;
-	};
+	}
 
 	ProjectionPrinter::ProjectionPrinter (ofstream& output_file,
 										  double x_step) :
@@ -119,7 +119,7 @@ namespace BinaryTree
 		_x_step (x_step)
 	{}
 
-	ProjectionPrinter::~ProjectionPrinter() {};
+	ProjectionPrinter::~ProjectionPrinter() {}
 
 	void ProjectionPrinter::operator() (const DimensionedNode<1>* node)
 	{
@@ -129,5 +129,5 @@ namespace BinaryTree
 		double x_right = nodes[1];
 		for (; x_left < x_right; x_left += this->_x_step)
 			this->_output_file << x_left << "	" << node->Projection (x_left) << endl;
-	};
+	}
 } //namespace BinaryTree

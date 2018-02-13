@@ -152,7 +152,7 @@ namespace LibmeshBinary
 
 		/* After the binarization I update the map */
 		_boolean_map[&mesh] = true;
-	};
+	}
 
 	//TODO: optimize the function in order to not check for all the elements if the cast has already been done (maybe give the element you want to binarize as input parameter, setted nullptr by default, and if it is nullptr check all the elements)
 	template <size_t dim, class BinaryClass, class LibmeshClass>
@@ -209,20 +209,20 @@ namespace LibmeshBinary
 		}
 
 		return result;
-	};
+	}
 
 	template <size_t dim>
 	BinaryTree::DimensionedNode<dim>* BinarityMap::AsBinary (libMesh::Elem* el)
 	{
 		return dynamic_cast<BinaryTree::DimensionedNode<dim>*> (el);
-	};
+	}
 
 	template <size_t dim>
 	const BinaryTree::DimensionedNode<dim>* BinarityMap::AsBinary (
 		const libMesh::Elem* el)
 	{
 		return dynamic_cast<const BinaryTree::DimensionedNode<dim>*> (el);
-	};
+	}
 
 	template <size_t dim>
 	libMesh::Elem* BinarityMap::BinarizeNode (
@@ -235,7 +235,7 @@ namespace LibmeshBinary
 		throw invalid_argument (
 			"Cannot handle an element of dimension " + to_string (dim));
 		return nullptr;
-	};
+	}
 
 	template <>
 	libMesh::Elem* BinarityMap::BinarizeNode<1> (libMesh::Elem* el_ptr,

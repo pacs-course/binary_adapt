@@ -8,7 +8,7 @@ namespace SandiaQuadrature
 {
 	__attribute__ ((destructor))
 	static void ExitFunction()
-	{};
+	{}
 
 	/**
 		Function doing quadrature rules builders registrations at plugin loading.
@@ -30,6 +30,6 @@ namespace SandiaQuadrature
 							 &Helpers::Builders <SandiaQuadratureRule<2>,
 												 Geometry::QuadratureRuleInterface<2>
 												>::BuildObject);
-	};
+	}
 } //namespace LibmeshBinary
 

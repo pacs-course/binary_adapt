@@ -171,13 +171,13 @@ namespace FiniteElements
 
 	template <size_t dim>
 	AbstractBasis<dim>::AbstractBasis() : _size_map (1, 1)
-	{};
+	{}
 
 	template <size_t dim>
 	void AbstractBasis<dim>::Copy (const AbstractBasis<dim>& basis)
 	{
 		this->_size_map = basis._size_map;
-	};
+	}
 
 	template <size_t dim>
 	size_t AbstractBasis<dim>::ComputeSize (const size_t& degree)
@@ -204,18 +204,18 @@ namespace FiniteElements
 			}
 		}
 		return (this->_size_map)[degree];
-	};
+	}
 
 	template <size_t dim>
 	TensorialBasis<dim>::TensorialBasis() : AbstractBasis<dim>()
-	{};
+	{}
 
 	template <size_t dim>
 	void TensorialBasis<dim>::Copy (const TensorialBasis<dim>& basis)
 	{
 		AbstractBasis<dim>::Copy (basis);
 		this->_tensorial_indexes = basis._tensorial_indexes;
-	};
+	}
 
 	template <size_t dim>
 	void TensorialBasis<dim>::UpdateSize (size_t new_length)
@@ -241,7 +241,7 @@ namespace FiniteElements
 				Filler<dim>::FillIndexes (previous_end, current_degree);
 			}
 		}
-	};
+	}
 
 	template <size_t dim>
 	Geometry::Vector TensorialBasis<dim>::EvaluateBasis (size_t degree,
@@ -254,7 +254,7 @@ namespace FiniteElements
 			result[i] = Evaluate (i, p);
 
 		return result;
-	};
+	}
 
 	template <size_t dim>
 	double TensorialBasis<dim>::Evaluate (size_t ind, const Geometry::Point<dim>& p)
@@ -270,7 +270,7 @@ namespace FiniteElements
 			result *= OneDEvaluation (* (ind_iter++), * (point_iter++));
 
 		return result;
-	};
+	}
 
 
 	template <size_t dim>
@@ -282,7 +282,7 @@ namespace FiniteElements
 				cout << ind << " ";
 			cout << endl;
 		}
-	};
+	}
 
 	template <size_t dim>
 	array<size_t, dim> TensorialBasis<dim>::GetIndexes (size_t ind)
@@ -290,7 +290,7 @@ namespace FiniteElements
 		UpdateSize (ind + 1);
 
 		return (this->_tensorial_indexes)[ind];
-	};
+	}
 
 	template <size_t dim, size_t d>
 	void Filler<dim, d>::FillIndexes (typename IndexVector<dim>::iterator& iter,
@@ -301,7 +301,7 @@ namespace FiniteElements
 			(*iter)[d - 1] = current_degree;
 			Filler < dim, d - 1 >::FillIndexes (iter, degree - current_degree);
 		}
-	};
+	}
 
 	/**
 		Partial specialization to end the recursion
@@ -318,9 +318,9 @@ namespace FiniteElements
 	{
 		(*iter)[0] = degree;
 		++iter;
-	};
+	}
 
-};//namespace FiniteElements
+}//namespace FiniteElements
 
 #endif //__BASIS__HH
 

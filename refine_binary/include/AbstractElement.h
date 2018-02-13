@@ -102,7 +102,7 @@ namespace Geometry
 
 	template <size_t dim>
 	AbstractElement<dim>::~AbstractElement()
-	{};
+	{}
 
 	template <size_t dim>
 	double AbstractElement<dim>::Integrate (const function<double (Point<dim>)>& f)
@@ -125,7 +125,7 @@ namespace Geometry
 		}
 
 		return fval.Dot (weights);
-	};
+	}
 
 	template <size_t dim>
 	ColumnVector AbstractElement<dim>
@@ -155,21 +155,21 @@ namespace Geometry
 		}
 
 		return (multi_fval * weights);
-	};
+	}
 
 	template <size_t dim>
 	template <typename F1, typename F2>
 	double AbstractElement<dim>::L2Prod (const F1& f, const F2& g) const
 	{
 		return Integrate ([&] (const Point<dim>& p) {return f (p) * g (p);});
-	};
+	}
 
 	template <size_t dim>
 	template <typename F>
 	double AbstractElement<dim>::L2Norm (const F& f) const
 	{
 		return sqrt (L2Prod (f, f));
-	};
+	}
 
 } //namespace Geometry
 

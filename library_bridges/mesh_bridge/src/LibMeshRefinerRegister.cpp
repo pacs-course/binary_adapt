@@ -8,7 +8,7 @@ namespace LibmeshBinary
 {
 	__attribute__ ((destructor))
 	static void ExitFunction()
-	{};
+	{}
 
 	/**
 		Function doing LibMeshRefiner builder registration at plugin loading.
@@ -31,5 +31,5 @@ namespace LibmeshBinary
 							 &Helpers::Builders <LibmeshRefiner<2>,
 												 BinaryTree::MeshRefiner<2>
 												>::BuildObject);
-	};
+	}
 } //namespace LibmeshBinary

@@ -293,7 +293,7 @@ namespace BinaryTree
 		DerivedInitialization (argc, argv);
 
 		this->_initialized = true;
-	};
+	}
 
 	template <size_t dim>
 	void MeshRefiner<dim>::Init (std::unique_ptr<Functor<dim>> f_ptr)
@@ -302,14 +302,14 @@ namespace BinaryTree
 		    since I need to share it with the BinaryNode elements */
 		this->_objective_function = FunctionPtr<dim> (f_ptr.release());
 		this->_initialized = true;
-	};
+	}
 
 	template <size_t dim>
 	void MeshRefiner<dim>::CheckInitialization() const
 	{
 		if (! (this->_initialized))
 			throw std::runtime_error ("Trying to use an uninitialized refiner");
-	};
+	}
 
 	template <size_t dim>
 	void MeshRefiner<dim>::LoadMesh(std::string input)
@@ -317,7 +317,7 @@ namespace BinaryTree
 		this->CheckInitialization();
 		this->MeshDerivedLoading(input);
 		this->InitializeGodfather();
-	};
+	}
 
 	template <size_t dim>
 	void MeshRefiner<dim>::UpdateGlobalError()
@@ -326,14 +326,15 @@ namespace BinaryTree
 		err_cp.ResetError();
 		IterateActiveNodes (err_cp);
 		this->_error_updated = true;
-	};
+	}
 
 
 	/**
 		In case no variadic argument is passed
 	**/
 	template <typename... Args>
-	void Execute() {};
+	void Execute()
+	{}
 
 	/**
 		End of the recursion
@@ -342,7 +343,7 @@ namespace BinaryTree
 	void Execute (T f)
 	{
 		f();
-	};
+	}
 
 	/**
 		Function which simply calls in sequence the functors passed by arguments.
@@ -353,7 +354,7 @@ namespace BinaryTree
 	{
 		f();
 		Execute (funcs...);
-	};
+	}
 
 
 	template <size_t dim>
@@ -404,7 +405,7 @@ namespace BinaryTree
 			++n_iter;
 		}
 		this->_error_updated = false;
-	};
+	}
 
 	template <size_t dim>
 	void MeshRefiner<dim>::Refine (size_t max_iter)
@@ -421,7 +422,7 @@ namespace BinaryTree
 
 		(this->_godfather).SelectActiveNodes();
 		this->_error_updated = false;
-	};
+	}
 
 	template <size_t dim>
 	void MeshRefiner<dim>::ClimbUp (BinaryNode* leaf_dad)
@@ -460,7 +461,7 @@ namespace BinaryTree
 			previous_daddy = daddy;
 			daddy = previous_daddy->Dad();
 		} //while(daddy)
-	};
+	}
 
 	template <size_t dim>
 	double MeshRefiner<dim>::GlobalError()
@@ -471,7 +472,7 @@ namespace BinaryTree
 			UpdateGlobalError();
 
 		return this->_global_error;
-	};
+	}
 
 	template <size_t dim>
 	std::vector<size_t> MeshRefiner<dim>::ExtractPLevels() const
@@ -481,7 +482,7 @@ namespace BinaryTree
 		PlevelsExtractor p_ex;
 		this->IterateActiveNodes (p_ex);
 		return p_ex.GetPLevels();
-	};
+	}
 
 	template <size_t dim>
 	size_t MeshRefiner<dim>::ActiveNodesNumber() const
@@ -491,7 +492,7 @@ namespace BinaryTree
 		Counter cont;
 		this->IterateActiveNodes (cont);
 		return cont.GetCount();
-	};
+	}
 
 	template <size_t dim>
 	const Functor<dim>& MeshRefiner<dim>::GetFunctor() const
@@ -499,7 +500,7 @@ namespace BinaryTree
 		CheckInitialization();
 
 		return * (this->_objective_function);
-	};
+	}
 
 
 	template <size_t dim>
@@ -550,7 +551,7 @@ namespace BinaryTree
 		for (; i < c.GetCount() - 1; ++i)
 			output_file << "p_" << i << "(x) lw 6, \\" << std::endl;
 		output_file << "p_" << i << "(x)" << "lw 6" << std::endl;
-	};
+	}
 
 	template <size_t dim>
 	template <size_t dummy,
@@ -565,7 +566,7 @@ namespace BinaryTree
 					this->_objective_function->Formula() << std::endl;
 		ProjectionPrinter printer (output_file, x_step);
 		IterateActiveNodes (printer);
-	};
+	}
 
 } //namespace BinaryTree
 #endif //__MESH_REFINER_H

@@ -113,11 +113,11 @@ namespace FiniteElements
 	void StdFElementInterface<dim, FeType>::InitNorms (size_t degree)
 	{
 		_max_degree = degree;
-	};
+	}
 
 	template <size_t dim, BasisType FeType>
 	StdFElementInterface<dim, FeType>::StdFElementInterface() : _norm_values()
-	{};
+	{}
 
 	template <size_t dim, BasisType FeType>
 	StdFElementInterface<dim, FeType>::~StdFElementInterface()
@@ -126,7 +126,7 @@ namespace FiniteElements
 		If a new std element is created after the destruction of this one,
 		I want the InitNorms method to be called again */
 		this->_max_degree = 0;
-	};
+	}
 
 	template <size_t dim, BasisType FeType>
 	double StdFElementInterface<dim, FeType>::BasisNormSquared (size_t ind)
@@ -137,7 +137,7 @@ namespace FiniteElements
 		this->UpdateNorms();
 
 		return (this->_norm_values)[ind];
-	};
+	}
 
 	template <size_t dim, BasisType FeType>
 	void StdFElementInterface<dim, FeType>::UpdateNorms()
@@ -155,7 +155,7 @@ namespace FiniteElements
 
 		for (size_t i = l; i < new_l; ++i)
 			(this->_norm_values)[i] = this->ComputeNormSquared (i);
-	};
+	}
 
 
 } //namespace FiniteElements

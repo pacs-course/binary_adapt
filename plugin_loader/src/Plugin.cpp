@@ -9,7 +9,7 @@ namespace PluginLoading
 {
 	Plugin::Plugin (const std::string& so_file, int mode) : _so_file (so_file),
 		_handle (nullptr), _mode (mode)
-	{	};
+	{}
 
 	Plugin::~Plugin()
 	{
@@ -18,7 +18,7 @@ namespace PluginLoading
 #ifdef ENABLE_PLUGIN_CLOSE_BUG
 		Close();
 #endif
-	};
+	}
 
 	void* Plugin::Open()
 	{
@@ -34,8 +34,7 @@ namespace PluginLoading
 				+ string (err ? err : ""));
 		}
 		return this->_handle;
-
-	};
+	}
 
 	void Plugin::Close()
 	{
@@ -56,16 +55,16 @@ namespace PluginLoading
 			}
 		}
 		this->_handle = nullptr;
-	};
+	}
 
 	void* Plugin::Handle() const
 	{
 		return this->_handle;
-	};
+	}
 
 	const std::string& Plugin::File() const
 	{
 		return this->_so_file;
-	};
+	}
 
 } //namespace PluginLoading

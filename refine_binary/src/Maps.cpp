@@ -3,8 +3,8 @@
 
 namespace Geometry
 {
-	IntervalMap::IntervalMap() {};
-	IntervalMap::~IntervalMap() {};
+	IntervalMap::IntervalMap() {}
+	IntervalMap::~IntervalMap() {}
 
 	void IntervalMap::Init (const NodesVector<1>& vert)
 	{
@@ -15,10 +15,10 @@ namespace Geometry
 		this->_trasl[0]  = (a + b) / 2;
 		this->_jacobian = this->_mat (0, 0);
 		this->_inverse (0,0) = 1 / this->_mat (0, 0);
-	};
+	}
 
-	TriMap::TriMap() {};
-	TriMap::~TriMap() {};
+	TriMap::TriMap() {}
+	TriMap::~TriMap() {}
 
 	void TriMap::Init (const NodesVector<2>& vert)
 	{
@@ -41,13 +41,13 @@ namespace Geometry
 
 		//TODO: optimize it
 		this->_inverse = this->_mat.Inverse();
-	};
+	}
 
-	QuadMap::QuadMap() {};
-	QuadMap::~QuadMap() {};
+	QuadMap::QuadMap() {}
+	QuadMap::~QuadMap() {}
 
-	StdTriMap::StdTriMap() {};
-	StdTriMap::~StdTriMap() {};
+	StdTriMap::StdTriMap() {}
+	StdTriMap::~StdTriMap() {}
 
 	Point<2> StdTriMap::Evaluate (const Point<2>& p) const
 	{
@@ -59,7 +59,7 @@ namespace Geometry
 		result[1] = eta;
 
 		return result;
-	};
+	}
 
 	Point<2> StdTriMap::ComputeInverse (const Point<2>& p) const
 	{
@@ -71,12 +71,12 @@ namespace Geometry
 		result[1] = y;
 
 		return result;
-	};
+	}
 
 	double StdTriMap::EvaluateJacobian (const Point<2>& p) const
 	{
 		return (1 - p[1]) / 2;
-	};
+	}
 
 } //namespace Geometry
 

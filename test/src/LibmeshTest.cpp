@@ -13,7 +13,7 @@ using namespace FiniteElements;
 TEST_F (LibmeshTest, LibmeshVersionCompatibility)
 {
 	//TODO
-};
+}
 
 #ifdef TRY_IT
 /*  TODO Test to check the correctness of quadrature nodes and weights
@@ -36,7 +36,7 @@ TEST_F (BasicTest, SandiaQuadratureTest)
 	auto two_d_weights = one_d_rule.GetWeights();
 
 	clog << endl << "PointTest ended" << endl;
-};
+}
 #endif //TRY_IT
 
 TEST_F (LibmeshTest, GeneralIntegration)
@@ -151,7 +151,7 @@ TEST_F (LibmeshTest, GeneralIntegration)
 	EXPECT_LT (err, 1E-14) << s;
 
 	clog << "GeneralIntegration ended" << endl << endl;
-};
+}
 
 
 TEST_F (LibmeshTest, BinaryElementsConstruction)
@@ -208,7 +208,7 @@ TEST_F (LibmeshTest, BinaryElementsConstruction)
 	mesh2.prepare_for_use (/*skip_renumber =*/ false);
 
 	clog << "BinaryElementsConstruction ended" << endl << endl;
-};
+}
 
 
 TEST_F (LibmeshTest, IntervalProjectionTest)
@@ -515,7 +515,7 @@ TEST_F (LibmeshTest, TriangleOrthogonality)
 	//to avoid segfault when libMesh::Mesh destructor is called
 	libmesh_ptr = f_el.ReleaseGeometry();
 	clog << "TriangleOrthogonality ended" << endl << endl;
-};
+}
 
 TEST_F (LibmeshTest, TriangleProjectionTest)
 {
@@ -593,7 +593,7 @@ TEST_F (LibmeshTest, TriangleProjectionTest)
 	//	TODO: add automated checks on values not exactly integrated
 
 	clog << "TriangleProjectionTest ended" << endl << endl;
-};
+}
 
 TEST_F (LibmeshTest, LibmeshRefinement)
 {
@@ -676,7 +676,7 @@ TEST_F (LibmeshTest, LibmeshRefinement)
 							+ to_string (cont) + " ACTIVE elements";
 
 	clog << "LibmeshRefinement ended" << endl << endl;
-};
+}
 
 TEST_F (LibmeshTest, TriangleBisection)
 {
@@ -831,7 +831,7 @@ TEST_F (LibmeshTest, TriangleBisection)
 	EXPECT_LT (abs (nodes[2][1]) - 1  , 1E-14);
 
 	clog << "TriangleBisection ended" << endl << endl;
-};
+}
 
 TEST_F (LibmeshTest, ManualBinaryRefinement)
 {
@@ -894,7 +894,7 @@ TEST_F (LibmeshTest, ManualBinaryRefinement)
 						+ to_string (cont) + " ACTIVE elements";
 
 	clog << "ManualBinaryRefinement ended" << endl << endl;
-};
+}
 
 //TODO make results checking fully automated
 TEST_F (LibmeshTest, BinaryRefinement)
@@ -955,7 +955,7 @@ TEST_F (LibmeshTest, BinaryRefinement)
 	cout << endl;
 
 	clog << "BinaryRefinement ended" << endl << endl;
-};
+}
 
 //TODO: to be automated checks on input/output methods
 TEST_F (LibmeshTest, IOTest)
@@ -971,7 +971,7 @@ TEST_F (LibmeshTest, IOTest)
 	mesh.write ("./mesh2d.msh");
 
 	clog << "libMesh file IO test ended" << endl << endl;
-};
+}
 
 
 #ifdef TRY_IT
@@ -1008,5 +1008,5 @@ TEST_F (LibmeshTest, FirstNotExactElement)
 	clog << "Integral: " << I << endl;
 
 	clog << "FirstNotExactElement ended" << endl << endl;
-};
+}
 #endif //TRY_IT
