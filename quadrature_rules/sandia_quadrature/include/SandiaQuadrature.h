@@ -60,11 +60,11 @@ namespace SandiaQuadrature
 		/**
 			Get quadrature nodes
 		**/
-		virtual Geometry::QuadPointVec<dim> GetPoints() override;
+		virtual Geometry::QuadPointVec<dim> GetPoints() const override;
 		/**
 			Get quadrature weigths
 		**/
-		virtual Geometry::QuadWeightVec GetWeights() override;
+		virtual Geometry::QuadWeightVec GetWeights() const override;
 
 	  protected:
 		/**
@@ -127,13 +127,13 @@ namespace SandiaQuadrature
 	{}
 
 	template <size_t dim>
-	Geometry::QuadPointVec<dim> SandiaQuadratureRule<dim>::GetPoints()
+	Geometry::QuadPointVec<dim> SandiaQuadratureRule<dim>::GetPoints() const
 	{
 		return this->_points;
 	}
 
 	template <size_t dim>
-	Geometry::QuadWeightVec SandiaQuadratureRule<dim>::GetWeights()
+	Geometry::QuadWeightVec SandiaQuadratureRule<dim>::GetWeights() const
 	{
 		return this->_weights;
 	}

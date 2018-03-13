@@ -2,7 +2,6 @@
 #define __MAPS_H
 
 #include "LinearAlgebra.h"
-#include "AbstractFactory.h"
 #include "TypeEnumerations.h"
 
 //TODO insert a control on library reference elements

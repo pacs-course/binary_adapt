@@ -36,7 +36,7 @@ namespace BinaryTree
 		    Initialize the element.
 		    It sets the e, e~, E, E~, q, S
 			parameters to their default values,
-		    i.e. the ones assumed by leafs.
+		    i.e. the ones assumed by leaves.
 		**/
 		virtual void Init();
 

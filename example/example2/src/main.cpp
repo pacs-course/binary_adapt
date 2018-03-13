@@ -12,6 +12,9 @@
 	then the refining mesh can be used inside libMesh.
 	Information about the algorithm flow are extracted during the execution
 	and stored togheter with the results in ./results directory.
+	Use the plot_error.m script (matlab, octave or compatible software needed)
+	to plot the results for the error profile and the projected function,
+	gnuplot to plot the result for the p levels.
 **/
 
 #include <array>

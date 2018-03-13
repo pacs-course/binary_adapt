@@ -195,7 +195,7 @@ namespace BinaryTree
 		**/
 		virtual double Projection (const Geometry::Point<dim>&) const = 0;
 		/**
-			vertexes of the underliying geometry
+			vertices of the underliying geometry
 		**/
 		virtual Geometry::NodesVector<dim> Nodes() const = 0;
 	};

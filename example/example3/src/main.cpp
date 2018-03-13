@@ -12,6 +12,8 @@
 	then the refining mesh can be used inside libMesh.
 	Information about the algorithm flow are extracted during the execution
 	and stored togheter with the results in ./results directory.
+	Use the plot_error.m script to plot the results for the error,
+	gmsh or compatible software to plot the mesh
 **/
 
 #include <array>
@@ -164,6 +166,37 @@ int main (int argc, char** argv)
 		[&error, &binary_refiner_ptr]
 		(void)
 		{error.push_back (binary_refiner_ptr->GlobalError());};
+
+	//to print to file p levels
+	size_t p_iter = 0;
+	function<void()> plevels_printer = 
+		[results_dir, digits, &p_iter, &binary_refiner_ptr]
+		()
+		{
+			stringstream ss;
+			ss << setfill ('0') << setw (digits) << to_string (p_iter);
+			string plevel_name = results_dir + "/p_levels_" + ss.str();
+			ofstream plevel_file (plevel_name);
+			if (!plevel_file.is_open())
+				cerr << "Houston we have a problem! I'm not writing on plevel file!"
+					 << endl;
+
+			auto p_levels = binary_refiner_ptr->ExtractPLevels();
+			auto vertices = binary_refiner_ptr->ExtractVertices();
+
+			plevel_file << "#[p] [vertices]" << endl << endl;
+			for (size_t idx = 0; idx < p_levels.size(); ++idx)
+			{
+				plevel_file << p_levels[idx] << "\t[\t";
+				auto nodes = vertices[idx];
+				for (size_t jdx = 0; jdx < nodes.Size(); ++jdx)
+					plevel_file << nodes[jdx] << "\t";
+				plevel_file << "]" << endl << endl;
+			}
+
+			++p_iter;
+		};
+
 //*INDENT-ON*
 
 	//I take from getpot configuration file the tolerance on the error
@@ -179,10 +212,11 @@ int main (int argc, char** argv)
 	binary_refiner_ptr->Refine (max_iter,
 								tol,
 								error_extractor,
+								plevels_printer,
 								gmsh_printer);
 
 	//I print to file the error data
-	string error_name	 = results_dir + "/error_data";
+	string error_name = results_dir + "/error_data";
 	ofstream error_file (error_name);
 
 	if (!error_file.is_open())
@@ -194,6 +228,7 @@ int main (int argc, char** argv)
 
 	for (auto e : error)
 		error_file << cont++ << "	" << e << endl;
+
 
 	//I make the refined mesh usable in libmesh
 	mesh_ptr->prepare_for_use (/*skip_renumber =*/ false);

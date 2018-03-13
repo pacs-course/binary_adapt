@@ -39,12 +39,12 @@ namespace LibmeshBinary
 		/**
 			Get quadrature nodes converting libMesh nodes of #_quadrature_rule
 		**/
-		virtual Geometry::QuadPointVec<dim> GetPoints() override;
+		virtual Geometry::QuadPointVec<dim> GetPoints() const override;
 
 		/**
 			Get quadrature weights converting libMesh weights of #_quadrature_rule
 		**/
-		virtual Geometry::QuadWeightVec GetWeights() override;
+		virtual Geometry::QuadWeightVec GetWeights() const override;
 
 	  private:
 		libMesh::UniquePtr<libMesh::QBase> _quadrature_rule;
@@ -71,8 +71,8 @@ namespace LibmeshBinary
 		**/
 		~ModifiedTriangleRule();
 
-		virtual Geometry::QuadPointVec<2> GetPoints() override;
-		virtual Geometry::QuadWeightVec	  GetWeights() override;
+		virtual Geometry::QuadPointVec<2> GetPoints() const override;
+		virtual Geometry::QuadWeightVec	  GetWeights() const override;
 
 	  private:
 		/**
@@ -129,7 +129,7 @@ namespace LibmeshBinary
 	{}
 
 	template <size_t dim, Geometry::ElementType Type>
-	Geometry::QuadPointVec<dim> LibmeshQuadratureRule<dim, Type>::GetPoints()
+	Geometry::QuadPointVec<dim> LibmeshQuadratureRule<dim, Type>::GetPoints() const
 	{
 		std::vector<libMesh::Point> std_points = _quadrature_rule->get_points();
 		size_t length = std_points.size();
@@ -145,7 +145,7 @@ namespace LibmeshBinary
 	}
 
 	template <size_t dim, Geometry::ElementType Type>
-	Geometry::QuadWeightVec LibmeshQuadratureRule<dim, Type>::GetWeights()
+	Geometry::QuadWeightVec LibmeshQuadratureRule<dim, Type>::GetWeights() const
 	{
 		std::vector<libMesh::Real> std_weights = _quadrature_rule->get_weights();
 		Geometry::QuadWeightVec result (std_weights.size());

@@ -17,6 +17,8 @@
     Solid and Fluid Mechanics . G.H.Golub and others. Clarendon Press, 1998." p. 90
 
 	Results about the comparison are stored in ./results directory.
+	Use plot_error.m script (matlab, octave or compatible software needed)
+	to plot the result for the projection, gnuplot for the result for the p levels.
 **/
 
 #include <array>
@@ -41,19 +43,20 @@ using namespace FiniteElements;
 using namespace LibmeshBinary;
 
 /**
-	This is the result expected from the algorithm:
+	This is the result expected from the algorithm with N=45:
 	p_0(x) = x > 0.500000 && x <= 1.000000? 5 : 1/0
 	p_1(x) = x > 0.250000 && x <= 0.500000? 4 : 1/0
 	p_2(x) = x > 0.125000 && x <= 0.250000? 4 : 1/0
-	p_3(x) = x > 0.062500 && x <= 0.125000? 3 : 1/0
+	p_3(x) = x > 0.062500 && x <= 0.125000? 4 : 1/0
 	p_4(x) = x > 0.031250 && x <= 0.062500? 3 : 1/0
-	p_5(x) = x > 0.000000 && x <= 0.015625? 13 : 1/0
-	p_6(x) = x > 0.015625 && x <= 0.031250? 3 : 1/0
+	p_5(x) = x > 0.015625 && x <= 0.031250? 3 : 1/0
+	p_6(x) = x > 0.000000 && x <= 0.007812? 12 : 1/0
+	p_7(x) = x > 0.007812 && x <= 0.015625? 3 : 1/0
 
 	I want to pass from these p levels:
-		5 4 4 3 3 13 3
+		12 3 3 3 4 4 4 5
 	to
-		8 7 7 4 4 1  4
+		 1 2 4 4 5 7 7 8
 
 **/
 //TODO:	make the example more general, if anything changes in the algo result
@@ -62,7 +65,7 @@ class ManualAdapter : public NodeOperator
 {
   public:
 	/** constructor **/
-	ManualAdapter() : p_levels ( {8, 7, 7, 4, 4, 1, 4}), index (0) {};
+	ManualAdapter() : p_levels ( {8, 7, 7, 5, 4, 4, 1, 2}), index (0) {};
 	/** destructor **/
 	~ManualAdapter() {};
 
@@ -92,7 +95,7 @@ int main (int argc, char** argv)
 
 	BinaryTree::Init();
 
-	size_t max_iter = 40;
+	size_t max_iter = 45;
 
 	cout << "Starting the algorithm with " << max_iter << " iterations" << endl;
 
@@ -191,7 +194,22 @@ int main (int argc, char** argv)
 	string manual_projected_fun_name = results_dir + "/projection_data_manual";
 	binary_refiner_ptr->ExportProjection (manual_projected_fun_name, step);
 
+	string error_name = results_dir + "/error_data";
+	ofstream error_file (error_name);
+	if (!error_file.is_open())
+		cerr << "Houston we have a problem! I'm not writing on error file!"
+			 << endl;
+
+	string function_name = binary_refiner_ptr->GetFunctor().Formula();
+	error_file << "#Function: " << function_name << endl;
+	error_file << algo_error << endl;
+
+	error_file << manual_error << endl;
+
+	error_file << algo_error - manual_error << endl;
+
 	logfile.~Logfile();
+
 	cout << "Projection error on the resulting mesh" << endl;
 	cout << "E = " << algo_error << endl;
 

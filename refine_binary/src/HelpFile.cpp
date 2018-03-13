@@ -20,7 +20,7 @@ namespace Helpers
 	}
 
 
-	Cfgfile::Cfgfile (const string& filename)
+	Cfgfile::Cfgfile (const std::string& filename)
 	{
 		// WARNING:
 		// the GetPot version provided with libmesh raises an exception if the file does not exist
@@ -51,7 +51,7 @@ namespace Helpers
 	{}
 
 	int	
-	Cfgfile::operator()(const string var_name, int default_val) const
+	Cfgfile::operator()(const std::string var_name, int default_val) const
 	{
 		if (_ok)
 			return _cl(var_name.c_str(), default_val);
@@ -60,7 +60,7 @@ namespace Helpers
 	}
 
 	double
-	Cfgfile::operator()(const string var_name, const double& default_val) const
+	Cfgfile::operator()(const std::string var_name, const double& default_val) const
 	{
 		if (_ok)
 			return _cl(var_name.c_str(), default_val);
@@ -68,8 +68,8 @@ namespace Helpers
 			return default_val;
 	}
 
-	const string
-	Cfgfile::operator()(const string var_name, const string default_val) const
+	const std::string
+	Cfgfile::operator()(const std::string var_name, const std::string default_val) const
 	{
 		if (_ok)
 			return _cl(var_name.c_str(), default_val);

@@ -107,7 +107,7 @@ namespace FiniteElements
 		/**
 			Get the number of functions of a basis with degree equal to the input parameter.
 		**/
-		virtual size_t	BasisSize (size_t) const;
+		virtual size_t BasisSize (size_t) const;
 
 		/**
 			Get the number of functions of the element basis.

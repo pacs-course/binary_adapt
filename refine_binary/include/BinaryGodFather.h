@@ -43,7 +43,7 @@ namespace BinaryTree
 		/**
 			Refine the next leaf to be bisected.
 			It takes the S() parameter of the first element of _elements list and bisects it.
-			It returns a pointer to the father of the new just created leafs.
+			It returns a pointer to the father of the new just created leaves.
 		**/
 		BinaryNode* MakeBisection();
 		/**
@@ -130,9 +130,9 @@ namespace BinaryTree
 	{
 		SortElements();
 		auto first_element = * (_elements.begin());
-		/** I don't want to risk to have 2 active leafs
+		/** I don't want to risk to have 2 active leaves
 		    with an active ancestor, so before making the bisection,
-		    that will generate 2 active leafs,
+		    that will generate 2 active leaves,
 		    I deactivate all their ancestors. **/
 		RecursiveSelector rs;
 		rs.DeactivateSubTree (first_element);

@@ -35,11 +35,11 @@ namespace Geometry
 		/**
 			Get quadrature points
 		**/
-		virtual QuadPointVec<dim> GetPoints() = 0;
+		virtual QuadPointVec<dim> GetPoints() const = 0;
 		/**
 			Get quadrature weights
 		**/
-		virtual QuadWeightVec GetWeights() = 0;
+		virtual QuadWeightVec GetWeights() const = 0;
 
 		/**
 			Get the order of exactness of the rule.

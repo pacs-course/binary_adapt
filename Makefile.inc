@@ -21,8 +21,8 @@ LibMeshInclude :=
 LibMeshDir	   :=
 
 
-GTestInclude :=
-GTestDir	 :=
+GTestInclude := /usr/local/include
+GTestDir	 := /usr/local/lib
 
 #until libMesh is not patched libMesh getpot has to be used 
 GetPotInclude  := $(LibMeshInclude)

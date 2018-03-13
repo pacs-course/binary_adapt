@@ -14,6 +14,9 @@
 		 the functor to be interpolated
 		 the maximum number of iterations of the algorithm
 		 the tolerance on the error for the algorithm stopping criterion
+
+	Use gmsh or compatible software to plot the output mesh
+	(stored by default in ./results directory).
 **/
 
 #include "MeshRefiner.h"

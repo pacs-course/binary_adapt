@@ -133,6 +133,11 @@ namespace BinaryTree
 		std::vector<size_t> ExtractPLevels() const;
 
 		/**
+			Extract the vertices of active elements
+		**/
+		std::vector<Geometry::NodesVector<dim>> ExtractVertices() const;
+
+		/**
 			The number of active elements.
 		**/
 		size_t ActiveNodesNumber() const;
@@ -368,7 +373,7 @@ namespace BinaryTree
 		double total_error = this->GlobalError();
 		Execute (funcs...);
 		size_t n_iter = 0;
-		while (n_iter <= max_iter && total_error > tol)
+		while (n_iter < max_iter && total_error > tol)
 		{
 #ifdef VERBOSE
 			std::cout << std::endl
@@ -413,7 +418,7 @@ namespace BinaryTree
 		CheckInitialization();
 
 		size_t n_iter = 0;
-		while (n_iter <= max_iter)
+		while (n_iter < max_iter)
 		{
 			BinaryNode* leaf_dad = this->_godfather.MakeBisection();
 			ClimbUp (leaf_dad);
@@ -485,6 +490,18 @@ namespace BinaryTree
 	}
 
 	template <size_t dim>
+	std::vector<Geometry::NodesVector<dim>>
+	MeshRefiner<dim>::ExtractVertices() const
+	{
+		CheckInitialization();
+
+		VerticesExtractor<dim> v_ex;
+		this->IterateActiveNodes (v_ex);
+		return v_ex.GetVertices();		
+	};
+
+
+	template <size_t dim>
 	size_t MeshRefiner<dim>::ActiveNodesNumber() const
 	{
 		CheckInitialization();
@@ -527,12 +544,15 @@ namespace BinaryTree
 		double x_max = printer.XMax();
 		size_t p_max = printer.PMax();
 
-		output_file << "set xrange [" << x_min << ":" << x_max << "]" << std::endl
-					<< "set yrange [-1:" << p_max + 1 << "]" << std::endl
-					<< "set xlabel \"x\" font \"Helvetica, 22\"" << std::endl
-					<< "set ylabel \"p\" font \"Helvetica, 22\"" << std::endl
+		output_file << "set lmargin 16" << std::endl
+					<< "set bmargin 6" << std::endl
+				    << "set xrange [" << x_min << ":" << x_max << "]" << std::endl
+					<< "set yrange [0:" << p_max + 1 << "]" << std::endl
+					<< "set xlabel \"x\" font \"Helvetica, 40\" offset 0,-1.5,0" << std::endl
+					<< "set ylabel \"p\" font \"Helvetica, 40\" offset -6,0,0" << std::endl
 					<< "set samples 1000" << std::endl
-					<< "set xtics nomirror" << std::endl
+					<< "set xtics nomirror offset 0,-0.5,0" << std::endl
+					<< "set ytics nomirror" << std::endl
 					<< "set x2tics (";
 
 		auto x_left_vec = printer.XLeftVec();
@@ -541,16 +561,16 @@ namespace BinaryTree
 
 		output_file << "\"\" " << x_max << ")" << std::endl
 					<< "set grid noxtics noytics x2tics" << std::endl
-					<< "set tics font \"Helvetica,18\"" << std::endl
-					<< "set key font \",22\"" << std::endl
+					<< "set tics font \"Helvetica,36\"" << std::endl
+					<< "set nokey" << std::endl
 					<< "plot ";
 
 		size_t i = 0;
 		Counter c;
 		IterateActiveNodes (c);
 		for (; i < c.GetCount() - 1; ++i)
-			output_file << "p_" << i << "(x) lw 6, \\" << std::endl;
-		output_file << "p_" << i << "(x)" << "lw 6" << std::endl;
+			output_file << "p_" << i << "(x) lw 10, \\" << std::endl;
+		output_file << "p_" << i << "(x) lw 10" << std::endl;
 	}
 
 	template <size_t dim>

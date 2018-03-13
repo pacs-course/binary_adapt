@@ -106,7 +106,7 @@ namespace BinaryTree
 	};
 
 	/**
-		Functor the get from the underlying mesh the elements p levels.
+		Functor to get from the underlying mesh the elements p levels.
 		When iterating over active nodes it adds the node p level to the
 		#_p_levels vector; at the end of the iteration do GetPLevels to get it.
 	**/
@@ -127,7 +127,7 @@ namespace BinaryTree
 		**/
 		virtual void operator() (const BinaryNode*)override;
 		/**
-			get  p levels
+			get p levels
 		**/
 		std::vector<size_t> GetPLevels()const;
 
@@ -184,6 +184,41 @@ namespace BinaryTree
 
 		virtual void operator() (const DimensionedNode<dim>*) = 0;
 	};
+
+	/**
+		Functor to get from the underlying mesh the elements vertices.
+		When iterating over active nodes it adds the vertices to the
+		#_vertices vector; at the end of the iteration do GetVertices to get it.
+	**/
+	template <size_t dim>
+	class VerticesExtractor : public ConstDimOperator<dim>
+	{
+	  public:
+		/**
+			default constructor
+		**/
+		VerticesExtractor();
+		/**
+			default destructor
+		**/
+		virtual ~VerticesExtractor();
+
+		/**
+			push_back to #_vertices vector the vertices of the node
+		**/
+		virtual void operator() (const DimensionedNode<dim>*)override;
+		/**
+			get vertices
+		**/
+		std::vector<Geometry::NodesVector<dim>> GetVertices()const;
+
+	  protected:
+		/**
+			p levels vector
+		**/
+		std::vector<Geometry::NodesVector<dim>> _vertices;
+	};
+
 
 	/**
 		Functor for MeshRefiner::ExportGnuPlot() method.
@@ -292,5 +327,28 @@ namespace BinaryTree
 		**/
 		double _x_step;
 	};
+
+
+	template <size_t dim>
+	VerticesExtractor<dim>::VerticesExtractor() : _vertices()
+	{}
+
+	template <size_t dim>
+	VerticesExtractor<dim>::~VerticesExtractor()
+	{}
+
+	template <size_t dim>
+	void VerticesExtractor<dim>::operator() (const DimensionedNode<dim>* node)
+	{
+		this->_vertices.push_back(node->Nodes());
+	}
+
+	template <size_t dim>
+	std::vector<Geometry::NodesVector<dim>>
+	VerticesExtractor<dim>::GetVertices() const
+	{
+		return this->_vertices;
+	}
+
 } //namespace BinaryTree
 #endif //__MESH_REFINER_FUNCTORS_H
