@@ -188,9 +188,7 @@ define CompileObject
 $(call ObjectFilename,$(1),$(2)): $(SrcDir)/$(2) $(BaseDir)/Makefile.inc
 	@echo compiling: '$$<'
 	$$(CXX_$(1)) -c -o '$$@' '$$<'
-	$$(CXX_$(1)) '$$<' -MM -MF '$$@'.temp.dep
-	sed -e"s#$(subst .cpp,.o,$(2))#$$@#" '$$@'.temp.dep > $(call DependFilename,$(1),$(file))
-	rm '$$@'.temp.dep
+	$$(CXX_$(1)) '$$<' -MM -MT '$$@' -MF $(call DependFilename,$(1),$(file))
 endef
 
 define TargetTemplate
